@@ -28,6 +28,7 @@ namespace OptionChain
         public int TotalTradedVolume { get; set; }
         public string? Underlying { get; set; }
         public double UnderlyingValue { get; set; }
+        public DateTime? EntryDate { get; set; }
     }
 
     public class FilteredOptionData
@@ -54,6 +55,7 @@ namespace OptionChain
         public int TotalTradedVolume { get; set; }
         public string? Underlying { get; set; }
         public double UnderlyingValue { get; set; }
+        public DateTime? EntryDate { get; set; }
 
         public List<FilteredOptionData> ConvertToFilterOptionData(List<OptionData> optionDatas)
         {
@@ -77,52 +79,54 @@ namespace OptionChain
                 TotalSellQuantity = s.TotalSellQuantity,
                 TotalTradedVolume = s.TotalTradedVolume,
                 Underlying = s.Underlying,
-                UnderlyingValue = s.UnderlyingValue
+                UnderlyingValue = s.UnderlyingValue,
+                EntryDate = DateTime.Now.Date
             }).ToList();
         }
-}
+    }
 
-public class Record
-{
-    public long Id { get; set; }
-    public List<OptionData> Data { get; set; }
-    public List<string> ExpiryDates { get; set; }
-}
+    public class Record
+    {
+        public long Id { get; set; }
+        public List<OptionData> Data { get; set; }
+        public List<string> ExpiryDates { get; set; }
+    }
 
-public class Filtered
-{
-    public long Id { get; set; }
-    public List<OptionData> Data { get; set; }
-    public OptionSummary CE { get; set; }
-    public OptionSummary PE { get; set; }
-}
+    public class Filtered
+    {
+        public long Id { get; set; }
+        public List<OptionData> Data { get; set; }
+        public OptionSummary CE { get; set; }
+        public OptionSummary PE { get; set; }
+    }
 
-public class OptionSummary
-{
-    public double TotOI { get; set; }
-    public double TotVol { get; set; }
-}
+    public class OptionSummary
+    {
+        public double TotOI { get; set; }
+        public double TotVol { get; set; }
+    }
 
-public class Root
-{
-    public Record Records { get; set; }
-    public Filtered Filtered { get; set; }
-}
+    public class Root
+    {
+        public Record Records { get; set; }
+        public Filtered Filtered { get; set; }
+    }
 
-public class Summary
-{
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public long Id { get; set; }
-    public double TotOICE { get; set; }
-    public double TotOIPE { get; set; }
-    public double TotVolCE { get; set; }
-    public double TotVolPE { get; set; }
-    public double CEPEOIDiff { get; set; }
-    public double CEPEVolDiff { get; set; }
-    public double CEPEOIPrevDiff { get; set; }
-    public double CEPEVolPrevDiff { get; set; }
-    public string? Time { get; set; }
+    public class Summary
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+        public double TotOICE { get; set; }
+        public double TotOIPE { get; set; }
+        public double TotVolCE { get; set; }
+        public double TotVolPE { get; set; }
+        public double CEPEOIDiff { get; set; }
+        public double CEPEVolDiff { get; set; }
+        public double CEPEOIPrevDiff { get; set; }
+        public double CEPEVolPrevDiff { get; set; }
+        public string? Time { get; set; }
+        public DateTime? EntryDate { get; set; }
 
-}
+    }
 }

@@ -118,6 +118,11 @@ namespace OptionChain
                 {
                     await _optionDbContext.Database.BeginTransactionAsync();
 
+                    optionData.Records.Data.ForEach(r =>
+                    {
+                        r.EntryDate = DateTime.Now.Date;
+                    });
+
                     await _optionDbContext.AllOptionData.AddRangeAsync(optionData.Records.Data);
 
                     await _optionDbContext.SaveChangesAsync();
