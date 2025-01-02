@@ -156,8 +156,8 @@ namespace OptionChain
                         previousCPEColDiffValue = currentCPEVolValue - (new Random().NextSingle() * 100);
                     }*/
 
-                    double CEPEOIPreDiff = previousCPEOIDiffValue.HasValue ? currentCPEOIValue - previousCPEOIDiffValue.Value : 0;
-                    double CEPEVolPreDiff = previousCPEColDiffValue.HasValue ? currentCPEOIValue - previousCPEColDiffValue.Value : 0;
+                    double CEPEOIPreDiff = previousCPEOIDiffValue.HasValue ? ((currentCPEOIValue) - (previousCPEOIDiffValue.Value)) : 0;
+                    double CEPEVolPreDiff = previousCPEColDiffValue.HasValue ? ((currentCPEOIValue) - (previousCPEColDiffValue.Value)) : 0;
 
                     Summary summary = new Summary
                     {
