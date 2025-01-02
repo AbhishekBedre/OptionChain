@@ -20,23 +20,40 @@ builder.Services.AddDbContext<OptionDbContext>(options =>
 
 builder.Services.AddQuartz(q =>
 {
-    var fetchingJob = JobKey.Create("FetchingJob");
-    var finalFetchJob = JobKey.Create("FinalFetchJob");
+    var firstSession = JobKey.Create("FirstSession");
+    var midSession = JobKey.Create("MidSession");
+    var lastSession = JobKey.Create("LastSession");
+    var finalCall = JobKey.Create("FinalCall");
 
-    q.AddJob<FetchAndProcessJob>(fetchingJob)
+    q.AddJob<FetchAndProcessJob>(firstSession)
         .AddTrigger(trigger =>
         {
-            trigger.ForJob(fetchingJob)
-                .WithCronSchedule("0 15/5 9-15 ? * MON-FRI *"); // Start 9:15 AM to 3:30 PM
+            trigger.ForJob(firstSession)
+                .WithCronSchedule("0 15-59/5 9 ? * MON-FRI"); // From 9:15 AM to 9:59 AM, Monday to Friday
                 //.WithSimpleSchedule(s => s.WithRepeatCount(0));
                 //.WithCronSchedule("0 * * ? * *"); // Start of Every Minute                
         });
     
-    q.AddJob<FetchAndProcessJob>(finalFetchJob)
+    q.AddJob<FetchAndProcessJob>(midSession)
         .AddTrigger(trigger =>
         {
-            trigger.ForJob(finalFetchJob)
-                .WithCronSchedule("0 45 15 ? * MON-FRI *"); // Final Call 3:45 PM
+            trigger.ForJob(midSession)
+                .WithCronSchedule("0 0-59/5 10-14 ? * MON-FRI"); // From 10:00 AM to 2:59 PM, Monday to Friday
+        });
+
+
+    q.AddJob<FetchAndProcessJob>(lastSession)
+        .AddTrigger(trigger =>
+        {
+            trigger.ForJob(lastSession)
+                .WithCronSchedule("0 0-30/5 15 ? * MON-FRI"); // From 3:00 PM to 3:30 PM, Monday to Friday
+        });
+
+    q.AddJob<FetchAndProcessJob>(finalCall)
+        .AddTrigger(trigger =>
+        {
+            trigger.ForJob(finalCall)
+                .WithCronSchedule("0 45 15 ? * MON-FRI"); // At 3:40 PM, Monday to Friday
         });
 });
 

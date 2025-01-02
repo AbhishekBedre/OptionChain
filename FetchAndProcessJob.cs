@@ -118,7 +118,7 @@ namespace OptionChain
                 {
                     await _optionDbContext.Database.BeginTransactionAsync();
 
-                    optionData.Records.Data.ForEach(r =>
+                    optionData.Records.Data?.ForEach(r =>
                     {
                         r.EntryDate = DateTime.Now.Date;
                     });
@@ -173,7 +173,8 @@ namespace OptionChain
                         CEPEOIPrevDiff = CEPEOIPreDiff,
                         CEPEVolPrevDiff = CEPEVolPreDiff,
 
-                        Time = context.FireTimeUtc.ToLocalTime().ToString("hh:mm")
+                        Time = context.FireTimeUtc.ToLocalTime().ToString("hh:mm"),
+                        EntryDate = DateTime.Now.Date
                     };
 
                     await _optionDbContext.Summary.AddAsync(summary);
