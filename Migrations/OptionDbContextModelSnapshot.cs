@@ -22,6 +22,28 @@ namespace OptionChain.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("OptionChain.Advance", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("Advances")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Declines")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Unchanged")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Advance");
+                });
+
             modelBuilder.Entity("OptionChain.FilteredOptionData", b =>
                 {
                     b.Property<long>("Id")
@@ -168,6 +190,162 @@ namespace OptionChain.Migrations
                     b.ToTable("AllOptionData");
                 });
 
+            modelBuilder.Entity("OptionChain.StockData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<double>("Change")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Chart30dPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Chart365dPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChartTodayPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Date30dAgo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Date365dAgo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("DayHigh")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DayLow")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Ffmc")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Identifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("LastPrice")
+                        .HasColumnType("float");
+
+                    b.Property<string>("LastUpdateTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("MetaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<double>("NearWKH")
+                        .HasColumnType("float");
+
+                    b.Property<double>("NearWKL")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Open")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PChange")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PerChange30d")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PerChange365d")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PreviousClose")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Series")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("StockIndClosePrice")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("TotalTradedValue")
+                        .HasColumnType("float");
+
+                    b.Property<long>("TotalTradedVolume")
+                        .HasColumnType("bigint");
+
+                    b.Property<double>("YearHigh")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YearLow")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MetaId");
+
+                    b.ToTable("StockData");
+                });
+
+            modelBuilder.Entity("OptionChain.StockMetaData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Industry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCASec")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDebtSec")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelisted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsETFSec")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFNOSec")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMunicipalBond")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSLBSec")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSuspended")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Isin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ListingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SlbIsin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StockMetaData");
+                });
+
             modelBuilder.Entity("OptionChain.Summary", b =>
                 {
                     b.Property<long>("Id")
@@ -209,6 +387,17 @@ namespace OptionChain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Summary");
+                });
+
+            modelBuilder.Entity("OptionChain.StockData", b =>
+                {
+                    b.HasOne("OptionChain.StockMetaData", "Meta")
+                        .WithMany()
+                        .HasForeignKey("MetaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Meta");
                 });
 #pragma warning restore 612, 618
         }

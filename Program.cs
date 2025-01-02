@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OptionChain;
 using Quartz;
-using Quartz.Impl;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-string connectionString = "Data Source=DESKTOP-PKUGHDC;Initial Catalog=OptionChain;Integrated Security=True;TrustServerCertificate=True";
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<OptionDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -29,11 +27,11 @@ builder.Services.AddQuartz(q =>
         .AddTrigger(trigger =>
         {
             trigger.ForJob(firstSession)
-                .WithCronSchedule("0 15-59/5 9 ? * MON-FRI"); // From 9:15 AM to 9:59 AM, Monday to Friday
-                //.WithSimpleSchedule(s => s.WithRepeatCount(0));
+                //.WithCronSchedule("0 15-59/5 9 ? * MON-FRI"); // From 9:15 AM to 9:59 AM, Monday to Friday
+                .WithSimpleSchedule(s => s.WithRepeatCount(0));
                 //.WithCronSchedule("0 * * ? * *"); // Start of Every Minute                
         });
-    
+
     q.AddJob<FetchAndProcessJob>(midSession)
         .AddTrigger(trigger =>
         {

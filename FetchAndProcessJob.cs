@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Quartz;
 using System.Diagnostics;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OptionChain
 {
@@ -9,15 +12,17 @@ namespace OptionChain
     {
         private readonly ILogger<FetchAndProcessJob> _logger;
         private readonly OptionDbContext _optionDbContext;
+        private readonly IConfiguration _configuration;
         private object counter = 0;
         private double? previousCPEOIDiffValue = null; // To store the previous X value
         private double? previousCPEColDiffValue = null; // To store the previous X value
 
 
-        public FetchAndProcessJob(ILogger<FetchAndProcessJob> log, OptionDbContext optionDbContext)
+        public FetchAndProcessJob(ILogger<FetchAndProcessJob> log, OptionDbContext optionDbContext, IConfiguration configuration)
         {
             _logger = log;
             _optionDbContext = optionDbContext;
+            _configuration = configuration;
         }
         public async Task Execute(IJobExecutionContext context)
         {
@@ -48,6 +53,8 @@ namespace OptionChain
             {
                 _logger.LogInformation($"Multiple tried but not succeed. counter: {counter}");
                 counter = 0;
+
+                Utility.LogDetails(ex.Message);
             }
 
             await Task.CompletedTask;
@@ -55,6 +62,8 @@ namespace OptionChain
 
         public async Task<(bool, object, Root?)> GetNiftyOptionData(object counter, IJobExecutionContext context)
         {
+            Utility.LogDetails("Send quots reqest counter:" + counter + ", Time: " + context.FireTimeUtc.ToString("hh:mm"));
+
             bool status = true;
             Root? optionData = null;
 
@@ -65,7 +74,7 @@ namespace OptionChain
             client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.43.0");
             client.DefaultRequestHeaders.Add("Connection", "keep-alive");
 
-            string url = "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY";
+            string url = "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY1";
 
             try
             {
@@ -89,17 +98,20 @@ namespace OptionChain
                     else
                     {
                         _logger.LogInformation("Failed to parse JSON content.");
+                        Utility.LogDetails("Failed to parse JSON content.");
                         throw new Exception("Failed to parse JSON content.");
                     }
                 }
                 else
                 {
+                    Utility.LogDetails($"HTTP Error: {response.StatusCode}");
                     _logger.LogInformation($"HTTP Error: {response.StatusCode}");
                     throw new Exception($"Http Error: {response.StatusCode}");
                 }
             }
             catch (Exception ex)
             {
+                Utility.LogDetails($"Exception: {ex.Message}");
                 _logger.LogInformation($"Exception: {ex.Message}");
                 counter = Convert.ToInt16(counter) + 1;
                 status = false;
@@ -142,20 +154,15 @@ namespace OptionChain
                     {
                         previousCEPEOIId = await _optionDbContext.Summary.MaxAsync(m => m.Id);
                     }
-                    
+
                     var lastRecord = await _optionDbContext.Summary.Where(w => w.Id == previousCEPEOIId).FirstOrDefaultAsync();
 
                     if (lastRecord != null)
                     {
-                        previousCPEOIDiffValue = lastRecord.CEPEOIPrevDiff;
-                        previousCPEColDiffValue = lastRecord.CEPEVolPrevDiff;
+                        previousCPEOIDiffValue = lastRecord.CEPEOIDiff;
+                        previousCPEColDiffValue = lastRecord.CEPEVolDiff;
                     }
-                    /*else
-                    {
-                        previousCPEOIDiffValue = currentCPEOIValue - (new Random().NextSingle() * 100);
-                        previousCPEColDiffValue = currentCPEVolValue - (new Random().NextSingle() * 100);
-                    }*/
-
+                    
                     double CEPEOIPreDiff = previousCPEOIDiffValue.HasValue ? ((currentCPEOIValue) - (previousCPEOIDiffValue.Value)) : 0;
                     double CEPEVolPreDiff = previousCPEColDiffValue.HasValue ? ((currentCPEOIValue) - (previousCPEColDiffValue.Value)) : 0;
 
@@ -186,6 +193,7 @@ namespace OptionChain
             }
             catch (Exception ex)
             {
+                Utility.LogDetails($"DB Function Exception: {ex.Message}");
                 await _optionDbContext.Database.RollbackTransactionAsync();
                 return false;
             }
