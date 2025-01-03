@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
@@ -112,13 +113,6 @@ namespace OptionChain
         public Filtered Filtered { get; set; }
     }
 
-    public class StockRoot
-    {
-        public string Name { get; set; }
-        public Advance Advance { get; set; }
-        public List<StockData> Data { get; set; }
-    }
-
     public class Summary
     {
         [Key]
@@ -142,9 +136,10 @@ namespace OptionChain
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        public int Declines { get; set; }
-        public int Advances { get; set; }
-        public int Unchanged { get; set; }
+        public string? Declines { get; set; }
+        public string? Advances { get; set; }
+        public string? Unchanged { get; set; }
+        public DateTime? EntryDate { get; set; }
     }
 
     public class StockData
@@ -172,14 +167,16 @@ namespace OptionChain
         public double YearLow { get; set; }
         public double NearWKH { get; set; }
         public double NearWKL { get; set; }
-        public double PerChange365d { get; set; }
+
+        //[JsonConverter(typeof(IntOrDashConverter))]
+        //public double PerChange365d { get; set; }
         public string? Date365dAgo { get; set; }
         public string? Chart365dPath { get; set; }
         public string? Date30dAgo { get; set; }
         public double PerChange30d { get; set; }
         public string? Chart30dPath { get; set; }
         public string? ChartTodayPath { get; set; }
-        public virtual StockMetaData Meta { get; set; }
+        public DateTime? EntryDate { get; set; }
     }
 
     public class StockMetaData
@@ -197,9 +194,10 @@ namespace OptionChain
         public bool IsSuspended { get; set; }
         public bool IsETFSec { get; set; }
         public bool IsDelisted { get; set; }
-        public string Isin { get; set; }
-        public string SlbIsin { get; set; }
+        public string? Isin { get; set; }
+        public string? SlbIsin { get; set; }
         public DateTime ListingDate { get; set; }
         public bool IsMunicipalBond { get; set; }
+        public DateTime? EntryDate { get; set; }
     }
 }
