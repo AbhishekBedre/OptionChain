@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using OptionChain;
 using Quartz;
 
+Console.WriteLine("Program started");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,8 +15,12 @@ builder.Services.AddSwaggerGen();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+Console.WriteLine(connectionString);
+
 builder.Services.AddDbContext<OptionDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+Console.WriteLine("Adding Quartz settings");
 
 builder.Services.AddQuartz(q =>
 {
@@ -51,7 +57,7 @@ builder.Services.AddQuartz(q =>
         .AddTrigger(trigger =>
         {
             trigger.ForJob(finalCall)
-                .WithCronSchedule("0 45 15 ? * MON-FRI"); // At 3:40 PM, Monday to Friday
+                .WithCronSchedule("0 0 16 ? * MON-FRI"); // At 4:00 PM, Monday to Friday
         });
 });
 
@@ -59,13 +65,15 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.AllowAnyOrigin() //.WithOrigins("https://localhost", "http://localhost", "https://localhost/", "http://localhost/") // Add your allowed origins here
+        builder.AllowAnyOrigin() 
                .AllowAnyHeader()
                .AllowAnyMethod();
     });
 });
 
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
+Console.WriteLine("Building app");
 
 var app = builder.Build();
 
@@ -87,5 +95,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+Console.WriteLine("Running App");
 
 app.Run();
