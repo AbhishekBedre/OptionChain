@@ -140,7 +140,6 @@ function getLastFriday() {
     return today.toLocaleDateString(); // Return in a readable format (optional)
 }
 
-
 function getOptionsData(callback) {
 
     $("#chartFour").empty();
@@ -148,9 +147,12 @@ function getOptionsData(callback) {
     $("div[x-show='loaded']").show();
 
     var selectedDate = $(".form-datepicker").val();
+    var domain = window.location.origin;
+
+    var url = domain + "/optionchain/Options";
 
     $.ajax({
-        url: 'https://localhost:7064/Options',
+        url: url,
         type: 'GET',
         data: { "currentDate": selectedDate }, // Pass the date as a query parameter
         success: function (response) {
