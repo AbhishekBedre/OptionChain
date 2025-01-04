@@ -30,6 +30,7 @@ namespace OptionChain
         public string? Underlying { get; set; }
         public double UnderlyingValue { get; set; }
         public DateTime? EntryDate { get; set; }
+        public TimeSpan? Time { get; set; }
     }
 
     public class FilteredOptionData
@@ -57,6 +58,7 @@ namespace OptionChain
         public string? Underlying { get; set; }
         public double UnderlyingValue { get; set; }
         public DateTime? EntryDate { get; set; }
+        public TimeSpan? Time { get; set; }
 
         public List<FilteredOptionData> ConvertToFilterOptionData(List<OptionData> optionDatas)
         {
@@ -81,7 +83,8 @@ namespace OptionChain
                 TotalTradedVolume = s.TotalTradedVolume,
                 Underlying = s.Underlying,
                 UnderlyingValue = s.UnderlyingValue,
-                EntryDate = DateTime.Now.Date
+                EntryDate = DateTime.Now.Date,
+                Time = DateTime.Now.TimeOfDay
             }).ToList();
         }
     }
@@ -126,7 +129,7 @@ namespace OptionChain
         public double CEPEVolDiff { get; set; }
         public double CEPEOIPrevDiff { get; set; }
         public double CEPEVolPrevDiff { get; set; }
-        public string? Time { get; set; }
+        public TimeSpan? Time { get; set; }
         public DateTime? EntryDate { get; set; }
 
     }
@@ -140,6 +143,7 @@ namespace OptionChain
         public string? Advances { get; set; }
         public string? Unchanged { get; set; }
         public DateTime? EntryDate { get; set; }
+        public TimeSpan? Time { get; set; }
     }
 
     public class StockData
@@ -176,6 +180,7 @@ namespace OptionChain
         public double PerChange30d { get; set; }
         public string? Chart30dPath { get; set; }
         public string? ChartTodayPath { get; set; }
+        public TimeSpan? Time { get; set; }
         public DateTime? EntryDate { get; set; }
     }
 
@@ -198,6 +203,7 @@ namespace OptionChain
         public string? SlbIsin { get; set; }
         public DateTime ListingDate { get; set; }
         public bool IsMunicipalBond { get; set; }
+        public TimeSpan? Time { get; set; }
         public DateTime? EntryDate { get; set; }
     }
 }

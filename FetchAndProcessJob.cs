@@ -27,11 +27,13 @@ namespace OptionChain
         {
             _logger.LogInformation("Started");
 
-            var optionsTask = GetNiftyOptions(context);
+            //var optionsTask = GetNiftyOptions(context);
+            //await GetNiftyOptions(context);
 
-            var stockTask = GetStockData(context);
+            //var stockTask = GetStockData(context);
+            await GetStockData(context);
 
-            await Task.WhenAll(optionsTask, stockTask);
+            //await Task.WhenAll(optionsTask, stockTask);
 
             await Task.CompletedTask;
         }
@@ -168,6 +170,7 @@ namespace OptionChain
                     optionData.Records.Data?.ForEach(r =>
                     {
                         r.EntryDate = DateTime.Now.Date;
+                        r.Time = DateTime.Now.TimeOfDay;
                     });
 
                     await _optionDbContext.AllOptionData.AddRangeAsync(optionData.Records.Data);
@@ -215,7 +218,7 @@ namespace OptionChain
                         CEPEOIPrevDiff = CEPEOIPreDiff,
                         CEPEVolPrevDiff = CEPEVolPreDiff,
 
-                        Time = context.FireTimeUtc.ToLocalTime().ToString("hh:mm"),
+                        Time = context.FireTimeUtc.ToLocalTime().TimeOfDay,
                         EntryDate = DateTime.Now.Date
                     };
 
@@ -330,7 +333,8 @@ namespace OptionChain
                             PerChange30d = f.PerChange30d,
                             Chart30dPath = f.Chart30dPath,
                             ChartTodayPath = f.ChartTodayPath,
-                            EntryDate = f.EntryDate
+                            EntryDate = DateTime.Now.Date,
+                            Time = DateTime.Now.TimeOfDay
                         };
 
                         stockDatas.Add(stockData);
@@ -351,7 +355,7 @@ namespace OptionChain
                             SlbIsin = f.Meta.SlbIsin,
                             ListingDate = f.Meta.ListingDate,
                             IsMunicipalBond = f.Meta.IsMunicipalBond,
-                            EntryDate = f.Meta.EntryDate,
+                            EntryDate = DateTime.Now.Date,
                         });
                     });
 
@@ -363,7 +367,8 @@ namespace OptionChain
 
                     // Advances data
 
-                    stockRoot.Advance.EntryDate = DateTime.Now;
+                    stockRoot.Advance.EntryDate = DateTime.Now.Date;
+                    stockRoot.Advance.Time = context.FireTimeUtc.ToLocalTime().TimeOfDay;
 
                     await _optionDbContext.Advance.AddRangeAsync(stockRoot.Advance);
 
@@ -386,7 +391,8 @@ namespace OptionChain
                                     CompanyName = stock.CompanyName,
                                     IsCASec = stock.IsCASec,
                                     Symbol = stock.Symbol,
-                                    EntryDate = DateTime.Now,
+                                    EntryDate = DateTime.Now.Date,
+                                    Time = context.FireTimeUtc.ToLocalTime().TimeOfDay,
                                     ListingDate = stock.ListingDate,
                                     Industry = stock.Industry,
                                     IsDebtSec = stock.IsDebtSec,
@@ -405,7 +411,8 @@ namespace OptionChain
                                 metaData.CompanyName = stock.CompanyName;
                                 metaData.IsCASec = stock.IsCASec;
                                 metaData.Symbol = stock.Symbol;
-                                metaData.EntryDate = DateTime.Now;
+                                metaData.EntryDate = DateTime.Now.Date;
+                                metaData.Time = context.FireTimeUtc.ToLocalTime().TimeOfDay;
                                 metaData.ListingDate = stock.ListingDate;
                                 metaData.Industry = stock.Industry;
                                 metaData.IsDebtSec = stock.IsDebtSec;

@@ -39,6 +39,9 @@ namespace OptionChain.Migrations
                     b.Property<DateTime?>("EntryDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
                     b.Property<string>("Unchanged")
                         .HasColumnType("nvarchar(max)");
 
@@ -99,6 +102,9 @@ namespace OptionChain.Migrations
 
                     b.Property<double>("StrikePrice")
                         .HasColumnType("float");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
 
                     b.Property<int>("TotalBuyQuantity")
                         .HasColumnType("int");
@@ -172,6 +178,9 @@ namespace OptionChain.Migrations
 
                     b.Property<double>("StrikePrice")
                         .HasColumnType("float");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
 
                     b.Property<int>("TotalBuyQuantity")
                         .HasColumnType("int");
@@ -270,6 +279,9 @@ namespace OptionChain.Migrations
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
                     b.Property<double>("TotalTradedValue")
                         .HasColumnType("float");
 
@@ -340,6 +352,9 @@ namespace OptionChain.Migrations
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
                     b.HasKey("Id");
 
                     b.ToTable("StockMetaData");
@@ -368,8 +383,8 @@ namespace OptionChain.Migrations
                     b.Property<DateTime?>("EntryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Time")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
 
                     b.Property<double>("TotOICE")
                         .HasColumnType("float");
