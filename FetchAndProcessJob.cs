@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Quartz;
 using System.Diagnostics;
@@ -27,13 +26,14 @@ namespace OptionChain
         {
             _logger.LogInformation("Started");
 
-            //var optionsTask = GetNiftyOptions(context);
+            var optionsTask = GetNiftyOptions(context);
+           
+            var stockTask = GetStockData(context);
+            
+            await Task.WhenAll(optionsTask, stockTask);
+
             //await GetNiftyOptions(context);
-
-            //var stockTask = GetStockData(context);
-            await GetStockData(context);
-
-            //await Task.WhenAll(optionsTask, stockTask);
+            //await GetStockData(context);
 
             await Task.CompletedTask;
         }
