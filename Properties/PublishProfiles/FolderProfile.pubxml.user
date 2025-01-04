@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\Users\abhis\source\repos\OptionChain\bin\Release\net6.0\publish\</_PublishTargetUrl>
-    <History>True|2025-01-04T16:44:27.3951399Z;True|2025-01-04T21:47:48.6279103+05:30;True|2025-01-04T20:34:54.5591849+05:30;True|2025-01-04T20:30:52.5125872+05:30;True|2025-01-04T20:29:33.1096428+05:30;True|2025-01-04T14:16:44.9907290+05:30;</History>
+    <History>True|2025-01-04T17:43:29.2326194Z;True|2025-01-04T22:14:27.3951399+05:30;True|2025-01-04T21:47:48.6279103+05:30;True|2025-01-04T20:34:54.5591849+05:30;True|2025-01-04T20:30:52.5125872+05:30;True|2025-01-04T20:29:33.1096428+05:30;True|2025-01-04T14:16:44.9907290+05:30;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

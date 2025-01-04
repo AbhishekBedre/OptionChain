@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Quartz;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -47,15 +48,15 @@ namespace OptionChain
             {
                 (bool status, object result, StockRoot StockRoot) = await GetStockData(stockCounter, context);
 
-                if (status == false && Convert.ToInt16(result) <= 2)
+                if (status == false && Convert.ToInt16(result) <= 5)
                 {
-                    await Task.Delay(2000);
+                    await Task.Delay(5000);
                     stockCounter = result;
 
                     goto STEP;
                 }
 
-                if (Convert.ToInt32(stockCounter) <= 2)
+                if (Convert.ToInt32(stockCounter) <= 5)
                 {
                     stockCounter = 0;
                     // Make a Db Call
@@ -80,7 +81,7 @@ namespace OptionChain
             {
                 (bool status, object result, Root? optionData) = await GetNiftyOptionData(counter, context);
 
-                if (status == false && Convert.ToInt16(result) <= 2)
+                if (status == false && Convert.ToInt16(result) <= 5)
                 {
                     await Task.Delay(2000);
                     counter = result;
@@ -89,7 +90,7 @@ namespace OptionChain
 
                 }
 
-                if (Convert.ToInt32(counter) <= 2)
+                if (Convert.ToInt32(counter) <= 5)
                 {
                     counter = 0;
                     // Make a Db Call
@@ -252,8 +253,9 @@ namespace OptionChain
             client.DefaultRequestHeaders.Add("Accept", "*/*");
             client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.43.0");
             client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            //client.DefaultRequestHeaders.Add("Cookie", "_abck=BC0AD507C49FDBB22F38C680380003C3~-1~YAAQFv7UF8Uu99GTAQAAbPlEMg1c2ejml1MS0fAnmGS3JkYKEEkUReDmmNvp3+TT3kyaLlHTM/h4Wk+qeIwwSGpLXJHnSmfoj2vbLrBfMD+IIfp/g7SxA4eDJ5oskq7PubIR39FiVNs/mqACWkMmqQo2FzR8/bXeBaDAYCI8QUrY7500Qae7Hy7M7w+BXvDjucJm1I5lkGlNH08oobF9gUkpSCgp0pkyx5oRTz5EeGWTCqEZy3gUbktIXN3Jyv5gq4lvbbpN8kjKdZ/mERSp6Ku0O7YE/3X2L2A+NmbvkeaT3kDkOTQDRuH2aAKe1+FudrMXmAzl0pcANBVZ0NFixUrM5DXMYFsSAknLE4Ta2RjQvxe3AtGBBqg+6sIOZwiiMh096XBHGjMmw5PsFQUiU5e3pZd4CrUcVZX/cuR+cYl1cNSXkjQBu365~-1~-1~-1; ak_bmsc=C8715B2C1DA1EF610EE202E7ACECBCF0~000000000000000000000000000000~YAAQFv7UF8Yu99GTAQAAbPlEMho+GKzEIDLyoHQoqVOq4sbpOPowS3l5BCHAcqyZf7vUm0XYi1iwTb67kR1AcPB6N5wC4WmjMO3clK6WvnqBY5HtuduPRYFaKh47QPZLn/PgHXamsYibin+iKcWjYhmCf+rTFdXi5PdusjPz5+7A3eeh1Qvml9RZ3pT6OTMhjO8QfSDf8dC1edWI1E6/lr5Npoc31cEFnTfdeVXHlOy9bmDjfYcSLeosKjl0c4qMUSuRTXmUWbolESqwoc1QZ7w2JgPZlv2YIiLQQcGSeGLTgcdnfLfOtLGu7RFo/5UJqhs3CGyJPdL7ij+vtR+rEIknD7AUq6e22aUafQ0=; bm_sv=34F43D4AEF5F064A63B9A5ACFAB1DF85~YAAQFv7UF/Jl99GTAQAA3HZMMhpLfrPAMdANRumRq60hMZ7v5WWKG9CnXbvil0DBJ5T4Vaef9od6Krly9cM/1mCmU2X21yGW+TfebMuxMV07EbYWXyaB639sAGB38q6JtE1zLScxvR1qmDAIChxfeEU9FDOQXVYXqnksCkOlP/WHPTQ6Cp0PkM+QF4fqCCgnLp31L3WN/HAwtL0wxp2nx83CJU+Bd0UOebPvLzDK1J3a7a/W5odU6JgegnL8BXjTW5BW~1; bm_sz=4F242C6A1EF8F6F2551345A8B951D5C0~YAAQFv7UF8cu99GTAQAAbPlEMho5OasKj4T1EJJDuXD5YicU3cvlIoEjpr0LH3bLPJ48g2+qQq1gDhrGqyvolYe7SeBSlYpoX4tCnXsMet/vHjVG3ffb0OohO4aVBLrc6oDPHb3/IYNQKLFjQUU2N1FFYY+BH2qDx/gOJBsY+22pjxWShV4hHz9HyslRmavlKXS8+EXbiSBYVxxMzZMN1/emt8GG80VVxgDQxRvwncLoBRSgSf5t2lyiRu35AqhyJC+dKnziMd4RbRqEatb/z8y1+LUfMEs1WzT7Ywfj0DXvCJbJZZW9qLaAn5OQiTBkynDwulf549h0c9Cbyi6H0G9z5a75YCnTifil29ra~3551282~3486007");
 
-            string url = "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY 200";
+            string url = "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%20200";
 
             try
             {
@@ -303,8 +305,8 @@ namespace OptionChain
                     List<StockData> stockDatas = new List<StockData>();
                     List<StockMetaData> stockMetaDatas = new List<StockMetaData>();
 
-                    stockRoot.Data?.ForEach(f =>
-                    {
+                    foreach (var (f, index) in stockRoot.Data.Select((f, index) => (f, index)))
+                    {                        
                         var stockData = new StockData
                         {
                             Priority = f.Priority,
@@ -330,7 +332,7 @@ namespace OptionChain
                             Date365dAgo = f.Date365dAgo,
                             Chart365dPath = f.Chart365dPath,
                             Date30dAgo = f.Date30dAgo,
-                            PerChange30d = f.PerChange30d,
+                            //PerChange30d = f.PerChange30d,
                             Chart30dPath = f.Chart30dPath,
                             ChartTodayPath = f.ChartTodayPath,
                             EntryDate = DateTime.Now.Date,
@@ -339,25 +341,30 @@ namespace OptionChain
 
                         stockDatas.Add(stockData);
 
-                        stockMetaDatas.Add(new StockMetaData
+                        if (f.Meta != null)
                         {
-                            Symbol = f.Meta.Symbol,
-                            CompanyName = f.Meta.CompanyName,
-                            Industry = f.Meta.Industry,
-                            IsFNOSec = f.Meta.IsFNOSec,
-                            IsCASec = f.Meta.IsCASec,
-                            IsSLBSec = f.Meta.IsSLBSec,
-                            IsDebtSec = f.Meta.IsDebtSec,
-                            IsSuspended = f.Meta.IsSuspended,
-                            IsETFSec = f.Meta.IsETFSec,
-                            IsDelisted = f.Meta.IsDelisted,
-                            Isin = f.Meta.Isin,
-                            SlbIsin = f.Meta.SlbIsin,
-                            ListingDate = f.Meta.ListingDate,
-                            IsMunicipalBond = f.Meta.IsMunicipalBond,
-                            EntryDate = DateTime.Now.Date,
-                        });
-                    });
+                            var meta = new StockMetaData
+                            {
+                                Symbol = f.Meta.Symbol,
+                                CompanyName = f.Meta.CompanyName,
+                                Industry = f.Meta.Industry,
+                                IsFNOSec = f.Meta.IsFNOSec,
+                                IsCASec = f.Meta.IsCASec,
+                                IsSLBSec = f.Meta.IsSLBSec,
+                                IsDebtSec = f.Meta.IsDebtSec,
+                                IsSuspended = f.Meta.IsSuspended,
+                                IsETFSec = f.Meta.IsETFSec,
+                                IsDelisted = f.Meta.IsDelisted,
+                                Isin = f.Meta.Isin,
+                                SlbIsin = f.Meta.SlbIsin,
+                                ListingDate = f.Meta.ListingDate,
+                                IsMunicipalBond = f.Meta.IsMunicipalBond,
+                                EntryDate = DateTime.Now.Date,
+                            };
+
+                            stockMetaDatas.Add(meta);
+                        }
+                    }
 
                     await _optionDbContext.StockData.AddRangeAsync(stockDatas);
 

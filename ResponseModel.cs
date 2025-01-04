@@ -32,7 +32,7 @@ namespace OptionChain
         public string? Date365dAgo { get; set; }
         public string? Chart365dPath { get; set; }
         public string? Date30dAgo { get; set; }
-        public double PerChange30d { get; set; }
+        //public double PerChange30d { get; set; }
         public string? Chart30dPath { get; set; }
         public string? ChartTodayPath { get; set; }
         public DateTime? EntryDate { get; set; }
