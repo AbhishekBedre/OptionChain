@@ -55,6 +55,16 @@ builder.Services.AddQuartz(q =>
         });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", builder =>
+    {
+        builder.AllowAnyOrigin() //.WithOrigins("https://localhost", "http://localhost", "https://localhost/", "http://localhost/") // Add your allowed origins here
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
 var app = builder.Build();
@@ -66,6 +76,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseStaticFiles();
 

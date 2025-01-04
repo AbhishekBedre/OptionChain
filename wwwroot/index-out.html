@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Chart with Dynamic Colors</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair"></script>
+
+    <style>
+        canvas {
+            background-color: #333;
+            width: 1024px;
+        }
+    </style>
+    <script>
+        function autoRefresh() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 15); // 09:15 AM
+            const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 45);  // 03:45 PM
+
+            if (now >= start && now <= end) {
+                // Calculate the milliseconds to the next minute
+                const nextMinute = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1, 0, 0);
+                const timeToNextMinute = nextMinute - now;
+
+                console.log(`Reloading in ${timeToNextMinute / 1000} seconds`);
+
+                setTimeout(function () {
+                    location.reload(); // Refresh the page
+                }, timeToNextMinute); // Reload at the start of the next minute
+            } else {
+                console.log("Outside refresh hours.");
+            }
+        }
+
+        // Start the refresh loop
+        autoRefresh();
+
+        // Check every minute if the page should reload
+        setInterval(autoRefresh, 60 * 1000);
+
+
+    </script>
+</head>
+<body>
+    <canvas id="myChart"></canvas>
+    <script>
+        function getOptionsData(callback) {
+            $.ajax({
+                url: 'https://localhost:7064/Options',
+                type: 'GET',
+                data: { currentDate: '2025-01-03' }, // Pass the date as a query parameter
+                success: function (response) {
+                    console.log('Success:', response);
+                    return callback(response);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', status, error);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            getOptionsData(function (response) {
+                paintChart(response);
+            });
+        });
+
+        function paintChart(optionData) {
+
+            const labels = optionData?.map(m => m.time);
+
+            const data = optionData?.map(m => m.oi);
+
+            // Generate dynamic colors based on the specified conditions
+            const colors = data.map((value, index) => {
+                if (value > 0) {
+                    if (index > 0 && data[index - 1] > 0 && value < data[index - 1]) {
+                        return 'rgb(3, 186, 3)'; // Lighter green if the current value is less than the previous green bar
+                    }
+                    return 'green'; // Normal green for positive values
+                } else {
+                    if (index > 0 && data[index - 1] < 0 && value > data[index - 1]) {
+                        return 'rgb(247, 64, 64)'; // Lighter red if the current value is closer to zero than the previous red bar
+                    }
+                    return 'red'; // Normal red for negative values
+                }
+            });
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Value',
+                        data: data,
+                        backgroundColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        crosshair: {
+                            line: {
+                                color: '#000', // Crosshair color
+                                width: 1        // Crosshair width
+                            },
+                            sync: {
+                                enabled: false // Disable syncing with other charts
+                            },
+                            zoom: {
+                                enabled: false // Disable zooming
+                            },
+                            snap: {
+                                enabled: true  // Snap crosshair to data points
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false // Remove x-axis gridlines
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false // Remove y-axis gridlines
+                            },
+                            ticks: {
+                                display: false // Remove Y-axis labels
+                            },
+                            min: -Math.max(data, 0), // Set the minimum Y value to ensure 0 is in the middle
+                            max: Math.max(data, 0)  // Set the maximum Y value to ensure 0 is in the middle
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

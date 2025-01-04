@@ -4,8 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <_PublishTargetUrl>C:\Users\abhis\source\repos\OptionChain\bin\Release\net7.0\publish\</_PublishTargetUrl>
-    <History>True|2025-01-04T08:03:17.9428088Z;</History>
+    <_PublishTargetUrl>C:\Users\abhis\source\repos\OptionChain\bin\Release\net6.0\publish\</_PublishTargetUrl>
+    <History>True|2025-01-04T08:46:44.9907290Z;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>
