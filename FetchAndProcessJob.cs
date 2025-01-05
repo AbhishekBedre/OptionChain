@@ -368,9 +368,9 @@ namespace OptionChain
 
                     await _optionDbContext.StockData.AddRangeAsync(stockDatas);
 
-                    await _optionDbContext.StockMetaData.AddRangeAsync(stockMetaDatas);
+                    //await _optionDbContext.StockMetaData.AddRangeAsync(stockMetaDatas);
 
-                    await _optionDbContext.SaveChangesAsync();
+                    //await _optionDbContext.SaveChangesAsync();
 
                     // Advances data
 
