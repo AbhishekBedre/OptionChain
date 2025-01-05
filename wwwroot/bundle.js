@@ -163,12 +163,12 @@ function getOptionsData(callback) {
         type: 'GET',
         data: { "currentDate": selectedDate }, // Pass the date as a query parameter
         success: function (response) {
-            $("div[x-show='loaded']").hide();
+            //$("div[x-show='loaded']").hide();
             console.log('Success:', response);
             return callback(response);
         },
         error: function (xhr, status, error) {
-            $("div[x-show='loaded']").hide();
+            //$("div[x-show='loaded']").hide();
             console.error('Error:', status, error);
         }
     });

@@ -44,7 +44,7 @@ namespace OptionChain.Controllers
             if (overall == 1)
             {
                 var query = from s in _optionDbContext.Sectors
-                            join sd in _optionDbContext.StockData.Where(x=>x.EntryDate == Convert.ToDateTime(currentdate).Date)
+                            join sd in _optionDbContext.StockData.Where(x=>x.EntryDate == Convert.ToDateTime(currentdate).Date && (x.PChange < -0.5 || x.PChange > 0.5))
                             on s.Symbol equals sd.Symbol
                             group sd by s.MappingName into g
                             select new
@@ -66,7 +66,7 @@ namespace OptionChain.Controllers
             else
             {
                 var query = from s in _optionDbContext.StockMetaData
-                            join sd in _optionDbContext.StockData.Where(x => x.EntryDate == Convert.ToDateTime(currentdate).Date)
+                            join sd in _optionDbContext.StockData.Where(x => x.EntryDate == Convert.ToDateTime(currentdate).Date && (x.PChange < -0.5 || x.PChange > 0.5))
                             on s.Symbol equals sd.Symbol
                             group sd by s.Industry into g
                             select new
