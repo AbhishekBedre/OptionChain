@@ -41,8 +41,6 @@
 
     </script>
 
-
-
   <body
     x-data="{ page: 'analytics', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
     x-init="
@@ -79,7 +77,7 @@
     font-size: 30px;
     color: #fff;
     font-weight: bold;
-    font-family: inherit;">Smart Trader
+    font-family: inherit;">Smart Trade
           </h1>
       </a>
 
@@ -2062,923 +2060,795 @@
         <!-- ===== Main Content Start ===== -->
         <main>
           <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-            <div class="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
-              <!-- ====== Chart Four Start -->
-              <div class="col-span-12 flex flex-wrap items-center justify-between gap-3">
-                <!-- Datepicker built with flatpickr -->
-                <div class="relative">
-                  <input
-                    class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary flatpickr-input active"
-                    placeholder="Select date"
-                    data-class="flatpickr-right"
-                  />
-                    <div
-                          class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center"
-                        >
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
-                              fill="#64748B"
-                            />
-                          </svg>
-                        </div>
-                  
-                </div>
+              <div class="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
+                  <!-- ====== Chart Four Start -->
+                  <div class="col-span-12 flex flex-wrap items-center gap-3">
+                      <!-- Datepicker built with flatpickr -->
+                      <div class="relative">
+                          <input id="optionDate" class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary flatpickr-input active"
+                                 placeholder="Select date"
+                                 data-class="flatpickr-right" />
+                          <div class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                              <svg width="18"
+                                   height="18"
+                                   viewBox="0 0 18 18"
+                                   fill="none"
+                                   xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                        fill="#64748B" />
+                              </svg>
+                          </div>
 
-                  <div class="z-1 inline-block rounded bg-white shadow-card-2 dark:bg-boxdark">
-                      <button id="updateChart" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                          Update Option Chart
-                      </button>
-                  </div>
-              </div>
-              <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5" >
-                  <div>
-                    <h3 class="text-xl font-bold text-black dark:text-white">
-                      Option Chain Positions
-                    </h3>
-                  </div>
-                  <div>
-                    <div id="chartFour" style="min-height:600px;" class="-ml-5"></div>
-                  </div>
-                </div>
+                      </div>
 
-              <!-- ====== Chart Four End -->
-
-              <!-- ====== Data Stats Start -->
-              <div
-                class="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark"
-              >
-                <div
-                  class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0"
-                >
-                  <div
-                    class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0"
-                  >
-                    <div>
-                      <h4
-                        class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg"
-                      >
-                        $4,350
-                      </h4>
-                      <p class="text-sm font-medium">Unique Visitors</p>
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <svg
-                        width="19"
-                        height="19"
-                        viewBox="0 0 19 19"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                          fill="#10B981"
-                        />
-                      </svg>
-                      <span class="text-sm font-medium text-meta-3">18%</span>
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0"
-                  >
-                    <div>
-                      <h4
-                        class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg"
-                      >
-                        55.9K
-                      </h4>
-                      <p class="text-sm font-medium">Total Pageviews</p>
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <svg
-                        width="19"
-                        height="19"
-                        viewBox="0 0 19 19"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                          fill="#10B981"
-                        />
-                      </svg>
-                      <span class="text-sm font-medium text-meta-3">25%</span>
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r"
-                  >
-                    <div>
-                      <h4
-                        class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg"
-                      >
-                        54%
-                      </h4>
-                      <p class="text-sm font-medium">Bounce Rate</p>
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <svg
-                        width="19"
-                        height="19"
-                        viewBox="0 0 19 19"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
-                          fill="#F0950C"
-                        />
-                      </svg>
-                      <span class="text-sm font-medium text-meta-8">7%</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center justify-center gap-2">
-                    <div>
-                      <h4
-                        class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg"
-                      >
-                        2m 56s
-                      </h4>
-                      <p class="text-sm">Visit Duration</p>
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <svg
-                        width="19"
-                        height="19"
-                        viewBox="0 0 19 19"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                          fill="#10B981"
-                        />
-                      </svg>
-                      <span class="text-meta-3">12%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- ====== Data Stats End -->
-
-              <!-- ====== Map Two Start -->
-              <div
-  class="col-span-12 overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-6"
->
-  <div class="p-4 md:p-6 xl:p-7.5">
-    <div class="mb-7.5 justify-between sm:flex">
-      <div class="mb-2">
-        <h3 class="text-xl font-bold text-black dark:text-white">
-          Sessions by country
-        </h3>
-      </div>
-      <div class="mb-2">
-        <div
-          class="relative z-20 inline-block rounded bg-gray-2 dark:bg-boxdark"
-        >
-          <select
-            name=""
-            id=""
-            class="relative z-20 inline-flex appearance-none rounded border border-stroke bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none dark:border-strokedark"
-          >
-            <option value="">Last 7 days</option>
-            <option value="">Last 15 days</option>
-          </select>
-          <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
-            <svg
-              width="10"
-              height="6"
-              viewBox="0 0 10 6"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
-                fill="#637381"
-              />
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
-                fill="#637381"
-              />
-            </svg>
-          </span>
-        </div>
-      </div>
-    </div>
-    <div id="mapTwo" class="mapTwo map-btn h-65 md:h-95"></div>
-  </div>
-  <div
-    class="space-y-2.5 border-t border-stroke p-4 dark:border-strokedark md:p-6 xl:p-7.5"
-  >
-    <div class="items-center sm:flex">
-      <div class="flex w-full max-w-42.5 items-center gap-3.5">
-        <img src="src/images/country/country-01.svg" alt="usa" />
-        <p class="font-medium text-black dark:text-white">United States</p>
-      </div>
-      <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-        <div
-          class="absolute left-0 top-0 flex h-full w-[35%] items-center justify-center rounded bg-primary text-xs font-medium text-white"
-        >
-          35%
-        </div>
-      </div>
-    </div>
-    <div class="items-center sm:flex">
-      <div class="flex w-full max-w-42.5 items-center gap-3.5">
-        <img src="src/images/country/country-02.svg" alt="canada" />
-        <p class="font-medium text-black dark:text-white">Canada</p>
-      </div>
-      <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-        <div
-          class="absolute left-0 top-0 flex h-full w-[26%] items-center justify-center rounded bg-primary text-xs font-medium text-white"
-        >
-          26%
-        </div>
-      </div>
-    </div>
-    <div class="items-center sm:flex">
-      <div class="flex w-full max-w-42.5 items-center gap-3.5">
-        <img src="src/images/country/country-03.svg" alt="france" />
-        <p class="font-medium text-black dark:text-white">France</p>
-      </div>
-      <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-        <div
-          class="absolute left-0 top-0 flex h-full w-[18%] items-center justify-center rounded bg-primary text-xs font-medium text-white"
-        >
-          18%
-        </div>
-      </div>
-    </div>
-    <div class="items-center sm:flex">
-      <div class="flex w-full max-w-42.5 items-center gap-3.5">
-        <img src="src/images/country/country-04.svg" alt="italy" />
-        <p class="font-medium text-black dark:text-white">Italy</p>
-      </div>
-      <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-        <div
-          class="absolute left-0 top-0 flex h-full w-[14%] items-center justify-center rounded bg-primary text-xs font-medium text-white"
-        >
-          14%
-        </div>
-      </div>
-    </div>
-    <div class="items-center sm:flex">
-      <div class="flex w-full max-w-42.5 items-center gap-3.5">
-        <img src="src/images/country/country-05.svg" alt="australia" />
-        <p class="font-medium text-black dark:text-white">Australia</p>
-      </div>
-      <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-        <div
-          class="absolute left-0 top-0 flex h-full w-[10%] items-center justify-center rounded bg-primary text-xs font-medium text-white"
-        >
-          10%
-        </div>
-      </div>
-    </div>
-    <div class="items-center sm:flex">
-      <div class="flex w-full max-w-42.5 items-center gap-3.5">
-        <img src="src/images/country/country-06.svg" alt="india" />
-        <p class="font-medium text-black dark:text-white">India</p>
-      </div>
-      <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-        <div
-          class="absolute left-0 top-0 flex h-full w-[7%] items-center justify-center rounded bg-primary text-xs font-medium text-white"
-        >
-          7%
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-              <!-- ====== Map Two End -->
-
-              <div class="col-span-12 xl:col-span-6">
-                <!-- ====== Top Content Start -->
-                <div
-                  class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5"
-                >
-                  <div class="mb-7 flex items-center justify-between">
-                    <div>
-                      <h3 class="text-xl font-bold text-black dark:text-white">
-                        Top Content
-                      </h3>
-                    </div>
-                    <div>
-                      <div x-data="{openDropDown: false}" class="relative">
-                        <button @click="openDropDown = !openDropDown">
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M2.25 11.25C3.49264 11.25 4.5 10.2426 4.5 9C4.5 7.75736 3.49264 6.75 2.25 6.75C1.00736 6.75 0 7.75736 0 9C0 10.2426 1.00736 11.25 2.25 11.25Z"
-                              fill="#98A6AD"
-                            />
-                            <path
-                              d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z"
-                              fill="#98A6AD"
-                            />
-                            <path
-                              d="M15.75 11.25C16.9926 11.25 18 10.2426 18 9C18 7.75736 16.9926 6.75 15.75 6.75C14.5074 6.75 13.5 7.75736 13.5 9C13.5 10.2426 14.5074 11.25 15.75 11.25Z"
-                              fill="#98A6AD"
-                            />
-                          </svg>
-                        </button>
-                        <div
-                          x-show="openDropDown"
-                          @click.outside="openDropDown = false"
-                          class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-sm border border-stroke bg-white p-1.5 shadow-default dark:border-strokedark dark:bg-boxdark"
-                        >
-                          <button
-                            class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4"
-                          >
-                            <svg
-                              class="fill-current"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <g clip-path="url(#clip0_62_9787)">
-                                <path
-                                  d="M15.55 2.97499C15.55 2.77499 15.475 2.57499 15.325 2.42499C15.025 2.12499 14.725 1.82499 14.45 1.52499C14.175 1.24999 13.925 0.974987 13.65 0.724987C13.525 0.574987 13.375 0.474986 13.175 0.449986C12.95 0.424986 12.75 0.474986 12.575 0.624987L10.875 2.32499H2.02495C1.17495 2.32499 0.449951 3.02499 0.449951 3.89999V14C0.449951 14.85 1.14995 15.575 2.02495 15.575H12.15C13 15.575 13.725 14.875 13.725 14V5.12499L15.35 3.49999C15.475 3.34999 15.55 3.17499 15.55 2.97499ZM8.19995 8.99999C8.17495 9.02499 8.17495 9.02499 8.14995 9.02499L6.34995 9.62499L6.94995 7.82499C6.94995 7.79999 6.97495 7.79999 6.97495 7.77499L11.475 3.27499L12.725 4.49999L8.19995 8.99999ZM12.575 14C12.575 14.25 12.375 14.45 12.125 14.45H2.02495C1.77495 14.45 1.57495 14.25 1.57495 14V3.87499C1.57495 3.62499 1.77495 3.42499 2.02495 3.42499H9.72495L6.17495 6.99999C6.04995 7.12499 5.92495 7.29999 5.87495 7.49999L4.94995 10.3C4.87495 10.5 4.92495 10.675 5.02495 10.85C5.09995 10.95 5.24995 11.1 5.52495 11.1H5.62495L8.49995 10.15C8.67495 10.1 8.84995 9.97499 8.97495 9.84999L12.575 6.24999V14ZM13.5 3.72499L12.25 2.49999L13.025 1.72499C13.225 1.92499 14.05 2.74999 14.25 2.97499L13.5 3.72499Z"
-                                  fill=""
-                                />
-                              </g>
-                              <defs>
-                                <clipPath id="clip0_62_9787">
-                                  <rect width="16" height="16" fill="white" />
-                                </clipPath>
-                              </defs>
-                            </svg>
-                            Edit
+                      <div class="z-1 inline-block rounded bg-white shadow-card-2 dark:bg-boxdark">
+                          <button id="updateChart" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+                              Update Option Chart
                           </button>
-                          <button
-                            class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4"
-                          >
-                            <svg
-                              class="fill-current"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M12.225 2.20005H10.3V1.77505C10.3 1.02505 9.70005 0.425049 8.95005 0.425049H7.02505C6.27505 0.425049 5.67505 1.02505 5.67505 1.77505V2.20005H3.75005C3.02505 2.20005 2.42505 2.80005 2.42505 3.52505V4.27505C2.42505 4.82505 2.75005 5.27505 3.22505 5.47505L3.62505 13.75C3.67505 14.775 4.52505 15.575 5.55005 15.575H10.4C11.425 15.575 12.275 14.775 12.325 13.75L12.75 5.45005C13.225 5.25005 13.55 4.77505 13.55 4.25005V3.50005C13.55 2.80005 12.95 2.20005 12.225 2.20005ZM6.82505 1.77505C6.82505 1.65005 6.92505 1.55005 7.05005 1.55005H8.97505C9.10005 1.55005 9.20005 1.65005 9.20005 1.77505V2.20005H6.85005V1.77505H6.82505ZM3.57505 3.52505C3.57505 3.42505 3.65005 3.32505 3.77505 3.32505H12.225C12.325 3.32505 12.425 3.40005 12.425 3.52505V4.27505C12.425 4.37505 12.35 4.47505 12.225 4.47505H3.77505C3.67505 4.47505 3.57505 4.40005 3.57505 4.27505V3.52505V3.52505ZM10.425 14.45H5.57505C5.15005 14.45 4.80005 14.125 4.77505 13.675L4.40005 5.57505H11.625L11.25 13.675C11.2 14.1 10.85 14.45 10.425 14.45Z"
-                                fill=""
-                              />
-                              <path
-                                d="M8.00005 8.1001C7.70005 8.1001 7.42505 8.3501 7.42505 8.6751V11.8501C7.42505 12.1501 7.67505 12.4251 8.00005 12.4251C8.30005 12.4251 8.57505 12.1751 8.57505 11.8501V8.6751C8.57505 8.3501 8.30005 8.1001 8.00005 8.1001Z"
-                                fill=""
-                              />
-                              <path
-                                d="M9.99994 8.60004C9.67494 8.57504 9.42494 8.80004 9.39994 9.12504L9.24994 11.325C9.22494 11.625 9.44994 11.9 9.77494 11.925C9.79994 11.925 9.79994 11.925 9.82494 11.925C10.1249 11.925 10.3749 11.7 10.3749 11.4L10.5249 9.20004C10.5249 8.87504 10.2999 8.62504 9.99994 8.60004Z"
-                                fill=""
-                              />
-                              <path
-                                d="M5.97497 8.60004C5.67497 8.62504 5.42497 8.90004 5.44997 9.20004L5.62497 11.4C5.64997 11.7 5.89997 11.925 6.17497 11.925C6.19997 11.925 6.19997 11.925 6.22497 11.925C6.52497 11.9 6.77497 11.625 6.74997 11.325L6.57497 9.12504C6.57497 8.80004 6.29997 8.57504 5.97497 8.60004Z"
-                                fill=""
-                              />
-                            </svg>
-                            Delete
-                          </button>
-                        </div>
                       </div>
-                    </div>
+                  </div>
+                  <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
+                      <div>
+                          <h3 class="text-xl font-bold text-black dark:text-white">
+                              Option Chain Positions
+                          </h3>
+                      </div>
+                      <div>
+                          <div id="chartFour" style="min-height:600px;" class="-ml-5"></div>
+                      </div>
                   </div>
 
-                  <div class="flex flex-col gap-2">
-                    <div class="grid grid-cols-10 py-2">
-                      <div class="col-span-6">
-                        <p class="text-sm font-medium">URL</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">Views</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">Uniques</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[74%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">/</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">2.5k</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">2.1k</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[38%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">/blog/</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">376</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">139</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[55%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">/reserve/success</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">468</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">290</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[20%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">
-                          /product/product-details
-                        </p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">298</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">176</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[27%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">
-                          /blog/digital-marketing
-                        </p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">179</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">57</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- ====== Top Content End -->
+                  <!-- ====== Chart Four End -->
 
-                <!-- ====== Top Channels Start -->
-                <div
-                  class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:p-6 xl:p-7.5"
-                >
-                  <div class="mb-7 flex items-center justify-between">
-                    <div>
-                      <h3 class="text-xl font-bold text-black dark:text-white">
-                        Top Channels
-                      </h3>
-                    </div>
-                    <div>
-                      <div x-data="{openDropDown: false}" class="relative">
-                        <button @click="openDropDown = !openDropDown">
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M2.25 11.25C3.49264 11.25 4.5 10.2426 4.5 9C4.5 7.75736 3.49264 6.75 2.25 6.75C1.00736 6.75 0 7.75736 0 9C0 10.2426 1.00736 11.25 2.25 11.25Z"
-                              fill="#98A6AD"
-                            />
-                            <path
-                              d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z"
-                              fill="#98A6AD"
-                            />
-                            <path
-                              d="M15.75 11.25C16.9926 11.25 18 10.2426 18 9C18 7.75736 16.9926 6.75 15.75 6.75C14.5074 6.75 13.5 7.75736 13.5 9C13.5 10.2426 14.5074 11.25 15.75 11.25Z"
-                              fill="#98A6AD"
-                            />
-                          </svg>
-                        </button>
-                        <div
-                          x-show="openDropDown"
-                          @click.outside="openDropDown = false"
-                          class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-sm border border-stroke bg-white p-1.5 shadow-default dark:border-strokedark dark:bg-boxdark"
-                        >
-                          <button
-                            class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4"
-                          >
-                            <svg
-                              class="fill-current"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <g clip-path="url(#clip0_62_9787)">
-                                <path
-                                  d="M15.55 2.97499C15.55 2.77499 15.475 2.57499 15.325 2.42499C15.025 2.12499 14.725 1.82499 14.45 1.52499C14.175 1.24999 13.925 0.974987 13.65 0.724987C13.525 0.574987 13.375 0.474986 13.175 0.449986C12.95 0.424986 12.75 0.474986 12.575 0.624987L10.875 2.32499H2.02495C1.17495 2.32499 0.449951 3.02499 0.449951 3.89999V14C0.449951 14.85 1.14995 15.575 2.02495 15.575H12.15C13 15.575 13.725 14.875 13.725 14V5.12499L15.35 3.49999C15.475 3.34999 15.55 3.17499 15.55 2.97499ZM8.19995 8.99999C8.17495 9.02499 8.17495 9.02499 8.14995 9.02499L6.34995 9.62499L6.94995 7.82499C6.94995 7.79999 6.97495 7.79999 6.97495 7.77499L11.475 3.27499L12.725 4.49999L8.19995 8.99999ZM12.575 14C12.575 14.25 12.375 14.45 12.125 14.45H2.02495C1.77495 14.45 1.57495 14.25 1.57495 14V3.87499C1.57495 3.62499 1.77495 3.42499 2.02495 3.42499H9.72495L6.17495 6.99999C6.04995 7.12499 5.92495 7.29999 5.87495 7.49999L4.94995 10.3C4.87495 10.5 4.92495 10.675 5.02495 10.85C5.09995 10.95 5.24995 11.1 5.52495 11.1H5.62495L8.49995 10.15C8.67495 10.1 8.84995 9.97499 8.97495 9.84999L12.575 6.24999V14ZM13.5 3.72499L12.25 2.49999L13.025 1.72499C13.225 1.92499 14.05 2.74999 14.25 2.97499L13.5 3.72499Z"
-                                  fill=""
-                                />
-                              </g>
-                              <defs>
-                                <clipPath id="clip0_62_9787">
-                                  <rect width="16" height="16" fill="white" />
-                                </clipPath>
-                              </defs>
-                            </svg>
-                            Edit
-                          </button>
-                          <button
-                            class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4"
-                          >
-                            <svg
-                              class="fill-current"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M12.225 2.20005H10.3V1.77505C10.3 1.02505 9.70005 0.425049 8.95005 0.425049H7.02505C6.27505 0.425049 5.67505 1.02505 5.67505 1.77505V2.20005H3.75005C3.02505 2.20005 2.42505 2.80005 2.42505 3.52505V4.27505C2.42505 4.82505 2.75005 5.27505 3.22505 5.47505L3.62505 13.75C3.67505 14.775 4.52505 15.575 5.55005 15.575H10.4C11.425 15.575 12.275 14.775 12.325 13.75L12.75 5.45005C13.225 5.25005 13.55 4.77505 13.55 4.25005V3.50005C13.55 2.80005 12.95 2.20005 12.225 2.20005ZM6.82505 1.77505C6.82505 1.65005 6.92505 1.55005 7.05005 1.55005H8.97505C9.10005 1.55005 9.20005 1.65005 9.20005 1.77505V2.20005H6.85005V1.77505H6.82505ZM3.57505 3.52505C3.57505 3.42505 3.65005 3.32505 3.77505 3.32505H12.225C12.325 3.32505 12.425 3.40005 12.425 3.52505V4.27505C12.425 4.37505 12.35 4.47505 12.225 4.47505H3.77505C3.67505 4.47505 3.57505 4.40005 3.57505 4.27505V3.52505V3.52505ZM10.425 14.45H5.57505C5.15005 14.45 4.80005 14.125 4.77505 13.675L4.40005 5.57505H11.625L11.25 13.675C11.2 14.1 10.85 14.45 10.425 14.45Z"
-                                fill=""
-                              />
-                              <path
-                                d="M8.00005 8.1001C7.70005 8.1001 7.42505 8.3501 7.42505 8.6751V11.8501C7.42505 12.1501 7.67505 12.4251 8.00005 12.4251C8.30005 12.4251 8.57505 12.1751 8.57505 11.8501V8.6751C8.57505 8.3501 8.30005 8.1001 8.00005 8.1001Z"
-                                fill=""
-                              />
-                              <path
-                                d="M9.99994 8.60004C9.67494 8.57504 9.42494 8.80004 9.39994 9.12504L9.24994 11.325C9.22494 11.625 9.44994 11.9 9.77494 11.925C9.79994 11.925 9.79994 11.925 9.82494 11.925C10.1249 11.925 10.3749 11.7 10.3749 11.4L10.5249 9.20004C10.5249 8.87504 10.2999 8.62504 9.99994 8.60004Z"
-                                fill=""
-                              />
-                              <path
-                                d="M5.97497 8.60004C5.67497 8.62504 5.42497 8.90004 5.44997 9.20004L5.62497 11.4C5.64997 11.7 5.89997 11.925 6.17497 11.925C6.19997 11.925 6.19997 11.925 6.22497 11.925C6.52497 11.9 6.77497 11.625 6.74997 11.325L6.57497 9.12504C6.57497 8.80004 6.29997 8.57504 5.97497 8.60004Z"
-                                fill=""
-                              />
-                            </svg>
-                            Delete
-                          </button>
-                        </div>
+                  <!-- ====== Sector Chart Start -->
+                  <div class="col-span-12 flex flex-wrap items-center items-center justify-between gap-3">
+                      <!-- Datepicker built with flatpickr -->
+                      <div class="col-span-9 flex flex-wrap items-center sm\:justify-between gap-2">
+
+                          <div class="relative">
+                              <input id="sectorDate" class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary flatpickr-input active"
+                                     placeholder="Select date"
+                                     data-class="flatpickr-right" />
+                              <div class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                                  <svg width="18"
+                                       height="18"
+                                       viewBox="0 0 18 18"
+                                       fill="none"
+                                       xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                            fill="#64748B" />
+                                  </svg>
+                              </div>
+
+                          </div>
+
+                          <div class="z-1 inline-block rounded bg-white shadow-card-2 dark:bg-boxdark">
+                              <button id="SectorUpdate" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+                                  Get Sector Details
+                              </button>
+                          </div>
+
                       </div>
-                    </div>
+                      <div class="col-span-3 flex flex-wrap items-center justify-between gap-2">
+                          <h1 style="position: relative; color: #fff; font-family: inherit;">Overall</h1>
+
+                          <div x-data="{ switcherToggle: true, handleChange(event) {
+                            this.switcherToggle = event.target.checked;
+                            console.log('Checkbox state:', this.switcherToggle); } }">
+
+                              <label for="toggle4" class="flex cursor-pointer select-none items-center">
+                                  <div class="relative">
+                                      <input type="checkbox" id="toggle4" class="sr-only" @change="handleChange($event);" x-model="switcherToggle"  />
+                                      <div id="toggle4-div" :class="switcherToggle && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
+                                      <div :class="switcherToggle && '!right-1 !translate-x-full'" 
+                                           class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
+                                  </div>
+                              </label>
+                          </div>
+                      </div>
                   </div>
 
-                  <div class="flex flex-col gap-2">
-                    <div class="grid grid-cols-10 py-2">
-                      <div class="col-span-6">
-                        <p class="text-sm font-medium">URL</p>
+                  <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
+                      <div>
+                          <h3 class="text-xl font-bold text-black dark:text-white">
+                              Sector Update
+                          </h3>
                       </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">Views</p>
+                      <div>
+                          <div id="sectorChart" style="min-height:600px;" class="-ml-5"></div>
                       </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">Uniques</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[74%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">Google</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">4.2k</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">3.9k</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[66%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">Github</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">1.9k</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">509</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[58%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">Producthunt</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">1.5k</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">986</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[48%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">Facebook</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">974</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">639</p>
-                      </div>
-                    </div>
-                    <div class="relative z-1 grid grid-cols-10 py-2">
-                      <span
-                        class="absolute left-0 top-0 -z-1 h-full w-[39%] rounded bg-gray dark:bg-meta-4"
-                      ></span>
-                      <div class="col-span-6 pl-3.5">
-                        <p class="text-sm font-medium">Twitter</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-center text-sm font-medium">179</p>
-                      </div>
-                      <div class="col-span-2">
-                        <p class="text-right text-sm font-medium">57</p>
-                      </div>
-                    </div>
                   </div>
-                </div>
-                <!-- ====== Top Channels End -->
+
+                  <!-- ====== Sector Chart End -->
+
+                  <!-- ====== Data Stats Start -->
+                  <div class="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+                      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
+                          <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
+                              <div>
+                                  <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                      $4,350
+                                  </h4>
+                                  <p class="text-sm font-medium">Unique Visitors</p>
+                              </div>
+                              <div class="flex items-center gap-1">
+                                  <svg width="19"
+                                       height="19"
+                                       viewBox="0 0 19 19"
+                                       fill="none"
+                                       xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                            fill="#10B981" />
+                                  </svg>
+                                  <span class="text-sm font-medium text-meta-3">18%</span>
+                              </div>
+                          </div>
+                          <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
+                              <div>
+                                  <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                      55.9K
+                                  </h4>
+                                  <p class="text-sm font-medium">Total Pageviews</p>
+                              </div>
+                              <div class="flex items-center gap-1">
+                                  <svg width="19"
+                                       height="19"
+                                       viewBox="0 0 19 19"
+                                       fill="none"
+                                       xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                            fill="#10B981" />
+                                  </svg>
+                                  <span class="text-sm font-medium text-meta-3">25%</span>
+                              </div>
+                          </div>
+                          <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r">
+                              <div>
+                                  <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                      54%
+                                  </h4>
+                                  <p class="text-sm font-medium">Bounce Rate</p>
+                              </div>
+                              <div class="flex items-center gap-1">
+                                  <svg width="19"
+                                       height="19"
+                                       viewBox="0 0 19 19"
+                                       fill="none"
+                                       xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
+                                            fill="#F0950C" />
+                                  </svg>
+                                  <span class="text-sm font-medium text-meta-8">7%</span>
+                              </div>
+                          </div>
+                          <div class="flex items-center justify-center gap-2">
+                              <div>
+                                  <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                      2m 56s
+                                  </h4>
+                                  <p class="text-sm">Visit Duration</p>
+                              </div>
+                              <div class="flex items-center gap-1">
+                                  <svg width="19"
+                                       height="19"
+                                       viewBox="0 0 19 19"
+                                       fill="none"
+                                       xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                            fill="#10B981" />
+                                  </svg>
+                                  <span class="text-meta-3">12%</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- ====== Data Stats End -->
+                  <!-- ====== Map Two Start -->
+                  <div class="col-span-12 overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-6">
+                      <div class="p-4 md:p-6 xl:p-7.5">
+                          <div class="mb-7.5 justify-between sm:flex">
+                              <div class="mb-2">
+                                  <h3 class="text-xl font-bold text-black dark:text-white">
+                                      Sessions by country
+                                  </h3>
+                              </div>
+                              <div class="mb-2">
+                                  <div class="relative z-20 inline-block rounded bg-gray-2 dark:bg-boxdark">
+                                      <select name=""
+                                              id=""
+                                              class="relative z-20 inline-flex appearance-none rounded border border-stroke bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none dark:border-strokedark">
+                                          <option value="">Last 7 days</option>
+                                          <option value="">Last 15 days</option>
+                                      </select>
+                                      <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
+                                          <svg width="10"
+                                               height="6"
+                                               viewBox="0 0 10 6"
+                                               fill="none"
+                                               xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
+                                                    fill="#637381" />
+                                              <path fill-rule="evenodd"
+                                                    clip-rule="evenodd"
+                                                    d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
+                                                    fill="#637381" />
+                                          </svg>
+                                      </span>
+                                  </div>
+                              </div>
+                          </div>
+                          <div id="mapTwo" class="mapTwo map-btn h-65 md:h-95"></div>
+                      </div>
+                      <div class="space-y-2.5 border-t border-stroke p-4 dark:border-strokedark md:p-6 xl:p-7.5">
+                          <div class="items-center sm:flex">
+                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
+                                  <img src="src/images/country/country-01.svg" alt="usa" />
+                                  <p class="font-medium text-black dark:text-white">United States</p>
+                              </div>
+                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
+                                  <div class="absolute left-0 top-0 flex h-full w-[35%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
+                                      35%
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="items-center sm:flex">
+                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
+                                  <img src="src/images/country/country-02.svg" alt="canada" />
+                                  <p class="font-medium text-black dark:text-white">Canada</p>
+                              </div>
+                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
+                                  <div class="absolute left-0 top-0 flex h-full w-[26%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
+                                      26%
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="items-center sm:flex">
+                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
+                                  <img src="src/images/country/country-03.svg" alt="france" />
+                                  <p class="font-medium text-black dark:text-white">France</p>
+                              </div>
+                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
+                                  <div class="absolute left-0 top-0 flex h-full w-[18%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
+                                      18%
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="items-center sm:flex">
+                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
+                                  <img src="src/images/country/country-04.svg" alt="italy" />
+                                  <p class="font-medium text-black dark:text-white">Italy</p>
+                              </div>
+                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
+                                  <div class="absolute left-0 top-0 flex h-full w-[14%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
+                                      14%
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="items-center sm:flex">
+                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
+                                  <img src="src/images/country/country-05.svg" alt="australia" />
+                                  <p class="font-medium text-black dark:text-white">Australia</p>
+                              </div>
+                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
+                                  <div class="absolute left-0 top-0 flex h-full w-[10%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
+                                      10%
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="items-center sm:flex">
+                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
+                                  <img src="src/images/country/country-06.svg" alt="india" />
+                                  <p class="font-medium text-black dark:text-white">India</p>
+                              </div>
+                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
+                                  <div class="absolute left-0 top-0 flex h-full w-[7%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
+                                      7%
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- ====== Map Two End -->
+
+                  <div class="col-span-12 xl:col-span-6">
+                      <!-- ====== Top Content Start -->
+                      <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
+                          <div class="mb-7 flex items-center justify-between">
+                              <div>
+                                  <h3 class="text-xl font-bold text-black dark:text-white">
+                                      Top Content
+                                  </h3>
+                              </div>
+                              <div>
+                                  <div x-data="{openDropDown: false}" class="relative">
+                                      <button @click="openDropDown = !openDropDown">
+                                          <svg width="18"
+                                               height="18"
+                                               viewBox="0 0 18 18"
+                                               fill="none"
+                                               xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M2.25 11.25C3.49264 11.25 4.5 10.2426 4.5 9C4.5 7.75736 3.49264 6.75 2.25 6.75C1.00736 6.75 0 7.75736 0 9C0 10.2426 1.00736 11.25 2.25 11.25Z"
+                                                    fill="#98A6AD" />
+                                              <path d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z"
+                                                    fill="#98A6AD" />
+                                              <path d="M15.75 11.25C16.9926 11.25 18 10.2426 18 9C18 7.75736 16.9926 6.75 15.75 6.75C14.5074 6.75 13.5 7.75736 13.5 9C13.5 10.2426 14.5074 11.25 15.75 11.25Z"
+                                                    fill="#98A6AD" />
+                                          </svg>
+                                      </button>
+                                      <div x-show="openDropDown"
+                                           @click.outside="openDropDown = false"
+                                           class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-sm border border-stroke bg-white p-1.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+                                          <button class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
+                                              <svg class="fill-current"
+                                                   width="16"
+                                                   height="16"
+                                                   viewBox="0 0 16 16"
+                                                   fill="none"
+                                                   xmlns="http://www.w3.org/2000/svg">
+                                                  <g clip-path="url(#clip0_62_9787)">
+                                                      <path d="M15.55 2.97499C15.55 2.77499 15.475 2.57499 15.325 2.42499C15.025 2.12499 14.725 1.82499 14.45 1.52499C14.175 1.24999 13.925 0.974987 13.65 0.724987C13.525 0.574987 13.375 0.474986 13.175 0.449986C12.95 0.424986 12.75 0.474986 12.575 0.624987L10.875 2.32499H2.02495C1.17495 2.32499 0.449951 3.02499 0.449951 3.89999V14C0.449951 14.85 1.14995 15.575 2.02495 15.575H12.15C13 15.575 13.725 14.875 13.725 14V5.12499L15.35 3.49999C15.475 3.34999 15.55 3.17499 15.55 2.97499ZM8.19995 8.99999C8.17495 9.02499 8.17495 9.02499 8.14995 9.02499L6.34995 9.62499L6.94995 7.82499C6.94995 7.79999 6.97495 7.79999 6.97495 7.77499L11.475 3.27499L12.725 4.49999L8.19995 8.99999ZM12.575 14C12.575 14.25 12.375 14.45 12.125 14.45H2.02495C1.77495 14.45 1.57495 14.25 1.57495 14V3.87499C1.57495 3.62499 1.77495 3.42499 2.02495 3.42499H9.72495L6.17495 6.99999C6.04995 7.12499 5.92495 7.29999 5.87495 7.49999L4.94995 10.3C4.87495 10.5 4.92495 10.675 5.02495 10.85C5.09995 10.95 5.24995 11.1 5.52495 11.1H5.62495L8.49995 10.15C8.67495 10.1 8.84995 9.97499 8.97495 9.84999L12.575 6.24999V14ZM13.5 3.72499L12.25 2.49999L13.025 1.72499C13.225 1.92499 14.05 2.74999 14.25 2.97499L13.5 3.72499Z"
+                                                            fill="" />
+                                                  </g>
+                                                  <defs>
+                                                      <clipPath id="clip0_62_9787">
+                                                          <rect width="16" height="16" fill="white" />
+                                                      </clipPath>
+                                                  </defs>
+                                              </svg>
+                                              Edit
+                                          </button>
+                                          <button class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
+                                              <svg class="fill-current"
+                                                   width="16"
+                                                   height="16"
+                                                   viewBox="0 0 16 16"
+                                                   fill="none"
+                                                   xmlns="http://www.w3.org/2000/svg">
+                                                  <path d="M12.225 2.20005H10.3V1.77505C10.3 1.02505 9.70005 0.425049 8.95005 0.425049H7.02505C6.27505 0.425049 5.67505 1.02505 5.67505 1.77505V2.20005H3.75005C3.02505 2.20005 2.42505 2.80005 2.42505 3.52505V4.27505C2.42505 4.82505 2.75005 5.27505 3.22505 5.47505L3.62505 13.75C3.67505 14.775 4.52505 15.575 5.55005 15.575H10.4C11.425 15.575 12.275 14.775 12.325 13.75L12.75 5.45005C13.225 5.25005 13.55 4.77505 13.55 4.25005V3.50005C13.55 2.80005 12.95 2.20005 12.225 2.20005ZM6.82505 1.77505C6.82505 1.65005 6.92505 1.55005 7.05005 1.55005H8.97505C9.10005 1.55005 9.20005 1.65005 9.20005 1.77505V2.20005H6.85005V1.77505H6.82505ZM3.57505 3.52505C3.57505 3.42505 3.65005 3.32505 3.77505 3.32505H12.225C12.325 3.32505 12.425 3.40005 12.425 3.52505V4.27505C12.425 4.37505 12.35 4.47505 12.225 4.47505H3.77505C3.67505 4.47505 3.57505 4.40005 3.57505 4.27505V3.52505V3.52505ZM10.425 14.45H5.57505C5.15005 14.45 4.80005 14.125 4.77505 13.675L4.40005 5.57505H11.625L11.25 13.675C11.2 14.1 10.85 14.45 10.425 14.45Z"
+                                                        fill="" />
+                                                  <path d="M8.00005 8.1001C7.70005 8.1001 7.42505 8.3501 7.42505 8.6751V11.8501C7.42505 12.1501 7.67505 12.4251 8.00005 12.4251C8.30005 12.4251 8.57505 12.1751 8.57505 11.8501V8.6751C8.57505 8.3501 8.30005 8.1001 8.00005 8.1001Z"
+                                                        fill="" />
+                                                  <path d="M9.99994 8.60004C9.67494 8.57504 9.42494 8.80004 9.39994 9.12504L9.24994 11.325C9.22494 11.625 9.44994 11.9 9.77494 11.925C9.79994 11.925 9.79994 11.925 9.82494 11.925C10.1249 11.925 10.3749 11.7 10.3749 11.4L10.5249 9.20004C10.5249 8.87504 10.2999 8.62504 9.99994 8.60004Z"
+                                                        fill="" />
+                                                  <path d="M5.97497 8.60004C5.67497 8.62504 5.42497 8.90004 5.44997 9.20004L5.62497 11.4C5.64997 11.7 5.89997 11.925 6.17497 11.925C6.19997 11.925 6.19997 11.925 6.22497 11.925C6.52497 11.9 6.77497 11.625 6.74997 11.325L6.57497 9.12504C6.57497 8.80004 6.29997 8.57504 5.97497 8.60004Z"
+                                                        fill="" />
+                                              </svg>
+                                              Delete
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div class="flex flex-col gap-2">
+                              <div class="grid grid-cols-10 py-2">
+                                  <div class="col-span-6">
+                                      <p class="text-sm font-medium">URL</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">Views</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">Uniques</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[74%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">/</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">2.5k</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">2.1k</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[38%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">/blog/</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">376</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">139</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[55%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">/reserve/success</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">468</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">290</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[20%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">
+                                          /product/product-details
+                                      </p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">298</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">176</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[27%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">
+                                          /blog/digital-marketing
+                                      </p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">179</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">57</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- ====== Top Content End -->
+                      <!-- ====== Top Channels Start -->
+                      <div class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:p-6 xl:p-7.5">
+                          <div class="mb-7 flex items-center justify-between">
+                              <div>
+                                  <h3 class="text-xl font-bold text-black dark:text-white">
+                                      Top Channels
+                                  </h3>
+                              </div>
+                              <div>
+                                  <div x-data="{openDropDown: false}" class="relative">
+                                      <button @click="openDropDown = !openDropDown">
+                                          <svg width="18"
+                                               height="18"
+                                               viewBox="0 0 18 18"
+                                               fill="none"
+                                               xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M2.25 11.25C3.49264 11.25 4.5 10.2426 4.5 9C4.5 7.75736 3.49264 6.75 2.25 6.75C1.00736 6.75 0 7.75736 0 9C0 10.2426 1.00736 11.25 2.25 11.25Z"
+                                                    fill="#98A6AD" />
+                                              <path d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z"
+                                                    fill="#98A6AD" />
+                                              <path d="M15.75 11.25C16.9926 11.25 18 10.2426 18 9C18 7.75736 16.9926 6.75 15.75 6.75C14.5074 6.75 13.5 7.75736 13.5 9C13.5 10.2426 14.5074 11.25 15.75 11.25Z"
+                                                    fill="#98A6AD" />
+                                          </svg>
+                                      </button>
+                                      <div x-show="openDropDown"
+                                           @click.outside="openDropDown = false"
+                                           class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-sm border border-stroke bg-white p-1.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+                                          <button class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
+                                              <svg class="fill-current"
+                                                   width="16"
+                                                   height="16"
+                                                   viewBox="0 0 16 16"
+                                                   fill="none"
+                                                   xmlns="http://www.w3.org/2000/svg">
+                                                  <g clip-path="url(#clip0_62_9787)">
+                                                      <path d="M15.55 2.97499C15.55 2.77499 15.475 2.57499 15.325 2.42499C15.025 2.12499 14.725 1.82499 14.45 1.52499C14.175 1.24999 13.925 0.974987 13.65 0.724987C13.525 0.574987 13.375 0.474986 13.175 0.449986C12.95 0.424986 12.75 0.474986 12.575 0.624987L10.875 2.32499H2.02495C1.17495 2.32499 0.449951 3.02499 0.449951 3.89999V14C0.449951 14.85 1.14995 15.575 2.02495 15.575H12.15C13 15.575 13.725 14.875 13.725 14V5.12499L15.35 3.49999C15.475 3.34999 15.55 3.17499 15.55 2.97499ZM8.19995 8.99999C8.17495 9.02499 8.17495 9.02499 8.14995 9.02499L6.34995 9.62499L6.94995 7.82499C6.94995 7.79999 6.97495 7.79999 6.97495 7.77499L11.475 3.27499L12.725 4.49999L8.19995 8.99999ZM12.575 14C12.575 14.25 12.375 14.45 12.125 14.45H2.02495C1.77495 14.45 1.57495 14.25 1.57495 14V3.87499C1.57495 3.62499 1.77495 3.42499 2.02495 3.42499H9.72495L6.17495 6.99999C6.04995 7.12499 5.92495 7.29999 5.87495 7.49999L4.94995 10.3C4.87495 10.5 4.92495 10.675 5.02495 10.85C5.09995 10.95 5.24995 11.1 5.52495 11.1H5.62495L8.49995 10.15C8.67495 10.1 8.84995 9.97499 8.97495 9.84999L12.575 6.24999V14ZM13.5 3.72499L12.25 2.49999L13.025 1.72499C13.225 1.92499 14.05 2.74999 14.25 2.97499L13.5 3.72499Z"
+                                                            fill="" />
+                                                  </g>
+                                                  <defs>
+                                                      <clipPath id="clip0_62_9787">
+                                                          <rect width="16" height="16" fill="white" />
+                                                      </clipPath>
+                                                  </defs>
+                                              </svg>
+                                              Edit
+                                          </button>
+                                          <button class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
+                                              <svg class="fill-current"
+                                                   width="16"
+                                                   height="16"
+                                                   viewBox="0 0 16 16"
+                                                   fill="none"
+                                                   xmlns="http://www.w3.org/2000/svg">
+                                                  <path d="M12.225 2.20005H10.3V1.77505C10.3 1.02505 9.70005 0.425049 8.95005 0.425049H7.02505C6.27505 0.425049 5.67505 1.02505 5.67505 1.77505V2.20005H3.75005C3.02505 2.20005 2.42505 2.80005 2.42505 3.52505V4.27505C2.42505 4.82505 2.75005 5.27505 3.22505 5.47505L3.62505 13.75C3.67505 14.775 4.52505 15.575 5.55005 15.575H10.4C11.425 15.575 12.275 14.775 12.325 13.75L12.75 5.45005C13.225 5.25005 13.55 4.77505 13.55 4.25005V3.50005C13.55 2.80005 12.95 2.20005 12.225 2.20005ZM6.82505 1.77505C6.82505 1.65005 6.92505 1.55005 7.05005 1.55005H8.97505C9.10005 1.55005 9.20005 1.65005 9.20005 1.77505V2.20005H6.85005V1.77505H6.82505ZM3.57505 3.52505C3.57505 3.42505 3.65005 3.32505 3.77505 3.32505H12.225C12.325 3.32505 12.425 3.40005 12.425 3.52505V4.27505C12.425 4.37505 12.35 4.47505 12.225 4.47505H3.77505C3.67505 4.47505 3.57505 4.40005 3.57505 4.27505V3.52505V3.52505ZM10.425 14.45H5.57505C5.15005 14.45 4.80005 14.125 4.77505 13.675L4.40005 5.57505H11.625L11.25 13.675C11.2 14.1 10.85 14.45 10.425 14.45Z"
+                                                        fill="" />
+                                                  <path d="M8.00005 8.1001C7.70005 8.1001 7.42505 8.3501 7.42505 8.6751V11.8501C7.42505 12.1501 7.67505 12.4251 8.00005 12.4251C8.30005 12.4251 8.57505 12.1751 8.57505 11.8501V8.6751C8.57505 8.3501 8.30005 8.1001 8.00005 8.1001Z"
+                                                        fill="" />
+                                                  <path d="M9.99994 8.60004C9.67494 8.57504 9.42494 8.80004 9.39994 9.12504L9.24994 11.325C9.22494 11.625 9.44994 11.9 9.77494 11.925C9.79994 11.925 9.79994 11.925 9.82494 11.925C10.1249 11.925 10.3749 11.7 10.3749 11.4L10.5249 9.20004C10.5249 8.87504 10.2999 8.62504 9.99994 8.60004Z"
+                                                        fill="" />
+                                                  <path d="M5.97497 8.60004C5.67497 8.62504 5.42497 8.90004 5.44997 9.20004L5.62497 11.4C5.64997 11.7 5.89997 11.925 6.17497 11.925C6.19997 11.925 6.19997 11.925 6.22497 11.925C6.52497 11.9 6.77497 11.625 6.74997 11.325L6.57497 9.12504C6.57497 8.80004 6.29997 8.57504 5.97497 8.60004Z"
+                                                        fill="" />
+                                              </svg>
+                                              Delete
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div class="flex flex-col gap-2">
+                              <div class="grid grid-cols-10 py-2">
+                                  <div class="col-span-6">
+                                      <p class="text-sm font-medium">URL</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">Views</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">Uniques</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[74%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">Google</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">4.2k</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">3.9k</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[66%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">Github</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">1.9k</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">509</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[58%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">Producthunt</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">1.5k</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">986</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[48%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">Facebook</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">974</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">639</p>
+                                  </div>
+                              </div>
+                              <div class="relative z-1 grid grid-cols-10 py-2">
+                                  <span class="absolute left-0 top-0 -z-1 h-full w-[39%] rounded bg-gray dark:bg-meta-4"></span>
+                                  <div class="col-span-6 pl-3.5">
+                                      <p class="text-sm font-medium">Twitter</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-center text-sm font-medium">179</p>
+                                  </div>
+                                  <div class="col-span-2">
+                                      <p class="text-right text-sm font-medium">57</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- ====== Top Channels End -->
+                  </div>
+
+                  <!-- ====== Chart Three Start -->
+                  <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5">
+                      <div class="mb-3 justify-between gap-4 sm:flex">
+                          <div>
+                              <h4 class="text-xl font-bold text-black dark:text-white">
+                                  Visitors Analytics
+                              </h4>
+                          </div>
+                          <div>
+                              <div class="relative z-20 inline-block">
+                                  <select name=""
+                                          id=""
+                                          class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
+                                      <option value="">Monthly</option>
+                                      <option value="">Yearly</option>
+                                  </select>
+                                  <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
+                                      <svg width="10"
+                                           height="6"
+                                           viewBox="0 0 10 6"
+                                           fill="none"
+                                           xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
+                                                fill="#637381" />
+                                          <path fill-rule="evenodd"
+                                                clip-rule="evenodd"
+                                                d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
+                                                fill="#637381" />
+                                      </svg>
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="mb-2">
+                          <div id="chartThree" class="mx-auto flex justify-center"></div>
+                      </div>
+                      <div class="-mx-8 flex flex-wrap items-center justify-center gap-y-3">
+                          <div class="w-full px-8 sm:w-1/2">
+                              <div class="flex w-full items-center">
+                                  <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"></span>
+                                  <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                                      <span> Desktop </span>
+                                      <span> 65% </span>
+                                  </p>
+                              </div>
+                          </div>
+                          <div class="w-full px-8 sm:w-1/2">
+                              <div class="flex w-full items-center">
+                                  <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#6577F3]"></span>
+                                  <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                                      <span> Tablet </span>
+                                      <span> 34% </span>
+                                  </p>
+                              </div>
+                          </div>
+                          <div class="w-full px-8 sm:w-1/2">
+                              <div class="flex w-full items-center">
+                                  <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#8FD0EF]"></span>
+                                  <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                                      <span> Mobile </span>
+                                      <span> 45% </span>
+                                  </p>
+                              </div>
+                          </div>
+                          <div class="w-full px-8 sm:w-1/2">
+                              <div class="flex w-full items-center">
+                                  <span class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#0FADCF]"></span>
+                                  <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                                      <span> Unknown </span>
+                                      <span> 12% </span>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- ====== Chart Three End -->
+                  <!-- ====== Table Two Start -->
+                  <div class="col-span-12 xl:col-span-7">
+                      <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                          <div class="px-4 py-6 md:px-6 xl:px-7.5">
+                              <h4 class="text-xl font-bold text-black dark:text-white">Top Products</h4>
+                          </div>
+
+                          <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                              <div class="col-span-3 flex items-center">
+                                  <p class="font-medium">Product Name</p>
+                              </div>
+                              <div class="col-span-2 hidden items-center sm:flex">
+                                  <p class="font-medium">Category</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="font-medium">Price</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="font-medium">Sold</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="font-medium">Profit</p>
+                              </div>
+                          </div>
+
+                          <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                              <div class="col-span-3 flex items-center">
+                                  <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                      <div class="h-12.5 w-15 rounded-md">
+                                          <img src="src/images/product/product-01.png" alt="Product" />
+                                      </div>
+                                      <p class="text-sm font-medium text-black dark:text-white">
+                                          Apple Watch Series 7
+                                      </p>
+                                  </div>
+                              </div>
+                              <div class="col-span-2 hidden items-center sm:flex">
+                                  <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-black dark:text-white">$269</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-black dark:text-white">22</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-meta-3">$45</p>
+                              </div>
+                          </div>
+                          <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                              <div class="col-span-3 flex items-center">
+                                  <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                      <div class="h-12.5 w-15 rounded-md">
+                                          <img src="src/images/product/product-02.png" alt="Product" />
+                                      </div>
+                                      <p class="text-sm font-medium text-black dark:text-white">
+                                          Macbook Pro M1
+                                      </p>
+                                  </div>
+                              </div>
+                              <div class="col-span-2 hidden items-center sm:flex">
+                                  <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-black dark:text-white">$546</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-black dark:text-white">34</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-meta-3">$125</p>
+                              </div>
+                          </div>
+                          <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                              <div class="col-span-3 flex items-center">
+                                  <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                      <div class="h-12.5 w-15 rounded-md">
+                                          <img src="src/images/product/product-03.png" alt="Product" />
+                                      </div>
+                                      <p class="text-sm font-medium text-black dark:text-white">
+                                          Dell Inspiron 15
+                                      </p>
+                                  </div>
+                              </div>
+                              <div class="col-span-2 hidden items-center sm:flex">
+                                  <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-black dark:text-white">$443</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-black dark:text-white">64</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-meta-3">$247</p>
+                              </div>
+                          </div>
+                          <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                              <div class="col-span-3 flex items-center">
+                                  <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                      <div class="h-12.5 w-15 rounded-md">
+                                          <img src="src/images/product/product-04.png" alt="Product" />
+                                      </div>
+                                      <p class="text-sm font-medium text-black dark:text-white">
+                                          HP Probook 450
+                                      </p>
+                                  </div>
+                              </div>
+                              <div class="col-span-2 hidden items-center sm:flex">
+                                  <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-black dark:text-white">$499</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-black dark:text-white">72</p>
+                              </div>
+                              <div class="col-span-1 flex items-center">
+                                  <p class="text-sm font-medium text-meta-3">$103</p>
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+                  <!-- ====== Table Two End -->
               </div>
-
-              <!-- ====== Chart Three Start -->
-              <div
-  class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5"
->
-  <div class="mb-3 justify-between gap-4 sm:flex">
-    <div>
-      <h4 class="text-xl font-bold text-black dark:text-white">
-        Visitors Analytics
-      </h4>
-    </div>
-    <div>
-      <div class="relative z-20 inline-block">
-        <select
-          name=""
-          id=""
-          class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
-        >
-          <option value="">Monthly</option>
-          <option value="">Yearly</option>
-        </select>
-        <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
-          <svg
-            width="10"
-            height="6"
-            viewBox="0 0 10 6"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
-              fill="#637381"
-            />
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
-              fill="#637381"
-            />
-          </svg>
-        </span>
-      </div>
-    </div>
-  </div>
-  <div class="mb-2">
-    <div id="chartThree" class="mx-auto flex justify-center"></div>
-  </div>
-  <div class="-mx-8 flex flex-wrap items-center justify-center gap-y-3">
-    <div class="w-full px-8 sm:w-1/2">
-      <div class="flex w-full items-center">
-        <span
-          class="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"
-        ></span>
-        <p
-          class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
-        >
-          <span> Desktop </span>
-          <span> 65% </span>
-        </p>
-      </div>
-    </div>
-    <div class="w-full px-8 sm:w-1/2">
-      <div class="flex w-full items-center">
-        <span
-          class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#6577F3]"
-        ></span>
-        <p
-          class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
-        >
-          <span> Tablet </span>
-          <span> 34% </span>
-        </p>
-      </div>
-    </div>
-    <div class="w-full px-8 sm:w-1/2">
-      <div class="flex w-full items-center">
-        <span
-          class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#8FD0EF]"
-        ></span>
-        <p
-          class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
-        >
-          <span> Mobile </span>
-          <span> 45% </span>
-        </p>
-      </div>
-    </div>
-    <div class="w-full px-8 sm:w-1/2">
-      <div class="flex w-full items-center">
-        <span
-          class="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#0FADCF]"
-        ></span>
-        <p
-          class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
-        >
-          <span> Unknown </span>
-          <span> 12% </span>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-              <!-- ====== Chart Three End -->
-
-              <!-- ====== Table Two Start -->
-              <div class="col-span-12 xl:col-span-7">
-                <div
-  class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
->
-  <div class="px-4 py-6 md:px-6 xl:px-7.5">
-    <h4 class="text-xl font-bold text-black dark:text-white">Top Products</h4>
-  </div>
-
-  <div
-    class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
-  >
-    <div class="col-span-3 flex items-center">
-      <p class="font-medium">Product Name</p>
-    </div>
-    <div class="col-span-2 hidden items-center sm:flex">
-      <p class="font-medium">Category</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="font-medium">Price</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="font-medium">Sold</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="font-medium">Profit</p>
-    </div>
-  </div>
-
-  <div
-    class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
-  >
-    <div class="col-span-3 flex items-center">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div class="h-12.5 w-15 rounded-md">
-          <img src="src/images/product/product-01.png" alt="Product" />
-        </div>
-        <p class="text-sm font-medium text-black dark:text-white">
-          Apple Watch Series 7
-        </p>
-      </div>
-    </div>
-    <div class="col-span-2 hidden items-center sm:flex">
-      <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-black dark:text-white">$269</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-black dark:text-white">22</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-meta-3">$45</p>
-    </div>
-  </div>
-  <div
-    class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
-  >
-    <div class="col-span-3 flex items-center">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div class="h-12.5 w-15 rounded-md">
-          <img src="src/images/product/product-02.png" alt="Product" />
-        </div>
-        <p class="text-sm font-medium text-black dark:text-white">
-          Macbook Pro M1
-        </p>
-      </div>
-    </div>
-    <div class="col-span-2 hidden items-center sm:flex">
-      <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-black dark:text-white">$546</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-black dark:text-white">34</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-meta-3">$125</p>
-    </div>
-  </div>
-  <div
-    class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
-  >
-    <div class="col-span-3 flex items-center">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div class="h-12.5 w-15 rounded-md">
-          <img src="src/images/product/product-03.png" alt="Product" />
-        </div>
-        <p class="text-sm font-medium text-black dark:text-white">
-          Dell Inspiron 15
-        </p>
-      </div>
-    </div>
-    <div class="col-span-2 hidden items-center sm:flex">
-      <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-black dark:text-white">$443</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-black dark:text-white">64</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-meta-3">$247</p>
-    </div>
-  </div>
-  <div
-    class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
-  >
-    <div class="col-span-3 flex items-center">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div class="h-12.5 w-15 rounded-md">
-          <img src="src/images/product/product-04.png" alt="Product" />
-        </div>
-        <p class="text-sm font-medium text-black dark:text-white">
-          HP Probook 450
-        </p>
-      </div>
-    </div>
-    <div class="col-span-2 hidden items-center sm:flex">
-      <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-black dark:text-white">$499</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-black dark:text-white">72</p>
-    </div>
-    <div class="col-span-1 flex items-center">
-      <p class="text-sm font-medium text-meta-3">$103</p>
-    </div>
-  </div>
-</div>
-
-              </div>
-              <!-- ====== Table Two End -->
-            </div>
           </div>
         </main>
         <!-- ===== Main Content End ===== -->

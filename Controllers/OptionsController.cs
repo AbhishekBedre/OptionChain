@@ -35,6 +35,66 @@ namespace OptionChain.Controllers
 
             return optionsResponse;
         }
+
+        [HttpGet("sectors")]
+        public async Task<IEnumerable<SectorsResponse>> GetSectorsTrend(string currentdate, int overall = 1)
+        {
+            IEnumerable<SectorsResponse> sectorsResponses = null;
+
+            if (overall == 1)
+            {
+                var query = from s in _optionDbContext.Sectors
+                            join sd in _optionDbContext.StockData.Where(x=>x.EntryDate == Convert.ToDateTime(currentdate).Date)
+                            on s.Symbol equals sd.Symbol
+                            group sd by s.MappingName into g
+                            select new
+                            {
+                                Sector = g.Key,
+                                AvgPChange = g.Average(x => x.PChange)
+                            }
+                            into result
+                            orderby result.AvgPChange
+                            select result;
+
+                sectorsResponses = query.ToList().Select((s, index) => new SectorsResponse
+                {
+                    Id = index,
+                    Sector = s.Sector,
+                    PChange = Math.Round(s.AvgPChange, 2)
+                });
+            }
+            else
+            {
+                var query = from s in _optionDbContext.StockMetaData
+                            join sd in _optionDbContext.StockData.Where(x => x.EntryDate == Convert.ToDateTime(currentdate).Date)
+                            on s.Symbol equals sd.Symbol
+                            group sd by s.Industry into g
+                            select new
+                            {
+                                Sector = g.Key,
+                                AvgPChange = g.Average(x => x.PChange)
+                            }
+                            into result
+                            orderby result.AvgPChange
+                            select result;
+
+                sectorsResponses = query.ToList().Select((s, index) => new SectorsResponse
+                {
+                    Id = index,
+                    Sector = s.Sector,
+                    PChange = Math.Round(s.AvgPChange, 2)
+                });
+            }
+
+            return sectorsResponses;
+        }
+    }
+
+    public class SectorsResponse
+    {
+        public int Id { get; set; }
+        public string? Sector { get; set; }
+        public double? PChange { get; set; }
     }
 
     public class OptionsResponse

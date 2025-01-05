@@ -146,11 +146,18 @@ function getOptionsData(callback) {
 
     $("div[x-show='loaded']").show();
 
-    var selectedDate = $(".form-datepicker").val();
+    var selectedDate = $("#optionDate").val();
     var domain = window.location.origin;
+    var subfolderName = "";
 
-    var url = domain + "/optionchain/Options";
+    var arr = window.location.pathname.split('/');
 
+    if(arr.length > 2) {
+        subfolderName = "/" + arr[1];
+    }
+
+    var url = domain + subfolderName  + "/Options";
+    
     $.ajax({
         url: url,
         type: 'GET',
@@ -166,20 +173,169 @@ function getOptionsData(callback) {
         }
     });
 }
+
+function getSectorUpdate(callback) {
+
+    $("#sectorChart").empty();
+
+    $("div[x-show='loaded']").show();
+
+    var domain = window.location.origin;
+
+    var subfolderName = "";
+
+    var arr = window.location.pathname.split('/');
+
+    if (arr.length > 2) {
+        subfolderName = "/" + arr[1];
+    }
+
+    var selectedDate = $("#sectorDate").val();
+
+    var url = domain + subfolderName + "/Options/sectors";
+
+    var overall = $("#toggle4-div").hasClass("!bg-primary");
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: { "currentDate": selectedDate, "overall": overall ? 1 : 0 }, // Pass the date as a query parameter
+        success: function (response) {
+            $("div[x-show='loaded']").hide();
+            console.log('Success:', response);
+            return callback(response);
+        },
+        error: function (xhr, status, error) {
+            $("div[x-show='loaded']").hide();
+            console.error('Error:', status, error);
+        }
+    });
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#updateChart").onclick = function () {
+        chart04();
+    },
+
+    document.querySelector("#SectorUpdate").onclick = function () {
         chart04();
     }
 });
 
 const chart04 = () => {
+
+    getSectorUpdate(function(response){
+
+        var data = response.map(m => m.pChange);
+
+        const chartSectorOptions = {
+            series: [
+                {
+                    data: data,
+                },
+            ],
+            colors: ["#3C50E0"],
+            chart: {
+                fontFamily: "Satoshi, sans-serif",
+                type: "bar",
+                height: 350,
+                toolbar: {
+                    show: true,
+                },
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: "55%",
+                    endingShape: "rounded",
+                    borderRadius: 2,
+                    colors: {
+                        ranges: [
+                            {
+                                from: -Infinity,
+                                to: -1,
+                                color: "#dc3545", // Red for negative values
+                            },
+                            {
+                                from: 1,
+                                to: Infinity,
+                                color: "#28a745", // Green for positive values
+                            },
+                        ],
+                    },
+                },
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                show: true,
+                width: 4,
+                colors: ["transparent"],
+            },
+            xaxis: {
+                categories: response.map(m => m.sector),
+                axisBorder: {
+                    show: true,
+                },
+                axisTicks: {
+                    show: true,
+                },
+                //tickAmount: Math.floor(response.length / 2), // Show fewer ticks
+                labels: {
+                    show: true,
+                    rotate: -90, // Rotate labels to avoid overlap
+                    style: {
+                        fontSize: "12px", // Adjust font size
+                    },
+                },
+            },
+            legend: {
+                show: true,
+                position: "top",
+                horizontalAlign: "left",
+                fontFamily: "Satoshi",
+                markers: {
+                    radius: 99,
+                },
+            },
+            yaxis: {
+                title: false,
+            },
+            grid: {
+                yaxis: {
+                    lines: {
+                        show: false,
+                    },
+                },
+            },
+            tooltip: {
+                x: {
+                    show: false,
+                },
+                y: {
+                    formatter: function (val) {
+                        return val;
+                    },
+                },
+            },
+        };
+
+        const chartSelector = document.querySelectorAll("#sectorChart");
+
+        if (chartSelector.length) {
+            const sectorChart = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(
+                document.querySelector("#sectorChart"),
+                chartSectorOptions
+            );
+            sectorChart.render();
+        }
+    });
     
     getOptionsData(function(response) {
 
         var data = response.map(m => m.oi);
-        //data = data.slice(1);
-
-        //data = data.slice(0, data.length - 2);  // Create a new array without the last element
 
         const chartFourOptions = {
             series: [
@@ -633,7 +789,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
         prevArrow: '<svg class="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
         nextArrow: '<svg class="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M1.4 10.8L0 9.4l4-4-4-4L1.4 0l5.4 5.4z" /></svg>',
         onChange: (selectedDates, dateStr, instance) => {
-            dateChange(instance.element.value);
+            //dateChange(instance.element.value);
         }
     });
 
