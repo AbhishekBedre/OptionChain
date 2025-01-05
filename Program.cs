@@ -33,8 +33,8 @@ builder.Services.AddQuartz(q =>
         .AddTrigger(trigger =>
         {
             trigger.ForJob(firstSession)
-                //.WithCronSchedule("0 15-59/5 9 ? * MON-FRI"); // From 9:15 AM to 9:59 AM, Monday to Friday
-                .WithSimpleSchedule(s => s.WithRepeatCount(0));
+                .WithCronSchedule("0 15-59/5 9 ? * MON-FRI"); // From 9:15 AM to 9:59 AM, Monday to Friday
+                //.WithSimpleSchedule(s => s.WithRepeatCount(0));
                 //.WithCronSchedule("0 * * ? * *"); // Start of Every Minute                
         });
 

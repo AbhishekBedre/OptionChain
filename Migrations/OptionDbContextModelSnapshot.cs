@@ -202,6 +202,28 @@ namespace OptionChain.Migrations
                     b.ToTable("AllOptionData");
                 });
 
+            modelBuilder.Entity("OptionChain.Sector", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<string>("Industry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MappingName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sectors");
+                });
+
             modelBuilder.Entity("OptionChain.StockData", b =>
                 {
                     b.Property<long>("Id")

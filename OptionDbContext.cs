@@ -10,6 +10,7 @@ namespace OptionChain
         public DbSet<Advance> Advance { get; set; }
         public DbSet<StockData> StockData { get; set; }
         public DbSet<StockMetaData> StockMetaData { get; set; }
+        public DbSet<Sector> Sectors { get; set; }
 
         // Constructor for DbContext
         public OptionDbContext(DbContextOptions<OptionDbContext> options)
@@ -36,6 +37,9 @@ namespace OptionChain
                 .HasKey(s => s.Id); //PK
 
             modelBuilder.Entity<StockMetaData>()
+                .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<Sector>()
                 .HasKey(s => s.Id); //PK
         }
     }

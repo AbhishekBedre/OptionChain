@@ -89,33 +89,6 @@ namespace OptionChain
         }
     }
 
-    public class Record
-    {
-        public long Id { get; set; }
-        public List<OptionData> Data { get; set; }
-        public List<string> ExpiryDates { get; set; }
-    }
-
-    public class Filtered
-    {
-        public long Id { get; set; }
-        public List<OptionData> Data { get; set; }
-        public OptionSummary CE { get; set; }
-        public OptionSummary PE { get; set; }
-    }
-
-    public class OptionSummary
-    {
-        public double TotOI { get; set; }
-        public double TotVol { get; set; }
-    }
-
-    public class Root
-    {
-        public Record Records { get; set; }
-        public Filtered Filtered { get; set; }
-    }
-
     public class Summary
     {
         [Key]
@@ -206,4 +179,45 @@ namespace OptionChain
         public TimeSpan? Time { get; set; }
         public DateTime? EntryDate { get; set; }
     }
+
+    public class Sector
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+        public string? Symbol { get; set; }
+        public string? MappingName { get; set; }
+        public string? Industry { get; set; }
+    }
+
+
+    #region "Parser Models"
+    public class Record
+    {
+        public long Id { get; set; }
+        public List<OptionData> Data { get; set; }
+        public List<string> ExpiryDates { get; set; }
+    }
+
+    public class Filtered
+    {
+        public long Id { get; set; }
+        public List<OptionData> Data { get; set; }
+        public OptionSummary CE { get; set; }
+        public OptionSummary PE { get; set; }
+    }
+
+    public class OptionSummary
+    {
+        public double TotOI { get; set; }
+        public double TotVol { get; set; }
+    }
+
+    public class Root
+    {
+        public Record Records { get; set; }
+        public Filtered Filtered { get; set; }
+    }
+    #endregion
+
 }
