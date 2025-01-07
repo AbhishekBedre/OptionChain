@@ -33,11 +33,108 @@
             }
         }
 
+        function renderSectorStocks(data) {
+            const container = document.getElementById('sectorStock');
+            container.innerHTML = ''; // Clear previous content
+
+            let row = document.createElement('div');
+            row.className = 'grid grid-cols-12 gap-6 mb-6'; // Create a row for two sectors
+
+            data.forEach((sector, index) => {
+                const sectorHtml = `
+            <div class="col-span-12 xl:col-span-6">
+                <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
+                    <div class="mb-7 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-black dark:text-white">
+                                ${sector.name}
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        ${sector.stocks.map(stock => `
+                            <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                <div class="col-span-3 flex items-center">
+                                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                        <div class="h-12.5 w-15 rounded-md">
+                                            <img src="${stock.image}" alt="${stock.name}" />
+                                        </div>
+                                        <p class="text-sm font-medium text-black dark:text-white">
+                                            ${stock.name}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-span-2 hidden items-center sm:flex">
+                                    <p class="text-sm font-medium text-black dark:text-white">${stock.lastPrice}</p>
+                                </div>
+                                <div class="col-span-1 flex items-center">
+                                    <p class="text-sm font-medium text-black dark:text-white">${stock.change}</p>
+                                </div>
+                                <div class="col-span-1 flex items-center">
+                                    <p class="text-sm font-medium text-black dark:text-white">${stock.percentChange}</p>
+                                </div>
+                                <div class="col-span-1 flex items-center">
+                                    <p class="text-sm font-medium text-meta-3">${stock.tFact}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+                row.innerHTML += sectorHtml;
+
+                // Add the row to the container every 2 sectors
+                if ((index + 1) % 2 === 0 || index === data.length - 1) {
+                    container.appendChild(row);
+                    row = document.createElement('div');
+                    row.className = 'grid grid-cols-12 gap-6 mb-6';
+                }
+            });
+        }
+
+        // Example usage with the AJAX call
+        getSecorStocks(function (response) {
+            alert("call");
+            console.log(response);
+            renderSectorStocks(response);
+        });
+
+
+        function getSecorStocks(callback) {
+            var domain = window.location.origin;
+            var subfolderName = "";
+
+            var arr = window.location.pathname.split('/');
+
+            if (arr.length > 2) {
+                subfolderName = "/" + arr[1];
+            }
+
+            var url = domain + subfolderName + "/Options/sector-stocks";
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { "currentDate": "2025-01-07" }, // Pass the date as a query parameter
+                success: function (response) {
+                    //$("div[x-show='loaded']").hide();
+                    console.log('Success:', response);
+                    return callback(response);
+                },
+                error: function (xhr, status, error) {
+                    //$("div[x-show='loaded']").hide();
+                    console.error('Error:', status, error);
+                }
+            });
+        }
+
         // Start the refresh loop
-        autoRefresh();
+        //autoRefresh();
 
         // Check every minute if the page should reload
-        setInterval(autoRefresh, 60 * 1000);
+        //setInterval(autoRefresh, 60 * 1000);
 
     </script>
 
@@ -2099,7 +2196,6 @@
                   </div>
 
                   <!-- ====== Chart Four End -->
-
                   <!-- ====== Sector Chart Start -->
                   <div class="col-span-12 flex flex-wrap items-center items-center justify-between gap-3">
                       <!-- Datepicker built with flatpickr -->
@@ -2138,9 +2234,9 @@
 
                               <label for="toggle4" class="flex cursor-pointer select-none items-center">
                                   <div class="relative">
-                                      <input type="checkbox" id="toggle4" class="sr-only" @change="handleChange($event);" x-model="switcherToggle"  />
+                                      <input type="checkbox" id="toggle4" class="sr-only" @change="handleChange($event);" x-model="switcherToggle" />
                                       <div id="toggle4-div" :class="switcherToggle && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
-                                      <div :class="switcherToggle && '!right-1 !translate-x-full'" 
+                                      <div :class="switcherToggle && '!right-1 !translate-x-full'"
                                            class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
                                   </div>
                               </label>
@@ -2160,7 +2256,6 @@
                   </div>
 
                   <!-- ====== Sector Chart End -->
-
                   <!-- ====== Data Stats Start -->
                   <div class="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
                       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
@@ -2243,409 +2338,126 @@
                       </div>
                   </div>
                   <!-- ====== Data Stats End -->
-                  <!-- ====== Map Two Start -->
-                  <div class="col-span-12 overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-6">
-                      <div class="p-4 md:p-6 xl:p-7.5">
-                          <div class="mb-7.5 justify-between sm:flex">
-                              <div class="mb-2">
-                                  <h3 class="text-xl font-bold text-black dark:text-white">
-                                      Sessions by country
-                                  </h3>
-                              </div>
-                              <div class="mb-2">
-                                  <div class="relative z-20 inline-block rounded bg-gray-2 dark:bg-boxdark">
-                                      <select name=""
-                                              id=""
-                                              class="relative z-20 inline-flex appearance-none rounded border border-stroke bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none dark:border-strokedark">
-                                          <option value="">Last 7 days</option>
-                                          <option value="">Last 15 days</option>
-                                      </select>
-                                      <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
-                                          <svg width="10"
-                                               height="6"
-                                               viewBox="0 0 10 6"
-                                               fill="none"
-                                               xmlns="http://www.w3.org/2000/svg">
-                                              <path d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
-                                                    fill="#637381" />
-                                              <path fill-rule="evenodd"
-                                                    clip-rule="evenodd"
-                                                    d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
-                                                    fill="#637381" />
-                                          </svg>
-                                      </span>
-                                  </div>
-                              </div>
-                          </div>
-                          <div id="mapTwo" class="mapTwo map-btn h-65 md:h-95"></div>
-                      </div>
-                      <div class="space-y-2.5 border-t border-stroke p-4 dark:border-strokedark md:p-6 xl:p-7.5">
-                          <div class="items-center sm:flex">
-                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
-                                  <img src="src/images/country/country-01.svg" alt="usa" />
-                                  <p class="font-medium text-black dark:text-white">United States</p>
-                              </div>
-                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-                                  <div class="absolute left-0 top-0 flex h-full w-[35%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
-                                      35%
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="items-center sm:flex">
-                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
-                                  <img src="src/images/country/country-02.svg" alt="canada" />
-                                  <p class="font-medium text-black dark:text-white">Canada</p>
-                              </div>
-                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-                                  <div class="absolute left-0 top-0 flex h-full w-[26%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
-                                      26%
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="items-center sm:flex">
-                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
-                                  <img src="src/images/country/country-03.svg" alt="france" />
-                                  <p class="font-medium text-black dark:text-white">France</p>
-                              </div>
-                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-                                  <div class="absolute left-0 top-0 flex h-full w-[18%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
-                                      18%
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="items-center sm:flex">
-                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
-                                  <img src="src/images/country/country-04.svg" alt="italy" />
-                                  <p class="font-medium text-black dark:text-white">Italy</p>
-                              </div>
-                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-                                  <div class="absolute left-0 top-0 flex h-full w-[14%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
-                                      14%
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="items-center sm:flex">
-                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
-                                  <img src="src/images/country/country-05.svg" alt="australia" />
-                                  <p class="font-medium text-black dark:text-white">Australia</p>
-                              </div>
-                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-                                  <div class="absolute left-0 top-0 flex h-full w-[10%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
-                                      10%
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="items-center sm:flex">
-                              <div class="flex w-full max-w-42.5 items-center gap-3.5">
-                                  <img src="src/images/country/country-06.svg" alt="india" />
-                                  <p class="font-medium text-black dark:text-white">India</p>
-                              </div>
-                              <div class="relative block h-4.5 w-full rounded bg-meta-9 dark:bg-meta-4">
-                                  <div class="absolute left-0 top-0 flex h-full w-[7%] items-center justify-center rounded bg-primary text-xs font-medium text-white">
-                                      7%
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
+                  <div id="sectorStock"></div>
 
-                  <!-- ====== Map Two End -->
+                  <!----
 
                   <div class="col-span-12 xl:col-span-6">
-                      <!-- ====== Top Content Start -->
                       <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
                           <div class="mb-7 flex items-center justify-between">
                               <div>
                                   <h3 class="text-xl font-bold text-black dark:text-white">
-                                      Top Content
+                                      AUTO
                                   </h3>
                               </div>
-                              <div>
-                                  <div x-data="{openDropDown: false}" class="relative">
-                                      <button @click="openDropDown = !openDropDown">
-                                          <svg width="18"
-                                               height="18"
-                                               viewBox="0 0 18 18"
-                                               fill="none"
-                                               xmlns="http://www.w3.org/2000/svg">
-                                              <path d="M2.25 11.25C3.49264 11.25 4.5 10.2426 4.5 9C4.5 7.75736 3.49264 6.75 2.25 6.75C1.00736 6.75 0 7.75736 0 9C0 10.2426 1.00736 11.25 2.25 11.25Z"
-                                                    fill="#98A6AD" />
-                                              <path d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z"
-                                                    fill="#98A6AD" />
-                                              <path d="M15.75 11.25C16.9926 11.25 18 10.2426 18 9C18 7.75736 16.9926 6.75 15.75 6.75C14.5074 6.75 13.5 7.75736 13.5 9C13.5 10.2426 14.5074 11.25 15.75 11.25Z"
-                                                    fill="#98A6AD" />
-                                          </svg>
-                                      </button>
-                                      <div x-show="openDropDown"
-                                           @click.outside="openDropDown = false"
-                                           class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-sm border border-stroke bg-white p-1.5 shadow-default dark:border-strokedark dark:bg-boxdark">
-                                          <button class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
-                                              <svg class="fill-current"
-                                                   width="16"
-                                                   height="16"
-                                                   viewBox="0 0 16 16"
-                                                   fill="none"
-                                                   xmlns="http://www.w3.org/2000/svg">
-                                                  <g clip-path="url(#clip0_62_9787)">
-                                                      <path d="M15.55 2.97499C15.55 2.77499 15.475 2.57499 15.325 2.42499C15.025 2.12499 14.725 1.82499 14.45 1.52499C14.175 1.24999 13.925 0.974987 13.65 0.724987C13.525 0.574987 13.375 0.474986 13.175 0.449986C12.95 0.424986 12.75 0.474986 12.575 0.624987L10.875 2.32499H2.02495C1.17495 2.32499 0.449951 3.02499 0.449951 3.89999V14C0.449951 14.85 1.14995 15.575 2.02495 15.575H12.15C13 15.575 13.725 14.875 13.725 14V5.12499L15.35 3.49999C15.475 3.34999 15.55 3.17499 15.55 2.97499ZM8.19995 8.99999C8.17495 9.02499 8.17495 9.02499 8.14995 9.02499L6.34995 9.62499L6.94995 7.82499C6.94995 7.79999 6.97495 7.79999 6.97495 7.77499L11.475 3.27499L12.725 4.49999L8.19995 8.99999ZM12.575 14C12.575 14.25 12.375 14.45 12.125 14.45H2.02495C1.77495 14.45 1.57495 14.25 1.57495 14V3.87499C1.57495 3.62499 1.77495 3.42499 2.02495 3.42499H9.72495L6.17495 6.99999C6.04995 7.12499 5.92495 7.29999 5.87495 7.49999L4.94995 10.3C4.87495 10.5 4.92495 10.675 5.02495 10.85C5.09995 10.95 5.24995 11.1 5.52495 11.1H5.62495L8.49995 10.15C8.67495 10.1 8.84995 9.97499 8.97495 9.84999L12.575 6.24999V14ZM13.5 3.72499L12.25 2.49999L13.025 1.72499C13.225 1.92499 14.05 2.74999 14.25 2.97499L13.5 3.72499Z"
-                                                            fill="" />
-                                                  </g>
-                                                  <defs>
-                                                      <clipPath id="clip0_62_9787">
-                                                          <rect width="16" height="16" fill="white" />
-                                                      </clipPath>
-                                                  </defs>
-                                              </svg>
-                                              Edit
-                                          </button>
-                                          <button class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
-                                              <svg class="fill-current"
-                                                   width="16"
-                                                   height="16"
-                                                   viewBox="0 0 16 16"
-                                                   fill="none"
-                                                   xmlns="http://www.w3.org/2000/svg">
-                                                  <path d="M12.225 2.20005H10.3V1.77505C10.3 1.02505 9.70005 0.425049 8.95005 0.425049H7.02505C6.27505 0.425049 5.67505 1.02505 5.67505 1.77505V2.20005H3.75005C3.02505 2.20005 2.42505 2.80005 2.42505 3.52505V4.27505C2.42505 4.82505 2.75005 5.27505 3.22505 5.47505L3.62505 13.75C3.67505 14.775 4.52505 15.575 5.55005 15.575H10.4C11.425 15.575 12.275 14.775 12.325 13.75L12.75 5.45005C13.225 5.25005 13.55 4.77505 13.55 4.25005V3.50005C13.55 2.80005 12.95 2.20005 12.225 2.20005ZM6.82505 1.77505C6.82505 1.65005 6.92505 1.55005 7.05005 1.55005H8.97505C9.10005 1.55005 9.20005 1.65005 9.20005 1.77505V2.20005H6.85005V1.77505H6.82505ZM3.57505 3.52505C3.57505 3.42505 3.65005 3.32505 3.77505 3.32505H12.225C12.325 3.32505 12.425 3.40005 12.425 3.52505V4.27505C12.425 4.37505 12.35 4.47505 12.225 4.47505H3.77505C3.67505 4.47505 3.57505 4.40005 3.57505 4.27505V3.52505V3.52505ZM10.425 14.45H5.57505C5.15005 14.45 4.80005 14.125 4.77505 13.675L4.40005 5.57505H11.625L11.25 13.675C11.2 14.1 10.85 14.45 10.425 14.45Z"
-                                                        fill="" />
-                                                  <path d="M8.00005 8.1001C7.70005 8.1001 7.42505 8.3501 7.42505 8.6751V11.8501C7.42505 12.1501 7.67505 12.4251 8.00005 12.4251C8.30005 12.4251 8.57505 12.1751 8.57505 11.8501V8.6751C8.57505 8.3501 8.30005 8.1001 8.00005 8.1001Z"
-                                                        fill="" />
-                                                  <path d="M9.99994 8.60004C9.67494 8.57504 9.42494 8.80004 9.39994 9.12504L9.24994 11.325C9.22494 11.625 9.44994 11.9 9.77494 11.925C9.79994 11.925 9.79994 11.925 9.82494 11.925C10.1249 11.925 10.3749 11.7 10.3749 11.4L10.5249 9.20004C10.5249 8.87504 10.2999 8.62504 9.99994 8.60004Z"
-                                                        fill="" />
-                                                  <path d="M5.97497 8.60004C5.67497 8.62504 5.42497 8.90004 5.44997 9.20004L5.62497 11.4C5.64997 11.7 5.89997 11.925 6.17497 11.925C6.19997 11.925 6.19997 11.925 6.22497 11.925C6.52497 11.9 6.77497 11.625 6.74997 11.325L6.57497 9.12504C6.57497 8.80004 6.29997 8.57504 5.97497 8.60004Z"
-                                                        fill="" />
-                                              </svg>
-                                              Delete
-                                          </button>
+                          </div>
+                          <div class="flex flex-col gap-2">
+                              <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                  <div class="col-span-3 flex items-center">
+                                      <p class="font-medium">Stock Name</p>
+                                  </div>
+                                  <div class="col-span-2 hidden items-center sm:flex">
+                                      <p class="font-medium">Last Price</p>
+                                  </div>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="font-medium">Change</p>
+                                  </div>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="font-medium">% Change</p>
+                                  </div>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="font-medium">T Fact</p>
+                                  </div>
+                              </div>
+                              <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                  <div class="col-span-3 flex items-center">
+                                      <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                          <div class="h-12.5 w-15 rounded-md">
+                                              <img src="src/images/product/product-01.png" alt="Product" />
+                                          </div>
+                                          <p class="text-sm font-medium text-black dark:text-white">
+                                              MARUTI
+                                          </p>
                                       </div>
                                   </div>
+                                  <div class="col-span-2 hidden items-center sm:flex">
+                                      <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
+                                  </div>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="text-sm font-medium text-black dark:text-white">$269</p>
+                                  </div>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="text-sm font-medium text-black dark:text-white">22</p>
+                                  </div>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="text-sm font-medium text-meta-3">$45</p>
+                                  </div>
                               </div>
-                          </div>
 
-                          <div class="flex flex-col gap-2">
-                              <div class="grid grid-cols-10 py-2">
-                                  <div class="col-span-6">
-                                      <p class="text-sm font-medium">URL</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">Views</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">Uniques</p>
-                                  </div>
-                              </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[74%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">/</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">2.5k</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">2.1k</p>
-                                  </div>
-                              </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[38%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">/blog/</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">376</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">139</p>
-                                  </div>
-                              </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[55%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">/reserve/success</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">468</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">290</p>
-                                  </div>
-                              </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[20%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">
-                                          /product/product-details
-                                      </p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">298</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">176</p>
-                                  </div>
-                              </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[27%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">
-                                          /blog/digital-marketing
-                                      </p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">179</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">57</p>
-                                  </div>
-                              </div>
                           </div>
                       </div>
-                      <!-- ====== Top Content End -->
-                      <!-- ====== Top Channels Start -->
-                      <div class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:p-6 xl:p-7.5">
+
+                  </div>
+
+                  <div class="col-span-12 xl:col-span-6">
+                      
+                      <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
                           <div class="mb-7 flex items-center justify-between">
                               <div>
                                   <h3 class="text-xl font-bold text-black dark:text-white">
-                                      Top Channels
+                                      OIL & GAS
                                   </h3>
-                              </div>
-                              <div>
-                                  <div x-data="{openDropDown: false}" class="relative">
-                                      <button @click="openDropDown = !openDropDown">
-                                          <svg width="18"
-                                               height="18"
-                                               viewBox="0 0 18 18"
-                                               fill="none"
-                                               xmlns="http://www.w3.org/2000/svg">
-                                              <path d="M2.25 11.25C3.49264 11.25 4.5 10.2426 4.5 9C4.5 7.75736 3.49264 6.75 2.25 6.75C1.00736 6.75 0 7.75736 0 9C0 10.2426 1.00736 11.25 2.25 11.25Z"
-                                                    fill="#98A6AD" />
-                                              <path d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z"
-                                                    fill="#98A6AD" />
-                                              <path d="M15.75 11.25C16.9926 11.25 18 10.2426 18 9C18 7.75736 16.9926 6.75 15.75 6.75C14.5074 6.75 13.5 7.75736 13.5 9C13.5 10.2426 14.5074 11.25 15.75 11.25Z"
-                                                    fill="#98A6AD" />
-                                          </svg>
-                                      </button>
-                                      <div x-show="openDropDown"
-                                           @click.outside="openDropDown = false"
-                                           class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-sm border border-stroke bg-white p-1.5 shadow-default dark:border-strokedark dark:bg-boxdark">
-                                          <button class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
-                                              <svg class="fill-current"
-                                                   width="16"
-                                                   height="16"
-                                                   viewBox="0 0 16 16"
-                                                   fill="none"
-                                                   xmlns="http://www.w3.org/2000/svg">
-                                                  <g clip-path="url(#clip0_62_9787)">
-                                                      <path d="M15.55 2.97499C15.55 2.77499 15.475 2.57499 15.325 2.42499C15.025 2.12499 14.725 1.82499 14.45 1.52499C14.175 1.24999 13.925 0.974987 13.65 0.724987C13.525 0.574987 13.375 0.474986 13.175 0.449986C12.95 0.424986 12.75 0.474986 12.575 0.624987L10.875 2.32499H2.02495C1.17495 2.32499 0.449951 3.02499 0.449951 3.89999V14C0.449951 14.85 1.14995 15.575 2.02495 15.575H12.15C13 15.575 13.725 14.875 13.725 14V5.12499L15.35 3.49999C15.475 3.34999 15.55 3.17499 15.55 2.97499ZM8.19995 8.99999C8.17495 9.02499 8.17495 9.02499 8.14995 9.02499L6.34995 9.62499L6.94995 7.82499C6.94995 7.79999 6.97495 7.79999 6.97495 7.77499L11.475 3.27499L12.725 4.49999L8.19995 8.99999ZM12.575 14C12.575 14.25 12.375 14.45 12.125 14.45H2.02495C1.77495 14.45 1.57495 14.25 1.57495 14V3.87499C1.57495 3.62499 1.77495 3.42499 2.02495 3.42499H9.72495L6.17495 6.99999C6.04995 7.12499 5.92495 7.29999 5.87495 7.49999L4.94995 10.3C4.87495 10.5 4.92495 10.675 5.02495 10.85C5.09995 10.95 5.24995 11.1 5.52495 11.1H5.62495L8.49995 10.15C8.67495 10.1 8.84995 9.97499 8.97495 9.84999L12.575 6.24999V14ZM13.5 3.72499L12.25 2.49999L13.025 1.72499C13.225 1.92499 14.05 2.74999 14.25 2.97499L13.5 3.72499Z"
-                                                            fill="" />
-                                                  </g>
-                                                  <defs>
-                                                      <clipPath id="clip0_62_9787">
-                                                          <rect width="16" height="16" fill="white" />
-                                                      </clipPath>
-                                                  </defs>
-                                              </svg>
-                                              Edit
-                                          </button>
-                                          <button class="flex w-full items-center gap-2 rounded-sm px-4 py-1.5 text-left text-sm hover:bg-gray dark:hover:bg-meta-4">
-                                              <svg class="fill-current"
-                                                   width="16"
-                                                   height="16"
-                                                   viewBox="0 0 16 16"
-                                                   fill="none"
-                                                   xmlns="http://www.w3.org/2000/svg">
-                                                  <path d="M12.225 2.20005H10.3V1.77505C10.3 1.02505 9.70005 0.425049 8.95005 0.425049H7.02505C6.27505 0.425049 5.67505 1.02505 5.67505 1.77505V2.20005H3.75005C3.02505 2.20005 2.42505 2.80005 2.42505 3.52505V4.27505C2.42505 4.82505 2.75005 5.27505 3.22505 5.47505L3.62505 13.75C3.67505 14.775 4.52505 15.575 5.55005 15.575H10.4C11.425 15.575 12.275 14.775 12.325 13.75L12.75 5.45005C13.225 5.25005 13.55 4.77505 13.55 4.25005V3.50005C13.55 2.80005 12.95 2.20005 12.225 2.20005ZM6.82505 1.77505C6.82505 1.65005 6.92505 1.55005 7.05005 1.55005H8.97505C9.10005 1.55005 9.20005 1.65005 9.20005 1.77505V2.20005H6.85005V1.77505H6.82505ZM3.57505 3.52505C3.57505 3.42505 3.65005 3.32505 3.77505 3.32505H12.225C12.325 3.32505 12.425 3.40005 12.425 3.52505V4.27505C12.425 4.37505 12.35 4.47505 12.225 4.47505H3.77505C3.67505 4.47505 3.57505 4.40005 3.57505 4.27505V3.52505V3.52505ZM10.425 14.45H5.57505C5.15005 14.45 4.80005 14.125 4.77505 13.675L4.40005 5.57505H11.625L11.25 13.675C11.2 14.1 10.85 14.45 10.425 14.45Z"
-                                                        fill="" />
-                                                  <path d="M8.00005 8.1001C7.70005 8.1001 7.42505 8.3501 7.42505 8.6751V11.8501C7.42505 12.1501 7.67505 12.4251 8.00005 12.4251C8.30005 12.4251 8.57505 12.1751 8.57505 11.8501V8.6751C8.57505 8.3501 8.30005 8.1001 8.00005 8.1001Z"
-                                                        fill="" />
-                                                  <path d="M9.99994 8.60004C9.67494 8.57504 9.42494 8.80004 9.39994 9.12504L9.24994 11.325C9.22494 11.625 9.44994 11.9 9.77494 11.925C9.79994 11.925 9.79994 11.925 9.82494 11.925C10.1249 11.925 10.3749 11.7 10.3749 11.4L10.5249 9.20004C10.5249 8.87504 10.2999 8.62504 9.99994 8.60004Z"
-                                                        fill="" />
-                                                  <path d="M5.97497 8.60004C5.67497 8.62504 5.42497 8.90004 5.44997 9.20004L5.62497 11.4C5.64997 11.7 5.89997 11.925 6.17497 11.925C6.19997 11.925 6.19997 11.925 6.22497 11.925C6.52497 11.9 6.77497 11.625 6.74997 11.325L6.57497 9.12504C6.57497 8.80004 6.29997 8.57504 5.97497 8.60004Z"
-                                                        fill="" />
-                                              </svg>
-                                              Delete
-                                          </button>
-                                      </div>
-                                  </div>
                               </div>
                           </div>
 
                           <div class="flex flex-col gap-2">
-                              <div class="grid grid-cols-10 py-2">
-                                  <div class="col-span-6">
-                                      <p class="text-sm font-medium">URL</p>
+                              <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                  <div class="col-span-3 flex items-center">
+                                      <p class="font-medium">Stock Name</p>
                                   </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">Views</p>
+                                  <div class="col-span-2 hidden items-center sm:flex">
+                                      <p class="font-medium">Last Price</p>
                                   </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">Uniques</p>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="font-medium">Change</p>
                                   </div>
-                              </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[74%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">Google</p>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="font-medium">% Change</p>
                                   </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">4.2k</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">3.9k</p>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="font-medium">T Fact</p>
                                   </div>
                               </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[66%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">Github</p>
+                              <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                  <div class="col-span-3 flex items-center">
+                                      <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                          <div class="h-12.5 w-15 rounded-md">
+                                              <img src="src/images/product/product-01.png" alt="Product" />
+                                          </div>
+                                          <p class="text-sm font-medium text-black dark:text-white">
+                                              OIL
+                                          </p>
+                                      </div>
                                   </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">1.9k</p>
+                                  <div class="col-span-2 hidden items-center sm:flex">
+                                      <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
                                   </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">509</p>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="text-sm font-medium text-black dark:text-white">$269</p>
                                   </div>
-                              </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[58%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">Producthunt</p>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="text-sm font-medium text-black dark:text-white">22</p>
                                   </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">1.5k</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">986</p>
-                                  </div>
-                              </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[48%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">Facebook</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">974</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">639</p>
+                                  <div class="col-span-1 flex items-center">
+                                      <p class="text-sm font-medium text-meta-3">$45</p>
                                   </div>
                               </div>
-                              <div class="relative z-1 grid grid-cols-10 py-2">
-                                  <span class="absolute left-0 top-0 -z-1 h-full w-[39%] rounded bg-gray dark:bg-meta-4"></span>
-                                  <div class="col-span-6 pl-3.5">
-                                      <p class="text-sm font-medium">Twitter</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-center text-sm font-medium">179</p>
-                                  </div>
-                                  <div class="col-span-2">
-                                      <p class="text-right text-sm font-medium">57</p>
-                                  </div>
-                              </div>
+
                           </div>
                       </div>
-                      <!-- ====== Top Channels End -->
                   </div>
 
+                  -->
                   <!-- ====== Chart Three Start -->
                   <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5">
                       <div class="mb-3 justify-between gap-4 sm:flex">

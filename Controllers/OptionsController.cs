@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OptionChain.Migrations;
+using System.Linq;
 
 namespace OptionChain.Controllers
 {
@@ -29,8 +31,8 @@ namespace OptionChain.Controllers
             var optionsResponse = result.Select(s => new OptionsResponse
             {
                 Id = s.Id,
-                OI = s.CEPEOIPrevDiff,
-                Time = s.Time?.Hours.ToString()+ ":" + s.Time?.Minutes.ToString()
+                OI = s.CEPEOIPrevDiff * -1,
+                Time = s.Time?.Hours.ToString() + ":" + s.Time?.Minutes.ToString()
             });
 
             return optionsResponse;
@@ -44,7 +46,7 @@ namespace OptionChain.Controllers
             if (overall == 1)
             {
                 var query = from s in _optionDbContext.Sectors
-                            join sd in _optionDbContext.StockData.Where(x=>x.EntryDate == Convert.ToDateTime(currentdate).Date && (x.PChange < -0.5 || x.PChange > 0.5))
+                            join sd in _optionDbContext.StockData.Where(x => x.EntryDate == Convert.ToDateTime(currentdate).Date && (x.PChange < -0.5 || x.PChange > 0.5))
                             on s.Symbol equals sd.Symbol
                             group sd by s.MappingName into g
                             select new
@@ -88,6 +90,84 @@ namespace OptionChain.Controllers
 
             return sectorsResponses;
         }
+
+        [HttpGet("sector-stocks")]
+        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-07")
+        {
+            List<Sector> sectorsStocks = new List<Sector>();
+
+            var sectorWithStockName = await _optionDbContext.Sectors
+                .AsQueryable()
+                .GroupBy(g => new { g.MappingName, g.Symbol })
+                .Select(s => new
+                {
+                    Name = s.Key.MappingName,
+                    Symbol = s.Key.Symbol ?? ""
+                })
+            .ToListAsync();
+
+            var sectors = sectorWithStockName.GroupBy(g => g.Name).Select(s => s.Key).ToList();
+
+            foreach (var sector in sectors)
+            {
+                var stockNames = sectorWithStockName.Where(x => x.Name == sector?.ToString()).Select(s => s.Symbol).ToList();
+
+                var result = await _optionDbContext.StockData.AsQueryable()
+                                .Where(x => !string.IsNullOrEmpty(x.Symbol)
+                                    && x.EntryDate == Convert.ToDateTime(currentDate).Date
+                                    && stockNames.Contains(x.Symbol)).ToListAsync();
+
+                Sector mySector = new Sector
+                {
+                    Id = 0,
+                    Name = sector,
+                    Stocks = new List<SectorStocksResponse>() 
+                };
+
+                foreach (var stock in stockNames)
+                {
+                    SectorStocksResponse sectorStocksResponse = new SectorStocksResponse();
+
+                    var stockDetail = result.Where(x => x.Symbol == stock).OrderByDescending(x => x.Id).FirstOrDefault();
+
+                    if (stockDetail != null)
+                    {
+                        mySector.Stocks.Add(new SectorStocksResponse
+                        {
+                            Id = stockDetail.Id,
+                            Symbol = stockDetail.Symbol,
+                            PChange = stockDetail.PChange,
+                            LastPrice = stockDetail.LastPrice,
+                            Change = stockDetail.Change,
+                            DayHigh = stockDetail.DayHigh,
+                            DayLow = stockDetail.DayLow,
+                        });
+                    }
+                }
+                mySector.Stocks = mySector.Stocks.OrderByDescending(x => x.PChange).ToList();
+                sectorsStocks.Add(mySector);
+            }
+
+            return sectorsStocks;
+        }
+    }
+
+    public class Sector
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<SectorStocksResponse> Stocks { get; set; }
+    }
+
+    public class SectorStocksResponse
+    {
+        public long Id { get; set; }
+        public string? Symbol { get; set; }
+        public double? PChange { get; set; }
+        public double? LastPrice { get; set; }
+        public double? Change { get; set; }
+        public double? DayHigh { get; set; }
+        public double? DayLow { get; set; }
     }
 
     public class SectorsResponse
