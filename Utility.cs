@@ -4,13 +4,23 @@
     {
         public static void LogDetails(string message)
         {
-            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Logs")))
+            try
             {
-                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Logs"));
+                if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Logs")))
+                {
+                    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Logs"));
+                }
+
+                string fileName = DateTime.Now.Date.ToString("yyyy-MM-dd") + ".txt";
+
+                using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "Logs", fileName), append: true))
+                {
+                    writer.WriteLine(DateTime.Now + " | " + message);
+                }
             }
-            using (StreamWriter writer = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "Logs", DateTime.Now.Date.ToShortDateString() + ".txt"), append: true))
+            catch
             {
-                writer.WriteLine(DateTime.Now + " | " + message);
+
             }
         }
     }

@@ -1,12 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Quartz;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace OptionChain
 {
+    // Task Never Sleeps
+    public class MakeServerLive : IJob
+    {
+        private readonly ILogger<MakeServerLive> _logger;
+
+        public MakeServerLive(ILogger<MakeServerLive> logger)
+        {
+            _logger = logger;
+        }
+        public async Task Execute(IJobExecutionContext context)
+        {
+            _logger.LogInformation($"Execution call from {nameof(MakeServerLive)}  Started: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm:ss"));
+            Utility.LogDetails($"Execution call from {nameof(MakeServerLive)} Started: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm:ss"));
+
+            await Task.CompletedTask;
+        }
+    }
+
     public class FetchAndProcessJob : IJob
     {
         private readonly ILogger<FetchAndProcessJob> _logger;
@@ -25,17 +40,11 @@ namespace OptionChain
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            _logger.LogInformation("Started");
-
-            /*var optionsTask = GetNiftyOptions(context);
-           
-            var stockTask = GetStockData(context);
-            
-            await Task.WhenAll(optionsTask, stockTask);
-            */
+            _logger.LogInformation($"Execution call from {nameof(FetchAndProcessJob)} Started: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm:ss"));
+            Utility.LogDetails($"Execution call from {nameof(FetchAndProcessJob)} Started: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm:ss"));
 
             await GetNiftyOptions(context);
-            
+
             await GetStockData(context);
 
             await Task.CompletedTask;
@@ -85,7 +94,7 @@ namespace OptionChain
 
                 if (status == false && Convert.ToInt16(result) <= 5)
                 {
-                    await Task.Delay(2000);
+                    await Task.Delay(5000);
                     counter = result;
 
                     goto STEP;
@@ -111,7 +120,7 @@ namespace OptionChain
 
         private async Task<(bool, object, Root?)> GetNiftyOptionData(object counter, IJobExecutionContext context)
         {
-            Utility.LogDetails("Send quots reqest counter:" + counter + ", Time: " + context.FireTimeUtc.ToString("hh:mm"));
+            Utility.LogDetails("Send quots reqest counter:" + counter + ", Time: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm"));
 
             bool status = true;
             Root? optionData = null;
@@ -170,71 +179,83 @@ namespace OptionChain
                 {
                     await _optionDbContext.Database.BeginTransactionAsync();
 
-                    optionData.Records.Data?.ForEach(r =>
+                    if (optionData.Records != null 
+                        && optionData.Filtered != null 
+                        && optionData.Records.Data != null 
+                        && optionData.Filtered.Data != null)
                     {
-                        r.EntryDate = DateTime.Now.Date;
-                        r.Time = DateTime.Now.TimeOfDay;
-                    });
+                        optionData.Records.Data?.ForEach(r =>
+                        {
+                            r.EntryDate = DateTime.Now.Date;
+                            r.Time = DateTime.Now.TimeOfDay;
+                        });
 
-                    await _optionDbContext.AllOptionData.AddRangeAsync(optionData.Records.Data);
+                        await _optionDbContext.AllOptionData.AddRangeAsync(optionData.Records.Data);
 
-                    await _optionDbContext.SaveChangesAsync();
+                        await _optionDbContext.SaveChangesAsync();
 
-                    await _optionDbContext.CurrentExpiryOptionDaata.AddRangeAsync(new FilteredOptionData().ConvertToFilterOptionData(optionData.Filtered.Data));
+                        await _optionDbContext.CurrentExpiryOptionDaata.AddRangeAsync(new FilteredOptionData().ConvertToFilterOptionData(optionData.Filtered.Data));
 
-                    await _optionDbContext.SaveChangesAsync();
+                        await _optionDbContext.SaveChangesAsync();
 
-                    // Calculate the Summary
+                        // Calculate the Summary
 
-                    var currentCPEOIValue = optionData.Filtered.CE.TotOI - optionData.Filtered.PE.TotOI;
-                    var currentCPEVolValue = optionData.Filtered.CE.TotVol - optionData.Filtered.PE.TotVol;
+                        var currentCPEOIValue = optionData.Filtered.CE.TotOI - optionData.Filtered.PE.TotOI;
+                        var currentCPEVolValue = optionData.Filtered.CE.TotVol - optionData.Filtered.PE.TotVol;
 
-                    long previousCEPEOIId = 0;
+                        long previousCEPEOIId = 0;
 
-                    if (await _optionDbContext.Summary.AnyAsync())
+                        if (await _optionDbContext.Summary.AnyAsync())
+                        {
+                            previousCEPEOIId = await _optionDbContext.Summary.MaxAsync(m => m.Id);
+                        }
+
+                        var lastRecord = await _optionDbContext.Summary.Where(w => w.Id == previousCEPEOIId).FirstOrDefaultAsync();
+
+                        if (lastRecord != null)
+                        {
+                            previousCPEOIDiffValue = lastRecord.CEPEOIDiff;
+                            previousCPEColDiffValue = lastRecord.CEPEVolDiff;
+                        }
+
+                        double CEPEOIPreDiff = previousCPEOIDiffValue.HasValue ? ((currentCPEOIValue) - (previousCPEOIDiffValue.Value)) : 0;
+                        double CEPEVolPreDiff = previousCPEColDiffValue.HasValue ? ((currentCPEOIValue) - (previousCPEColDiffValue.Value)) : 0;
+
+                        Summary summary = new Summary
+                        {
+                            TotOICE = optionData.Filtered.CE.TotOI,
+                            TotVolCE = optionData.Filtered.CE.TotVol,
+
+                            TotOIPE = optionData.Filtered.PE.TotOI,
+                            TotVolPE = optionData.Filtered.PE.TotVol,
+
+                            CEPEOIDiff = optionData.Filtered.CE.TotOI - optionData.Filtered.PE.TotOI,
+                            CEPEVolDiff = optionData.Filtered.CE.TotVol - optionData.Filtered.PE.TotVol,
+
+                            CEPEOIPrevDiff = CEPEOIPreDiff,
+                            CEPEVolPrevDiff = CEPEVolPreDiff,
+
+                            Time = context.FireTimeUtc.ToLocalTime().TimeOfDay,
+                            EntryDate = DateTime.Now.Date
+                        };
+
+                        await _optionDbContext.Summary.AddAsync(summary);
+
+                        await _optionDbContext.SaveChangesAsync();
+
+                    }
+                    else
                     {
-                        previousCEPEOIId = await _optionDbContext.Summary.MaxAsync(m => m.Id);
+                        await _optionDbContext.Database.RollbackTransactionAsync();
                     }
 
-                    var lastRecord = await _optionDbContext.Summary.Where(w => w.Id == previousCEPEOIId).FirstOrDefaultAsync();
-
-                    if (lastRecord != null)
-                    {
-                        previousCPEOIDiffValue = lastRecord.CEPEOIDiff;
-                        previousCPEColDiffValue = lastRecord.CEPEVolDiff;
-                    }
-
-                    double CEPEOIPreDiff = previousCPEOIDiffValue.HasValue ? ((currentCPEOIValue) - (previousCPEOIDiffValue.Value)) : 0;
-                    double CEPEVolPreDiff = previousCPEColDiffValue.HasValue ? ((currentCPEOIValue) - (previousCPEColDiffValue.Value)) : 0;
-
-                    Summary summary = new Summary
-                    {
-                        TotOICE = optionData.Filtered.CE.TotOI,
-                        TotVolCE = optionData.Filtered.CE.TotVol,
-
-                        TotOIPE = optionData.Filtered.PE.TotOI,
-                        TotVolPE = optionData.Filtered.PE.TotVol,
-
-                        CEPEOIDiff = optionData.Filtered.CE.TotOI - optionData.Filtered.PE.TotOI,
-                        CEPEVolDiff = optionData.Filtered.CE.TotVol - optionData.Filtered.PE.TotVol,
-
-                        CEPEOIPrevDiff = CEPEOIPreDiff,
-                        CEPEVolPrevDiff = CEPEVolPreDiff,
-
-                        Time = context.FireTimeUtc.ToLocalTime().TimeOfDay,
-                        EntryDate = DateTime.Now.Date
-                    };
-
-                    await _optionDbContext.Summary.AddAsync(summary);
-
-                    await _optionDbContext.SaveChangesAsync();
-
-                    await _optionDbContext.Database.CommitTransactionAsync();                    
+                    await _optionDbContext.Database.CommitTransactionAsync();
 
                 }
             }
             catch (Exception ex)
             {
+                _logger.LogError($"DB Function Exception: {ex.Message}");
                 Utility.LogDetails($"DB Function Exception: {ex.Message}");
                 await _optionDbContext.Database.RollbackTransactionAsync();
                 return false;
@@ -245,7 +266,7 @@ namespace OptionChain
 
         private async Task<(bool, object, StockRoot)> GetStockData(object counter, IJobExecutionContext context)
         {
-            Utility.LogDetails("Send quots reqest counter:" + counter + ", Time: " + context.FireTimeUtc.ToString("hh:mm"));
+            Utility.LogDetails("Send quots request counter:" + counter + ", Time: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm"));
 
             bool status = true;
             StockRoot stockData = null;
@@ -302,7 +323,8 @@ namespace OptionChain
             {
                 _logger.LogInformation("Adding data to stock table.");
 
-                if (stockRoot != null)
+                if (stockRoot != null
+                    && stockRoot.Data != null)
                 {
                     await _optionDbContext.Database.BeginTransactionAsync();
 
@@ -310,7 +332,7 @@ namespace OptionChain
                     List<StockMetaData> stockMetaDatas = new List<StockMetaData>();
 
                     foreach (var (f, index) in stockRoot.Data.Select((f, index) => (f, index)))
-                    {                        
+                    {
                         var stockData = new StockData
                         {
                             Priority = f.Priority,
@@ -371,10 +393,6 @@ namespace OptionChain
                     }
 
                     await _optionDbContext.StockData.AddRangeAsync(stockDatas);
-
-                    //await _optionDbContext.StockMetaData.AddRangeAsync(stockMetaDatas);
-
-                    //await _optionDbContext.SaveChangesAsync();
 
                     // Advances data
 
