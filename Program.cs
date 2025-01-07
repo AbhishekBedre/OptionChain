@@ -24,10 +24,18 @@ Console.WriteLine("Adding Quartz settings");
 
 builder.Services.AddQuartz(q =>
 {
+    //var firstEntry = JobKey.Create("FirstEntry");
     var firstSession = JobKey.Create("FirstSession");
     var midSession = JobKey.Create("MidSession");
     var lastSession = JobKey.Create("LastSession");
     var finalCall = JobKey.Create("FinalCall");
+
+    /*q.AddJob<FetchAndProcessJob>(firstEntry)
+        .AddTrigger(trigger =>
+        {
+            trigger.ForJob(firstEntry)
+                .WithCronSchedule("0 17 9 ? * MON-FRI");
+        });*/
 
     q.AddJob<FetchAndProcessJob>(firstSession)
         .AddTrigger(trigger =>
