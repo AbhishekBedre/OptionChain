@@ -43,9 +43,11 @@ namespace OptionChain
             _logger.LogInformation($"Execution call from {nameof(FetchAndProcessJob)} Started: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm:ss"));
             Utility.LogDetails($"Execution call from {nameof(FetchAndProcessJob)} Started: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm:ss"));
 
-            await GetNiftyOptions(context);
+            Task niftyTask = GetNiftyOptions(context);
 
-            await GetStockData(context);
+            Task stockTask = GetStockData(context);
+
+            await Task.WhenAll(niftyTask, stockTask);
 
             await Task.CompletedTask;
         }
@@ -53,55 +55,53 @@ namespace OptionChain
         public async Task GetStockData(IJobExecutionContext context)
         {
 
-        STEP:
+            STEP:
 
             try
             {
                 (bool status, object result, StockRoot StockRoot) = await GetStockData(stockCounter, context);
 
-                if (status == false && Convert.ToInt16(result) <= 5)
+                if (status == false && Convert.ToInt16(result) <= 3)
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(2000);
                     stockCounter = result;
 
                     goto STEP;
                 }
 
-                if (Convert.ToInt32(stockCounter) <= 5)
+                if (Convert.ToInt32(stockCounter) <= 3)
                 {
                     stockCounter = 0;
-                    // Make a Db Call
+                    // Make a Db Call                    
                     await StoreStockDataInTable(StockRoot, context);
                 }
             }
             catch (Exception ex)
             {
-
                 _logger.LogInformation($"Multiple tried for stock data but not succeed. counter: {stockCounter}");
                 stockCounter = 0;
 
-                Utility.LogDetails(ex.Message);
+                Utility.LogDetails($"{nameof(GetStockData) } Exception: {ex.Message}");
             }
         }
 
         public async Task GetNiftyOptions(IJobExecutionContext context)
         {
-        STEP:
+            STEP:
 
             try
             {
                 (bool status, object result, Root? optionData) = await GetNiftyOptionData(counter, context);
 
-                if (status == false && Convert.ToInt16(result) <= 5)
+                if (status == false && Convert.ToInt16(result) <= 3)
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(2000);
                     counter = result;
 
                     goto STEP;
-
                 }
 
-                if (Convert.ToInt32(counter) <= 5)
+                if (Convert.ToInt32(counter) <= 3)
                 {
                     counter = 0;
                     // Make a Db Call
@@ -113,57 +113,63 @@ namespace OptionChain
                 _logger.LogInformation($"Multiple tried nifty options but not succeed. counter: {counter}");
                 counter = 0;
 
-                Utility.LogDetails(ex.Message);
+                Utility.LogDetails($"{nameof(GetNiftyOptions) } Exception: {ex.Message}");
             }
         }
 
 
         private async Task<(bool, object, Root?)> GetNiftyOptionData(object counter, IJobExecutionContext context)
         {
-            Utility.LogDetails("Send quots reqest counter:" + counter + ", Time: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm"));
+            Utility.LogDetails($"{nameof(GetNiftyOptionData)} -> Send quots reqest counter:" + counter + ", Time: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm"));
 
             bool status = true;
             Root? optionData = null;
 
             _logger.LogInformation($"Exection time: {counter}");
 
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Accept", "*/*");
-            client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.43.0");
-            client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-
-            string url = "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY";
-
-            try
-            {
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
+            using (HttpClient client = new HttpClient()) {
+                client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.43.0");
+                client.DefaultRequestHeaders.Add("Accept", "*/*");
+                client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                client.DefaultRequestHeaders.Add("referer", "https://www.nseindia.com/option-chain");
+                client.DefaultRequestHeaders.Add("sec-ch-ua-platform", "Windows");
+                client.DefaultRequestHeaders.Add("sec-fetch-mode", "cors");
+                client.DefaultRequestHeaders.Add("sec-fetch-site", "same-origin");
+                client.DefaultRequestHeaders.Add("cookie", "_abck=B2CA542D4B41013155829F45D5CBA53E~-1~YAAQn3UsMeNwm0WUAQAAQy65RQ1mSjkar9I3HsD4qRDgNXRGY15APTnhGm4Zm1Rs/OcKGepQoTN0TtIFyk0S/Fqj+75GgvgefCbanjUSNxVVEmfnKLS8wrJF/jo5AsJpFHMNKcHfCYYTfB9aCJA4e+dxxY+DKNTekJw83qbQudp50O+4/zsTGNiDoJ534KhgxDIw0wHAy9VoRjwGdM/z5hQPcx+UL+jaLgvfUN+lyKzUeuieFcbeH8dZYqA9a3mY5tDTHxYA69BX6iSa0wBffaVXQTR3E1ZVZDAJl6T1qXr0b1VEHBCJIjO59zr1YS+zWmlj6wA1sHS/32E1m2GLVyG1967IPQKrBV4PEhPJyqx3t4KJklUjkdFk8vU4dWbFhEm/nBDwUSUnsi3lyPFK9IPSMiNhpljMwAZHsrCI7tajv3Yvq/I/Mn3+~-1~-1~-1; ak_bmsc=3D1063340016099859208A8E2424381C~000000000000000000000000000000~YAAQn3UsMeRwm0WUAQAAQy65RRqaeYfi3x/vWm0cUXqF7kAyB6iLGn+oA7r6XfSzcxKA2ksmaa2ld9j6AX4U7NodtNdg8CmlvUsUMA99Kf0r3IRF8qJH3bdqlAIVu6nwVEyiBQDm/SiSneOflUIx79/dDnMwvZ2xkUiBM1kKGIiD0245UDUNkP7uR867GGCcMgENTg5BRdndBapppX6Jq8aw/QzX36YYol8PaorjPOSV4KJ6F7aojE7K2odFrStGakppEUeFM9Cpgh6JYSfiz2lGLjtk/pd5FZtVzLNhwaeXVt+/cLVp+Ucuy0NC203hcdcyWv9ukSq5anoOaTT3uu+JE1n/DI9huZ3V; bm_sv=344BE8C60C7B1AE41C4E93D555D1214C~YAAQvIosMZ7jlUSUAQAARyrARRqyjK3VlOsF0cDME1Bcdxn7krWE29RZV7Rfxbo1vkRihe6DYRL6upiKlJpFuT2xiRDqcKULAZz7LRHCb15UXAPRFUAllmnF9+Ae5Smm2IK5Yyqh8Hg1VnnrgEOLkkyr2DUU838OBw1I/3EdTCCJB7HarMKncGS8T8TIrtDfJVn83dkZwBgpyMbO1AyAPwWMvJcEQTwUGgtti2CZ2r41L0DFXsQKgk2ZtrTxV4zmW6M=~1; bm_sz=D3E7C40E38ED349B57BAEF68D48E6A25~YAAQn3UsMeZwm0WUAQAAQy65RRpOxNl0ezDkfr4Y9qYG+350EqBHTc4Bnohh9xpRqiL6s3npH1/vlwnezfV7MfWbPNy3siCT6RMLAgkItE9rRO0kE4WsS0PTsMHb7ehZTO1P/OCam4yvNEsPIGWlt7JFix8BheqYxePRkCsj+6yY+GjF+i0+zJYzXHlX581bNE/MKuSo1MzibzoRNdEBZF50qKHk67FDkaikoKfadqLQD7s9kjzAvwmmOeIQ23U5TV7TMzO2fQnoew91JcCZ1ujXRzojtKcwbj3BIK28UfRg+KE+WMuv3PXSGWTiQoq1tekS34B3zU4TZbUEAT63nw0hpRIwTqcid52/tQ==~3552309~3160117; nseappid=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGkubnNlIiwiYXVkIjoiYXBpLm5zZSIsImlhdCI6MTczNjMzNjU1MCwiZXhwIjoxNzM2MzQzNzUwfQ.1Or4NousiqpNrZCQ6pWTICHekupQkqPvq9RtpMFXt98; nsit=kC7PFCY3kcbjl5B3NHJ-bPVB");
+    
+                string url = "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY";
+    
+                try
                 {
-                    string jsonContent = await response.Content.ReadAsStringAsync();
-
-                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    optionData = JsonSerializer.Deserialize<Root>(jsonContent, options);
-
-                    if (optionData == null || optionData.Filtered == null || optionData.Records == null)
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
                     {
-                        _logger.LogInformation("Failed to parse JSON content.");
-                        Utility.LogDetails("Failed to parse JSON content.");
-                        throw new Exception("Failed to parse JSON content.");
+                        string jsonContent = await response.Content.ReadAsStringAsync();
+    
+                        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                        optionData = JsonSerializer.Deserialize<Root>(jsonContent, options);
+    
+                        if (optionData == null || optionData.Filtered == null || optionData.Records == null)
+                        {
+                            _logger.LogInformation("Failed to parse JSON content.");
+                            Utility.LogDetails($"{nameof(GetNiftyOptionData)} -> Failed to parse JSON content.");
+                            throw new Exception("Failed to parse JSON content.");
+                        }
+                    }
+                    else
+                    {                        
+                        Utility.LogDetails($"{nameof(GetNiftyOptionData)} -> HTTP Error: {response.StatusCode}.");
+                        _logger.LogInformation($"HTTP Error: {response.StatusCode}");
+                        throw new Exception($"Http Error: {response.StatusCode}");
                     }
                 }
-                else
-                {
-                    Utility.LogDetails($"HTTP Error: {response.StatusCode}");
-                    _logger.LogInformation($"HTTP Error: {response.StatusCode}");
-                    throw new Exception($"Http Error: {response.StatusCode}");
+                catch (Exception ex)
+                {                    
+                    Utility.LogDetails($"{nameof(GetNiftyOptionData)} -> Exception: {ex.Message}.");
+                    _logger.LogInformation($"Exception: {ex.Message}");
+                    counter = Convert.ToInt16(counter) + 1;
+                    status = false;
                 }
-            }
-            catch (Exception ex)
-            {
-                Utility.LogDetails($"Exception: {ex.Message}");
-                _logger.LogInformation($"Exception: {ex.Message}");
-                counter = Convert.ToInt16(counter) + 1;
-                status = false;
             }
 
             return (status, counter, optionData);
@@ -255,8 +261,8 @@ namespace OptionChain
             }
             catch (Exception ex)
             {
-                _logger.LogError($"DB Function Exception: {ex.Message}");
-                Utility.LogDetails($"DB Function Exception: {ex.Message}");
+                _logger.LogError($"DB Function Exception: {ex.Message}");                
+                Utility.LogDetails($"{nameof(StoreOptionDataInTable)} -> Exception: {ex.Message}.");
                 await _optionDbContext.Database.RollbackTransactionAsync();
                 return false;
             }
@@ -266,52 +272,57 @@ namespace OptionChain
 
         private async Task<(bool, object, StockRoot)> GetStockData(object counter, IJobExecutionContext context)
         {
-            Utility.LogDetails("Send quots request counter:" + counter + ", Time: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm"));
+            Utility.LogDetails($"{nameof(GetStockData)} -> Send quots reqest counter:" + counter + ", Time: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm"));
 
             bool status = true;
             StockRoot stockData = null;
 
             _logger.LogInformation($"Exection time: {counter}");
 
-            using var client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(120);
-            client.DefaultRequestHeaders.Add("Accept", "*/*");
-            client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.43.0");
-            client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-            //client.DefaultRequestHeaders.Add("Cookie", "_abck=BC0AD507C49FDBB22F38C680380003C3~-1~YAAQFv7UF8Uu99GTAQAAbPlEMg1c2ejml1MS0fAnmGS3JkYKEEkUReDmmNvp3+TT3kyaLlHTM/h4Wk+qeIwwSGpLXJHnSmfoj2vbLrBfMD+IIfp/g7SxA4eDJ5oskq7PubIR39FiVNs/mqACWkMmqQo2FzR8/bXeBaDAYCI8QUrY7500Qae7Hy7M7w+BXvDjucJm1I5lkGlNH08oobF9gUkpSCgp0pkyx5oRTz5EeGWTCqEZy3gUbktIXN3Jyv5gq4lvbbpN8kjKdZ/mERSp6Ku0O7YE/3X2L2A+NmbvkeaT3kDkOTQDRuH2aAKe1+FudrMXmAzl0pcANBVZ0NFixUrM5DXMYFsSAknLE4Ta2RjQvxe3AtGBBqg+6sIOZwiiMh096XBHGjMmw5PsFQUiU5e3pZd4CrUcVZX/cuR+cYl1cNSXkjQBu365~-1~-1~-1; ak_bmsc=C8715B2C1DA1EF610EE202E7ACECBCF0~000000000000000000000000000000~YAAQFv7UF8Yu99GTAQAAbPlEMho+GKzEIDLyoHQoqVOq4sbpOPowS3l5BCHAcqyZf7vUm0XYi1iwTb67kR1AcPB6N5wC4WmjMO3clK6WvnqBY5HtuduPRYFaKh47QPZLn/PgHXamsYibin+iKcWjYhmCf+rTFdXi5PdusjPz5+7A3eeh1Qvml9RZ3pT6OTMhjO8QfSDf8dC1edWI1E6/lr5Npoc31cEFnTfdeVXHlOy9bmDjfYcSLeosKjl0c4qMUSuRTXmUWbolESqwoc1QZ7w2JgPZlv2YIiLQQcGSeGLTgcdnfLfOtLGu7RFo/5UJqhs3CGyJPdL7ij+vtR+rEIknD7AUq6e22aUafQ0=; bm_sv=34F43D4AEF5F064A63B9A5ACFAB1DF85~YAAQFv7UF/Jl99GTAQAA3HZMMhpLfrPAMdANRumRq60hMZ7v5WWKG9CnXbvil0DBJ5T4Vaef9od6Krly9cM/1mCmU2X21yGW+TfebMuxMV07EbYWXyaB639sAGB38q6JtE1zLScxvR1qmDAIChxfeEU9FDOQXVYXqnksCkOlP/WHPTQ6Cp0PkM+QF4fqCCgnLp31L3WN/HAwtL0wxp2nx83CJU+Bd0UOebPvLzDK1J3a7a/W5odU6JgegnL8BXjTW5BW~1; bm_sz=4F242C6A1EF8F6F2551345A8B951D5C0~YAAQFv7UF8cu99GTAQAAbPlEMho5OasKj4T1EJJDuXD5YicU3cvlIoEjpr0LH3bLPJ48g2+qQq1gDhrGqyvolYe7SeBSlYpoX4tCnXsMet/vHjVG3ffb0OohO4aVBLrc6oDPHb3/IYNQKLFjQUU2N1FFYY+BH2qDx/gOJBsY+22pjxWShV4hHz9HyslRmavlKXS8+EXbiSBYVxxMzZMN1/emt8GG80VVxgDQxRvwncLoBRSgSf5t2lyiRu35AqhyJC+dKnziMd4RbRqEatb/z8y1+LUfMEs1WzT7Ywfj0DXvCJbJZZW9qLaAn5OQiTBkynDwulf549h0c9Cbyi6H0G9z5a75YCnTifil29ra~3551282~3486007");
-
-            string url = "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY 50";
-
-            try
+            using(HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
+                client.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.43.0");
+                client.DefaultRequestHeaders.Add("Accept", "*/*");
+                client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                client.DefaultRequestHeaders.Add("referer", "https://www.nseindia.com/option-chain");
+                client.DefaultRequestHeaders.Add("sec-ch-ua-platform", "Windows");
+                client.DefaultRequestHeaders.Add("sec-fetch-mode", "cors");
+                client.DefaultRequestHeaders.Add("sec-fetch-site", "same-origin");
+                client.DefaultRequestHeaders.Add("cookie", "_abck=B2CA542D4B41013155829F45D5CBA53E~-1~YAAQn3UsMeNwm0WUAQAAQy65RQ1mSjkar9I3HsD4qRDgNXRGY15APTnhGm4Zm1Rs/OcKGepQoTN0TtIFyk0S/Fqj+75GgvgefCbanjUSNxVVEmfnKLS8wrJF/jo5AsJpFHMNKcHfCYYTfB9aCJA4e+dxxY+DKNTekJw83qbQudp50O+4/zsTGNiDoJ534KhgxDIw0wHAy9VoRjwGdM/z5hQPcx+UL+jaLgvfUN+lyKzUeuieFcbeH8dZYqA9a3mY5tDTHxYA69BX6iSa0wBffaVXQTR3E1ZVZDAJl6T1qXr0b1VEHBCJIjO59zr1YS+zWmlj6wA1sHS/32E1m2GLVyG1967IPQKrBV4PEhPJyqx3t4KJklUjkdFk8vU4dWbFhEm/nBDwUSUnsi3lyPFK9IPSMiNhpljMwAZHsrCI7tajv3Yvq/I/Mn3+~-1~-1~-1; ak_bmsc=3D1063340016099859208A8E2424381C~000000000000000000000000000000~YAAQn3UsMeRwm0WUAQAAQy65RRqaeYfi3x/vWm0cUXqF7kAyB6iLGn+oA7r6XfSzcxKA2ksmaa2ld9j6AX4U7NodtNdg8CmlvUsUMA99Kf0r3IRF8qJH3bdqlAIVu6nwVEyiBQDm/SiSneOflUIx79/dDnMwvZ2xkUiBM1kKGIiD0245UDUNkP7uR867GGCcMgENTg5BRdndBapppX6Jq8aw/QzX36YYol8PaorjPOSV4KJ6F7aojE7K2odFrStGakppEUeFM9Cpgh6JYSfiz2lGLjtk/pd5FZtVzLNhwaeXVt+/cLVp+Ucuy0NC203hcdcyWv9ukSq5anoOaTT3uu+JE1n/DI9huZ3V; bm_sv=344BE8C60C7B1AE41C4E93D555D1214C~YAAQvIosMZ7jlUSUAQAARyrARRqyjK3VlOsF0cDME1Bcdxn7krWE29RZV7Rfxbo1vkRihe6DYRL6upiKlJpFuT2xiRDqcKULAZz7LRHCb15UXAPRFUAllmnF9+Ae5Smm2IK5Yyqh8Hg1VnnrgEOLkkyr2DUU838OBw1I/3EdTCCJB7HarMKncGS8T8TIrtDfJVn83dkZwBgpyMbO1AyAPwWMvJcEQTwUGgtti2CZ2r41L0DFXsQKgk2ZtrTxV4zmW6M=~1; bm_sz=D3E7C40E38ED349B57BAEF68D48E6A25~YAAQn3UsMeZwm0WUAQAAQy65RRpOxNl0ezDkfr4Y9qYG+350EqBHTc4Bnohh9xpRqiL6s3npH1/vlwnezfV7MfWbPNy3siCT6RMLAgkItE9rRO0kE4WsS0PTsMHb7ehZTO1P/OCam4yvNEsPIGWlt7JFix8BheqYxePRkCsj+6yY+GjF+i0+zJYzXHlX581bNE/MKuSo1MzibzoRNdEBZF50qKHk67FDkaikoKfadqLQD7s9kjzAvwmmOeIQ23U5TV7TMzO2fQnoew91JcCZ1ujXRzojtKcwbj3BIK28UfRg+KE+WMuv3PXSGWTiQoq1tekS34B3zU4TZbUEAT63nw0hpRIwTqcid52/tQ==~3552309~3160117; nseappid=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcGkubnNlIiwiYXVkIjoiYXBpLm5zZSIsImlhdCI6MTczNjMzNjU1MCwiZXhwIjoxNzM2MzQzNzUwfQ.1Or4NousiqpNrZCQ6pWTICHekupQkqPvq9RtpMFXt98; nsit=kC7PFCY3kcbjl5B3NHJ-bPVB");
+
+                string url = "https://www.nseindia.com/api/equity-stockIndices?index=NIFTY 50";
+    
+                try
                 {
-                    string jsonContent = await response.Content.ReadAsStringAsync();
-
-                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    stockData = JsonSerializer.Deserialize<StockRoot>(jsonContent, options);
-
-                    if (stockData == null || stockData.Data == null)
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
                     {
-                        _logger.LogInformation("Failed to parse JSON content.");
-                        Utility.LogDetails("Failed to parse JSON content.");
-                        throw new Exception("Failed to parse JSON content.");
+                        string jsonContent = await response.Content.ReadAsStringAsync();
+    
+                        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                        stockData = JsonSerializer.Deserialize<StockRoot>(jsonContent, options);
+    
+                        if (stockData == null || stockData.Data == null)
+                        {
+                            _logger.LogInformation("Failed to parse JSON content.");                            
+                            Utility.LogDetails($"{nameof(GetStockData)} -> Failed to parse JSON content.");
+                            throw new Exception("Failed to parse JSON content.");
+                        }
+                    }
+                    else
+                    {                        
+                        Utility.LogDetails($"{nameof(GetStockData)} -> HTTP Error: {response.StatusCode}.");
+                        _logger.LogInformation($"HTTP Error: {response.StatusCode}");
+                        throw new Exception($"Http Error: {response.StatusCode}");
                     }
                 }
-                else
-                {
-                    Utility.LogDetails($"HTTP Error: {response.StatusCode}");
-                    _logger.LogInformation($"HTTP Error: {response.StatusCode}");
-                    throw new Exception($"Http Error: {response.StatusCode}");
+                catch (Exception ex)
+                {                    
+                    Utility.LogDetails($"{nameof(GetStockData)} -> Exception: {ex.Message}.");
+                    _logger.LogInformation($"Exception: {ex.Message}");
+                    counter = Convert.ToInt16(counter) + 1;
+                    status = false;
                 }
-            }
-            catch (Exception ex)
-            {
-                Utility.LogDetails($"Exception: {ex.Message}");
-                _logger.LogInformation($"Exception: {ex.Message}");
-                counter = Convert.ToInt16(counter) + 1;
-                status = false;
             }
 
             return (status, counter, stockData);
@@ -461,8 +472,8 @@ namespace OptionChain
                 }
             }
             catch (Exception ex)
-            {
-                Utility.LogDetails($"DB Function Exception: {ex.Message}");
+            {                
+                Utility.LogDetails($"{nameof(StoreStockDataInTable)} -> Exception: {ex.Message}.");
                 await _optionDbContext.Database.RollbackTransactionAsync();
                 return false;
             }
