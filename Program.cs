@@ -24,13 +24,13 @@ Console.WriteLine("Adding Quartz settings");
 
 builder.Services.AddQuartz(q =>
 {
-    var makeApplicationLive = JobKey.Create("FirstEntry");
+    /*var makeApplicationLive = JobKey.Create("FirstEntry");
 
     q.AddJob<MakeServerLive>(makeApplicationLive)
         .AddTrigger(trigger =>
         {
             trigger.ForJob(makeApplicationLive).WithSimpleSchedule(x => x.WithIntervalInSeconds(30).RepeatForever());
-        });
+        });*/
 
     var firstSession = JobKey.Create("FirstSession");
     var midSession = JobKey.Create("MidSession");
