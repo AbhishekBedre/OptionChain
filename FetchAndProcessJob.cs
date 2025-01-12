@@ -38,6 +38,7 @@ namespace OptionChain
             _optionDbContext = optionDbContext;
             _configuration = configuration;
         }
+
         public async Task Execute(IJobExecutionContext context)
         {
             _logger.LogInformation($"Execution call from {nameof(FetchAndProcessJob)} Started: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm:ss"));

@@ -50,6 +50,201 @@ namespace OptionChain.Migrations
                     b.ToTable("Advance");
                 });
 
+            modelBuilder.Entity("OptionChain.BankExpiryOptionData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<double>("AskPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int>("AskQty")
+                        .HasColumnType("int");
+
+                    b.Property<double>("BidPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int>("BidQty")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Change")
+                        .HasColumnType("float");
+
+                    b.Property<double>("ChangeInOpenInterest")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExpiryDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Identifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("ImpliedVolatility")
+                        .HasColumnType("float");
+
+                    b.Property<double>("LastPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double>("OpenInterest")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PChange")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PChangeInOpenInterest")
+                        .HasColumnType("float");
+
+                    b.Property<double>("StrikePrice")
+                        .HasColumnType("float");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
+                    b.Property<int>("TotalBuyQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalSellQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalTradedVolume")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Underlying")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("UnderlyingValue")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankExpiryOptionData");
+                });
+
+            modelBuilder.Entity("OptionChain.BankOptionData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<double>("AskPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int>("AskQty")
+                        .HasColumnType("int");
+
+                    b.Property<double>("BidPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int>("BidQty")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Change")
+                        .HasColumnType("float");
+
+                    b.Property<double>("ChangeInOpenInterest")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExpiryDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Identifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("ImpliedVolatility")
+                        .HasColumnType("float");
+
+                    b.Property<double>("LastPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double>("OpenInterest")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PChange")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PChangeInOpenInterest")
+                        .HasColumnType("float");
+
+                    b.Property<double>("StrikePrice")
+                        .HasColumnType("float");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
+                    b.Property<int>("TotalBuyQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalSellQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalTradedVolume")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Underlying")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("UnderlyingValue")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankOptionData");
+                });
+
+            modelBuilder.Entity("OptionChain.BankSummary", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<double>("CEPEOIDiff")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CEPEOIPrevDiff")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CEPEVolDiff")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CEPEVolPrevDiff")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
+                    b.Property<double>("TotOICE")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TotOIPE")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TotVolCE")
+                        .HasColumnType("float");
+
+                    b.Property<double>("TotVolPE")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankSummary");
+                });
+
             modelBuilder.Entity("OptionChain.FilteredOptionData", b =>
                 {
                     b.Property<long>("Id")
@@ -222,6 +417,25 @@ namespace OptionChain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sectors");
+                });
+
+            modelBuilder.Entity("OptionChain.Sessions", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<string>("Cookie")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("OptionChain.StockData", b =>

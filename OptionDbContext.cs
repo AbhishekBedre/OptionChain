@@ -11,6 +11,12 @@ namespace OptionChain
         public DbSet<StockData> StockData { get; set; }
         public DbSet<StockMetaData> StockMetaData { get; set; }
         public DbSet<Sector> Sectors { get; set; }
+        public DbSet<Sessions> Sessions { get; set; }
+
+        // Bank NIFTY Options
+        public DbSet<BankOptionData> BankOptionData { get; set; }
+        public DbSet<BankExpiryOptionData> BankExpiryOptionData { get; set; }
+        public DbSet<BankSummary> BankSummary { get; set; }
 
         // Constructor for DbContext
         public OptionDbContext(DbContextOptions<OptionDbContext> options)
@@ -28,6 +34,15 @@ namespace OptionChain
                 .HasKey(s => s.Id); //PK
 
             modelBuilder.Entity<Summary>()
+                .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<BankOptionData>()
+                .HasKey(o => o.Id); // OptionData Primary Key
+
+            modelBuilder.Entity<BankExpiryOptionData>()
+                .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<BankSummary>()
                 .HasKey(s => s.Id); //PK
 
             modelBuilder.Entity<Advance>()
