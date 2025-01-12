@@ -312,7 +312,10 @@ const chart04 = () => {
             },
             tooltip: {
                 x: {
-                    show: false,
+                    formatter: function (val) {
+                        return val;
+                    },
+                    show: true
                 },
                 y: {
                     formatter: function (val) {
@@ -348,8 +351,18 @@ const chart04 = () => {
                 fontFamily: "Satoshi, sans-serif",
                 type: "bar",
                 height: 350,
+                zoom: {
+                    enabled: true,         // Activates zoom feature
+                    type: 'y',             // Zoom on the x-axis (can also be 'y' or 'xy')
+                },
                 toolbar: {
                     show: true,
+                    tools: {
+                      zoom: true,          // Enables zoom
+                      zoomin: true,        // Adds zoom-in button
+                      zoomout: true,       // Adds zoom-out button
+                      reset: true,         // Adds reset zoom button
+                  },
                 },
             },
             plotOptions: {
@@ -390,10 +403,10 @@ const chart04 = () => {
                 axisTicks: {
                     show: true,
                 },
-                tickAmount: Math.floor(response.length / 2), // Show fewer ticks
+                tickAmount: Math.floor(response.length / 3), // Show fewer ticks
                 labels: {
                     show: true,
-                    rotate: -90, // Rotate labels to avoid overlap
+                    rotate: -45, // Rotate labels to avoid overlap
                     style: {
                         fontSize: "12px", // Adjust font size
                     },
@@ -420,12 +433,16 @@ const chart04 = () => {
             },
             tooltip: {
                 x: {
-                    show: false,
+                    formatter: function (val) {
+                      return val;
+                    },
+                    show: true
                 },
                 y: {
                     formatter: function (val) {
                         return val;
                     },
+                    show:true
                 },
             },
         };

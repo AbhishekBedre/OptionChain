@@ -67,7 +67,7 @@
                 if(data[i].pChange < 0)
                   className = "text-meta-1";
 
-                let sectorName = data[i].name + " <span class="+ className +">(" + data[i].pChange + "%)</span>";
+                let sectorName = data[i].name + " - <span class="+ className +">(" + data[i].pChange + "%)</span>";
 
                 var mainDiv = `<div class="col-span-12 xl:col-span-6 deleteToRefresh">                      
                       <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -93,7 +93,7 @@
                                       <p class="font-medium">Change</p>
                                   </div>-->
                                   <div class="col-span-2 flex items-center">
-                                      <p class="font-medium">%</p>
+                                      <p class="font-medium">% Change</p>
                                   </div>
                                   <div class="col-span-1 flex items-center">
                                       <p class="font-medium">T Fact</p>
@@ -102,16 +102,18 @@
 
                 for(var j=0;j<data[i].stocks.length;j++) {
 
-                    var stockClassName = "text-meta-3";
+                    var stockClassName = "text-success";
                     if(data[i].pChange < 0)
-                      stockClassName = "text-meta-1";
+                      stockClassName = "text-danger";
 
                       stockContent += `
                               <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
                                   <div class="col-span-3 flex items-center">
                                       <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
                                           <p class="text-sm font-medium text-black dark:text-white">
-                                              ${data[i].stocks[j].symbol}
+                                              <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="blank" href="https://www.tradingview.com/chart/?symbol=${data[i].stocks[j].symbol}&interval=5&theme=dark">
+                                                ${data[i].stocks[j].symbol}
+                                              </a>
                                           </p>
                                       </div>
                                   </div>
@@ -119,10 +121,10 @@
                                       <p class="text-sm font-medium text-black dark:text-white">${data[i].stocks[j].lastPrice}</p>
                                   </div>
                                   <!--<div class="col-span-1 flex items-center">
-                                      <p class="text-sm font-medium text-black dark:text-white">${data[i].stocks[j].change}</p>
+                                      <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">${data[i].stocks[j].change}</p>
                                   </div>-->
                                   <div class="col-span-2 flex items-center">
-                                      <p class="text-sm font-medium ${stockClassName}">${data[i].stocks[j].pChange}</p>
+                                      <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">${data[i].stocks[j].pChange}</p>
                                   </div>
                                   <div class="col-span-1 flex items-center">
                                       <p class="text-sm font-medium text-meta-3">6.85</p>
@@ -200,10 +202,12 @@
         // Check every minute if the page should reload
         setInterval(autoRefresh, 5 * 60 * 1000);
 
+        localStorage.setItem("darkMode", true);
+
     </script>
 
   <body
-    x-data="{ page: 'analytics', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-data="{ page: 'analytics', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': true, 'scrollTop': false }"
     x-init="
          darkMode = JSON.parse(localStorage.getItem('darkMode'));
          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
@@ -225,10 +229,10 @@
       <aside
   :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
   class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
-  @click.outside="sidebarToggle = false"
->
+  @click.outside="sidebarToggle = false">
+  
   <!-- SIDEBAR HEADER -->
-  <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+  <div class="flex items-center justify-between gap-2 px-6 lg:py-6.5">
       <a href="index.html">
           <img src="src/images/logo/logo-icon.svg" alt="Logo" style="">
           <h1 style="
@@ -250,7 +254,7 @@
   >
     <!-- Sidebar Menu -->
     <nav
-      class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
+      class="lg:px-6"
       x-data="{selected: $persist('Dashboard')}"
     >
       <!-- Menu Group -->
@@ -2222,6 +2226,90 @@
         <main>
           <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <div class="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
+
+                <!-- ====== Data Stats Start -->
+                <div class="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+                  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
+                      <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
+                          <div>
+                              <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                  $4,350
+                              </h4>
+                              <p class="text-sm font-medium">Unique Visitors</p>
+                          </div>
+                          <div class="flex items-center gap-1">
+                              <svg width="19"
+                                   height="19"
+                                   viewBox="0 0 19 19"
+                                   fill="none"
+                                   xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                        fill="#10B981" />
+                              </svg>
+                              <span class="text-sm font-medium text-meta-3">18%</span>
+                          </div>
+                      </div>
+                      <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
+                          <div>
+                              <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                  55.9K
+                              </h4>
+                              <p class="text-sm font-medium">Total Pageviews</p>
+                          </div>
+                          <div class="flex items-center gap-1">
+                              <svg width="19"
+                                   height="19"
+                                   viewBox="0 0 19 19"
+                                   fill="none"
+                                   xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                        fill="#10B981" />
+                              </svg>
+                              <span class="text-sm font-medium text-meta-3">25%</span>
+                          </div>
+                      </div>
+                      <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r">
+                          <div>
+                              <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                  54%
+                              </h4>
+                              <p class="text-sm font-medium">Bounce Rate</p>
+                          </div>
+                          <div class="flex items-center gap-1">
+                              <svg width="19"
+                                   height="19"
+                                   viewBox="0 0 19 19"
+                                   fill="none"
+                                   xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
+                                        fill="#F0950C" />
+                              </svg>
+                              <span class="text-sm font-medium text-meta-8">7%</span>
+                          </div>
+                      </div>
+                      <div class="flex items-center justify-center gap-2">
+                          <div>
+                              <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                  2m 56s
+                              </h4>
+                              <p class="text-sm">Visit Duration</p>
+                          </div>
+                          <div class="flex items-center gap-1">
+                              <svg width="19"
+                                   height="19"
+                                   viewBox="0 0 19 19"
+                                   fill="none"
+                                   xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                        fill="#10B981" />
+                              </svg>
+                              <span class="text-meta-3">12%</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!-- ====== Data Stats End -->
+
                   <!-- ====== Chart Four Start -->
                   <div class="col-span-12 flex flex-wrap items-center gap-3">
                       <!-- Datepicker built with flatpickr -->
@@ -2320,88 +2408,7 @@
                   </div>
 
                   <!-- ====== Sector Chart End -->
-                  <!-- ====== Data Stats Start -->
-                  <div class="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
-                      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
-                          <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
-                              <div>
-                                  <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
-                                      $4,350
-                                  </h4>
-                                  <p class="text-sm font-medium">Unique Visitors</p>
-                              </div>
-                              <div class="flex items-center gap-1">
-                                  <svg width="19"
-                                       height="19"
-                                       viewBox="0 0 19 19"
-                                       fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                            fill="#10B981" />
-                                  </svg>
-                                  <span class="text-sm font-medium text-meta-3">18%</span>
-                              </div>
-                          </div>
-                          <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
-                              <div>
-                                  <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
-                                      55.9K
-                                  </h4>
-                                  <p class="text-sm font-medium">Total Pageviews</p>
-                              </div>
-                              <div class="flex items-center gap-1">
-                                  <svg width="19"
-                                       height="19"
-                                       viewBox="0 0 19 19"
-                                       fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                            fill="#10B981" />
-                                  </svg>
-                                  <span class="text-sm font-medium text-meta-3">25%</span>
-                              </div>
-                          </div>
-                          <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r">
-                              <div>
-                                  <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
-                                      54%
-                                  </h4>
-                                  <p class="text-sm font-medium">Bounce Rate</p>
-                              </div>
-                              <div class="flex items-center gap-1">
-                                  <svg width="19"
-                                       height="19"
-                                       viewBox="0 0 19 19"
-                                       fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
-                                            fill="#F0950C" />
-                                  </svg>
-                                  <span class="text-sm font-medium text-meta-8">7%</span>
-                              </div>
-                          </div>
-                          <div class="flex items-center justify-center gap-2">
-                              <div>
-                                  <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
-                                      2m 56s
-                                  </h4>
-                                  <p class="text-sm">Visit Duration</p>
-                              </div>
-                              <div class="flex items-center gap-1">
-                                  <svg width="19"
-                                       height="19"
-                                       viewBox="0 0 19 19"
-                                       fill="none"
-                                       xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                            fill="#10B981" />
-                                  </svg>
-                                  <span class="text-meta-3">12%</span>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <!-- ====== Data Stats End -->
+                  
                   <div id="sectorStock"></div>
 
                   <!----
