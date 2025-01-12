@@ -22,7 +22,7 @@ builder.Services.AddDbContext<OptionDbContext>(options =>
 
 Console.WriteLine("Adding Quartz settings");
 
-builder.Services.AddQuartz(q =>
+/*builder.Services.AddQuartz(q =>
 {
     var firstSession = JobKey.Create("FirstSession");
     var midSession = JobKey.Create("MidSession");
@@ -34,9 +34,7 @@ builder.Services.AddQuartz(q =>
         .AddTrigger(trigger =>
         {
             trigger.ForJob(firstSession)
-                .WithCronSchedule("0 15-59/5 9 ? * MON-FRI"); // From 9:15 AM to 9:59 AM, Monday to Friday
-                //.WithSimpleSchedule(s => s.WithRepeatCount(0));
-                //.WithCronSchedule("0 * * ? * *"); // Start of Every Minute                
+                .WithCronSchedule("0 15-59/5 9 ? * MON-FRI");            
         });
 
     q.AddJob<FetchAndProcessJob>(midSession)
@@ -57,7 +55,7 @@ builder.Services.AddQuartz(q =>
         {
             trigger.ForJob(finalCall).WithCronSchedule("0 0 16 ? * MON-FRI"); // At 4:00 PM, Monday to Friday
         });
-});
+});*/
 
 builder.Services.AddCors(options =>
 {
@@ -69,7 +67,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+//builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
 Console.WriteLine("Building app");
 

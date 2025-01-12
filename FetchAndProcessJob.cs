@@ -118,7 +118,6 @@ namespace OptionChain
             }
         }
 
-
         private async Task<(bool, object, Root?)> GetNiftyOptionData(object counter, IJobExecutionContext context)
         {
             Utility.LogDetails($"{nameof(GetNiftyOptionData)} -> Send quots reqest counter:" + counter + ", Time: " + context.FireTimeUtc.ToLocalTime().ToString("hh:mm"));
