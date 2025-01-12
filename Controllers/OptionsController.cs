@@ -92,7 +92,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("sector-stocks")]
-        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-07")
+        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-10")
         {
             List<Sector> sectorsStocks = new List<Sector>();
 
@@ -144,7 +144,19 @@ namespace OptionChain.Controllers
                         });
                     }
                 }
-                mySector.Stocks = mySector.Stocks.OrderByDescending(x => x.PChange).ToList();
+
+                mySector.PChange = Math.Round(mySector.Stocks.Average(x => x.PChange) ?? 0, 2);
+
+                if (mySector.PChange < 0)
+                {
+                    mySector.Stocks = mySector.Stocks.OrderBy(x => x.PChange).ToList();
+                }
+
+                if (mySector.PChange >= 0)
+                {
+                    mySector.Stocks = mySector.Stocks.OrderByDescending(x => x.PChange).ToList();
+                }
+
                 sectorsStocks.Add(mySector);
             }
 
@@ -156,6 +168,7 @@ namespace OptionChain.Controllers
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public double? PChange { get; set; }
         public List<SectorStocksResponse> Stocks { get; set; }
     }
 
@@ -171,6 +184,7 @@ namespace OptionChain.Controllers
     }
 
     public class SectorsResponse
+
     {
         public int Id { get; set; }
         public string? Sector { get; set; }
