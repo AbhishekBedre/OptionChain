@@ -123,6 +123,9 @@ namespace OptionChain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_BankExpiryOptionDataIndex_EntryDate");
+
                     b.ToTable("BankExpiryOptionData");
                 });
 
@@ -199,6 +202,9 @@ namespace OptionChain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_BankOptionDataIndex_EntryDate");
+
                     b.ToTable("BankOptionData");
                 });
 
@@ -243,6 +249,115 @@ namespace OptionChain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BankSummary");
+                });
+
+            modelBuilder.Entity("OptionChain.BroderMarkets", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<string>("Advances")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Chart30dPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Chart365dPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DY")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Date30dAgo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Date365dAgo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Declines")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("High")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Index")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IndexSymbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("IndicativeClose")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Last")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Low")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("OneMonthAgo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("OneWeekAgo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("OneYearAgo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Open")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PB")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("PE")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal?>("PerChange30d")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PercentChange")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PreviousClose")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("PreviousDay")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Unchanged")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Variation")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("YearHigh")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("YearLow")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_BroderMarketsIndex_EntryDate");
+
+                    b.ToTable("BroderMarkets");
                 });
 
             modelBuilder.Entity("OptionChain.FilteredOptionData", b =>
@@ -317,6 +432,9 @@ namespace OptionChain.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_FilteredOptionDataIndex_EntryDate");
 
                     b.ToTable("CurrentExpiryOptionDaata");
                 });
@@ -393,6 +511,9 @@ namespace OptionChain.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_OptionDataIndex_EntryDate");
 
                     b.ToTable("AllOptionData");
                 });
@@ -529,6 +650,9 @@ namespace OptionChain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_StockDataIndex_EntryDate");
+
                     b.ToTable("StockData");
                 });
 
@@ -589,6 +713,9 @@ namespace OptionChain.Migrations
                         .HasColumnType("time");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_StockMetaDataIndex_EntryDate");
 
                     b.ToTable("StockMetaData");
                 });

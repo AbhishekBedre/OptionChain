@@ -174,6 +174,40 @@ function getOptionsData(callback) {
     });
 }
 
+function getBankNiftyOptionsData(callback) {
+
+  $("#chartBankNifty").empty();
+
+  $("div[x-show='loaded']").show();
+
+  var selectedDate = $("#optionBankDate").val();
+  var domain = window.location.origin;
+  var subfolderName = "";
+
+  var arr = window.location.pathname.split('/');
+
+  if(arr.length > 2) {
+      subfolderName = "/" + arr[1];
+  }
+
+  var url = domain + subfolderName  + "/Options/Bank";
+  
+  $.ajax({
+      url: url,
+      type: 'GET',
+      data: { "currentDate": selectedDate }, // Pass the date as a query parameter
+      success: function (response) {
+          //$("div[x-show='loaded']").hide();
+          console.log('Success:', response);
+          return callback(response);
+      },
+      error: function (xhr, status, error) {
+          //$("div[x-show='loaded']").hide();
+          console.error('Error:', status, error);
+      }
+  });
+}
+
 function getSectorUpdate(callback) {
 
     $("#sectorChart").empty();
@@ -220,6 +254,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector("#SectorUpdate").onclick = function () {
         chart04();
+    },
+
+    document.querySelector("#updateBankNiftyChart").onclick = function () {
+      chart04();
     }
 });
 
@@ -404,6 +442,7 @@ const chart04 = () => {
                     show: true,
                 },
                 tickAmount: Math.floor(response.length / 3), // Show fewer ticks
+                range: 75,
                 labels: {
                     show: true,
                     rotate: -45, // Rotate labels to avoid overlap
@@ -453,6 +492,128 @@ const chart04 = () => {
             const chartFour = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(
                 document.querySelector("#chartFour"),
                 chartFourOptions
+            );
+            chartFour.render();
+        }
+    });
+
+    getBankNiftyOptionsData(function(response){
+      var data = response.map(m => m.oi);
+
+      const chartBankNiftyOptions = {
+          series: [
+              {
+                  data: data,
+              },
+          ],
+          colors: ["#3C50E0"],
+          chart: {
+              fontFamily: "Satoshi, sans-serif",
+              type: "bar",
+              height: 350,
+              zoom: {
+                  enabled: true,         // Activates zoom feature
+                  type: 'y',             // Zoom on the x-axis (can also be 'y' or 'xy')
+              },
+              toolbar: {
+                  show: true,
+                  tools: {
+                    zoom: true,          // Enables zoom
+                    zoomin: true,        // Adds zoom-in button
+                    zoomout: true,       // Adds zoom-out button
+                    reset: true,         // Adds reset zoom button
+                },
+              },
+          },
+          plotOptions: {
+              bar: {
+                  horizontal: false,
+                  columnWidth: "55%",
+                  endingShape: "rounded",
+                  borderRadius: 2,
+                  colors: {
+                      ranges: [
+                          {
+                              from: -Infinity,
+                              to: -1,
+                              color: "#dc3545", // Red for negative values
+                          },
+                          {
+                              from: 0,
+                              to: Infinity,
+                              color: "#28a745", // Green for positive values
+                          },
+                      ],
+                  },
+              },
+          },
+          dataLabels: {
+              enabled: false,
+          },
+          stroke: {
+              show: true,
+              width: 4,
+              colors: ["transparent"],
+          },
+          xaxis: {
+              categories: response.map(m=>m.time),
+              axisBorder: {
+                  show: true,
+              },
+              axisTicks: {
+                  show: true,
+              },
+              tickAmount: Math.floor(response.length / 3), // Show fewer ticks
+              range: 75,
+              labels: {
+                  show: true,
+                  rotate: -45, // Rotate labels to avoid overlap
+                  style: {
+                      fontSize: "12px", // Adjust font size
+                  },
+              },
+          },
+          legend: {
+              show: true,
+              position: "top",
+              horizontalAlign: "left",
+              fontFamily: "Satoshi",
+              markers: {
+                  radius: 99,
+              },
+          },
+          yaxis: {
+              title: false,
+          },
+          grid: {
+              yaxis: {
+                  lines: {
+                      show: false,
+                  },
+              },
+          },
+          tooltip: {
+              x: {
+                  formatter: function (val) {
+                    return val;
+                  },
+                  show: true
+              },
+              y: {
+                  formatter: function (val) {
+                      return val;
+                  },
+                  show:true
+              },
+          },
+      };
+
+      const chartSelector = document.querySelectorAll("#chartBankNifty");
+
+        if (chartSelector.length) {
+            const chartFour = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(
+                document.querySelector("#chartBankNifty"),
+                chartBankNiftyOptions
             );
             chartFour.render();
         }

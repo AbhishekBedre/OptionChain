@@ -18,6 +18,9 @@ namespace OptionChain
         public DbSet<BankExpiryOptionData> BankExpiryOptionData { get; set; }
         public DbSet<BankSummary> BankSummary { get; set; }
 
+        // Broder Index
+        public DbSet<BroderMarkets> BroderMarkets { get; set; }
+
         // Constructor for DbContext
         public OptionDbContext(DbContextOptions<OptionDbContext> options)
             : base(options)
@@ -30,8 +33,14 @@ namespace OptionChain
             modelBuilder.Entity<OptionData>()
                 .HasKey(o => o.Id); // OptionData Primary Key
 
+            modelBuilder.Entity<OptionData>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_OptionDataIndex_EntryDate");
+
             modelBuilder.Entity<FilteredOptionData>()
                 .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<FilteredOptionData>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_FilteredOptionDataIndex_EntryDate");
 
             modelBuilder.Entity<Summary>()
                 .HasKey(s => s.Id); //PK
@@ -39,8 +48,14 @@ namespace OptionChain
             modelBuilder.Entity<BankOptionData>()
                 .HasKey(o => o.Id); // OptionData Primary Key
 
+            modelBuilder.Entity<BankOptionData>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_BankOptionDataIndex_EntryDate");
+
             modelBuilder.Entity<BankExpiryOptionData>()
                 .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<BankExpiryOptionData>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_BankExpiryOptionDataIndex_EntryDate");
 
             modelBuilder.Entity<BankSummary>()
                 .HasKey(s => s.Id); //PK
@@ -50,12 +65,23 @@ namespace OptionChain
 
             modelBuilder.Entity<StockData>()
                 .HasKey(s => s.Id); //PK
+            modelBuilder.Entity<StockData>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_StockDataIndex_EntryDate");
 
             modelBuilder.Entity<StockMetaData>()
                 .HasKey(s => s.Id); //PK
 
+            modelBuilder.Entity<StockMetaData>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_StockMetaDataIndex_EntryDate");
+
             modelBuilder.Entity<Sector>()
                 .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<BroderMarkets>()
+                .HasKey(x => x.Id);
+
+            modelBuilder.Entity<BroderMarkets>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_BroderMarketsIndex_EntryDate");
         }
     }
 

@@ -38,6 +38,21 @@ namespace OptionChain.Controllers
             return optionsResponse;
         }
 
+        [HttpGet("Bank")]
+        public async Task<IEnumerable<OptionsResponse>> GetBank(string currentDate)
+        {
+            var result = await _optionDbContext.BankSummary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
+
+            var optionsResponse = result.Select(s => new OptionsResponse
+            {
+                Id = s.Id,
+                OI = s.CEPEOIPrevDiff * -1,
+                Time = s.Time?.Hours.ToString() + ":" + s.Time?.Minutes.ToString()
+            });
+
+            return optionsResponse;
+        }
+
         [HttpGet("sectors")]
         public async Task<IEnumerable<SectorsResponse>> GetSectorsTrend(string currentdate, int overall = 1)
         {
