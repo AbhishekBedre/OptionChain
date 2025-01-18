@@ -1,10 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OptionChain.Migrations;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace OptionChain.Controllers
 {
+    public class Test
+    {
+        public long ConvertToUnixTimestamp(TimeSpan timeSpan, DateTime entryDate)
+        {
+            // Get the current DateTime
+            DateTime currentDateTime = new DateTime(entryDate.Year, entryDate.Month, entryDate.Day, timeSpan.Hours, timeSpan.Minutes, 0, DateTimeKind.Local).ToUniversalTime();
+
+            long unixTime = ((DateTimeOffset)currentDateTime).ToUniversalTime().ToUnixTimeSeconds();
+
+            return unixTime;
+
+        }
+    }
 
     [ApiController]
     [Route("[controller]")]
@@ -19,67 +33,119 @@ namespace OptionChain.Controllers
             _optionDbContext = optionDbContext;
         }
 
-        /// <summary>
-        /// Read Options Chart.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IEnumerable<OptionsResponse>> Get(string currentDate)
+        [HttpGet("trading-view-option")]
+        public async Task<AllOptionResponse> GetTradingViewOption(string currentDate)
         {
+            Test ob = new Test();
             var result = await _optionDbContext.Summary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
 
-            var optionsResponse = result.Select(s => new OptionsResponse
+            var positiveValue = result.Select(s => new OptionsResponse
             {
-                Id = s.Id,
-                OI = s.CEPEOIPrevDiff * -1,
-                Time = s.Time?.Hours.ToString() + ":" + s.Time?.Minutes.ToString()
+                value = s.CEPEOIPrevDiff * -1,
+                Time = ob.ConvertToUnixTimestamp(s.Time ?? new TimeSpan(), s.EntryDate ?? new DateTime())
+            }).ToList();
+
+            var negetiveValue = result.Select(s => new OptionsResponse
+            {
+                value = s.CEPEOIPrevDiff * -1,
+                Time = ob.ConvertToUnixTimestamp(s.Time ?? new TimeSpan(), s.EntryDate ?? new DateTime())
+            }).ToList();
+
+            AllOptionResponse allOptionResponse = new AllOptionResponse();
+            positiveValue.ToList().ForEach(s =>
+            {
+                if (s.value < 0)
+                {
+                    s.value = null;
+                }
             });
 
-            return optionsResponse;
+            negetiveValue.ForEach(s =>
+            {
+                if (s.value >= 0)
+                {
+                    s.value = null;
+                }
+            });
+
+            allOptionResponse.PositiveValue = positiveValue;
+            allOptionResponse.NegetiveValue = negetiveValue;
+
+            return allOptionResponse;
         }
 
         [HttpGet("Bank")]
-        public async Task<IEnumerable<OptionsResponse>> GetBank(string currentDate)
+        public async Task<AllOptionResponse> GetBank(string currentDate)
         {
+            Test ob = new Test();
             var result = await _optionDbContext.BankSummary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
 
-            var optionsResponse = result.Select(s => new OptionsResponse
+
+            var positiveValue = result.Select(s => new OptionsResponse
             {
-                Id = s.Id,
-                OI = s.CEPEOIPrevDiff * -1,
-                Time = s.Time?.Hours.ToString() + ":" + s.Time?.Minutes.ToString()
+                value = s.CEPEOIPrevDiff * -1,
+                Time = ob.ConvertToUnixTimestamp(s.Time ?? new TimeSpan(), s.EntryDate ?? new DateTime())
+            }).ToList();
+
+            var negetiveValue = result.Select(s => new OptionsResponse
+            {
+                value = s.CEPEOIPrevDiff * -1,
+                Time = ob.ConvertToUnixTimestamp(s.Time ?? new TimeSpan(), s.EntryDate ?? new DateTime())
+            }).ToList();
+
+            AllOptionResponse allOptionResponse = new AllOptionResponse();
+            positiveValue.ToList().ForEach(s =>
+            {
+                if (s.value < 0)
+                {
+                    s.value = null;
+                }
             });
 
-            return optionsResponse;
+            negetiveValue.ForEach(s =>
+            {
+                if (s.value >= 0)
+                {
+                    s.value = null;
+                }
+            });
+
+            allOptionResponse.PositiveValue = positiveValue;
+            allOptionResponse.NegetiveValue = negetiveValue;
+
+            return allOptionResponse;
         }
 
         [HttpGet("sectors")]
-        public async Task<IEnumerable<SectorsResponse>> GetSectorsTrend(string currentdate, int overall = 1)
+        public async Task<List<SectorsResponse>> GetSectorsTrend(string currentdate, int overall = 1)
         {
-            IEnumerable<SectorsResponse> sectorsResponses = null;
+            List<SectorsResponse> sectorsResponses = new List<SectorsResponse>();
 
             if (overall == 1)
             {
-                var query = from s in _optionDbContext.Sectors
-                            join sd in _optionDbContext.StockData.Where(x => x.EntryDate == Convert.ToDateTime(currentdate).Date && (x.PChange < -0.8 || x.PChange > 0.8))
-                            on s.Symbol equals sd.Symbol
-                            group sd by s.MappingName into g
-                            select new
-                            {
-                                Sector = g.Key,
-                                AvgPChange = g.Average(x => x.PChange)
-                            }
-                            into result
-                            orderby result.AvgPChange
-                            select result;
+                var sectorialIndex = await _optionDbContext.BroderMarkets
+                    .Where(x => x.Key == "SECTORAL INDICES" && x.EntryDate == Convert.ToDateTime(currentdate))
+                    .GroupBy(x => x.IndexSymbol)
+                    .Select(group => new
+                    {
+                        IndexSymbol = group.Key,
+                        Items = group.ToList() // Retrieves all items in the group if needed
+                    }).ToListAsync();
 
-                sectorsResponses = query.ToList().Select((s, index) => new SectorsResponse
+                foreach (var item in sectorialIndex)
                 {
-                    Id = index,
-                    Sector = s.Sector,
-                    PChange = Math.Round(s.AvgPChange, 2)
-                });
-            }
+                    var lastSectorialIndexUpdate = item.Items.OrderByDescending(x => x.Id).FirstOrDefault();
+                    if (lastSectorialIndexUpdate != null)
+                    {
+                        sectorsResponses.Add(new SectorsResponse
+                        {
+                            Id = lastSectorialIndexUpdate.Id,
+                            Sector = item.IndexSymbol,
+                            PChange = lastSectorialIndexUpdate.PercentChange
+                        });
+                    }
+                }
+            }/*
             else
             {
                 var query = from s in _optionDbContext.StockMetaData
@@ -101,13 +167,13 @@ namespace OptionChain.Controllers
                     Sector = s.Sector,
                     PChange = Math.Round(s.AvgPChange, 2)
                 });
-            }
+            }*/
 
-            return sectorsResponses;
+            return sectorsResponses.OrderByDescending(x=>x.PChange).ToList();
         }
 
         [HttpGet("sector-stocks")]
-        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-10")
+        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-17")
         {
             List<Sector> sectorsStocks = new List<Sector>();
 
@@ -136,7 +202,7 @@ namespace OptionChain.Controllers
                 {
                     Id = 0,
                     Name = sector,
-                    Stocks = new List<SectorStocksResponse>() 
+                    Stocks = new List<SectorStocksResponse>()
                 };
 
                 foreach (var stock in stockNames)
@@ -177,6 +243,67 @@ namespace OptionChain.Controllers
 
             return sectorsStocks;
         }
+
+        [HttpGet("nifty-chart")]
+        public async Task<IEnumerable<NiftyChart>> GetNiftyChartsAsync(string currentDate = "2025-01-16")
+        {
+            NiftyChart niftyChart = new NiftyChart();
+
+            var result = await _optionDbContext.BroderMarkets.Where(x => x.EntryDate == Convert.ToDateTime(currentDate)
+                         && x.IndexSymbol == "NIFTY 50").OrderBy(x => x.Id).Select(s => new NiftyChart
+                         {
+                             //Id = s.Id,
+                             x = s.Time.HasValue ? s.Time.Value.ToString(@"hh\:mm") : "00:00",
+                             y = new List<decimal> { s.Open, s.High, s.Low, s.Last }.ToArray()
+                         }).ToListAsync();
+
+            var updatedResult = FillMissingData(result);
+
+
+            return updatedResult; //.OrderBy(x=>x.Id);            
+        }
+
+        public static List<NiftyChart> FillMissingData(List<NiftyChart> data, string startTime = "09:15", string endTime = "15:30")
+        {
+            // Parse start and end times
+            TimeSpan start = TimeSpan.Parse(startTime);
+            TimeSpan end = TimeSpan.Parse(endTime);
+
+            // Convert input data to a dictionary for fast lookups
+            var dataDict = new Dictionary<string, decimal[]>();
+            foreach (var item in data)
+            {
+                dataDict[item.x] = item.y;
+            }
+
+            // Initialize the result list
+            var result = new List<NiftyChart>();
+
+            // Loop through each minute between start and end times
+            for (var time = start; time <= end; time = time.Add(TimeSpan.FromMinutes(5)))
+            {
+                string timeStr = time.ToString(@"hh\:mm");
+                if (dataDict.ContainsKey(timeStr))
+                {
+                    // If data exists for the time, add it to the result
+                    result.Add(new NiftyChart { x = timeStr, y = dataDict[timeStr] });
+                }
+                else
+                {
+                    // Otherwise, add a placeholder with an empty decimal array
+                    result.Add(new NiftyChart { x = timeStr, y = new decimal[0] });
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public class NiftyChart
+    {
+        //public long Id { get; set; }
+        public string? x { get; set; }
+        public decimal[]? y { get; set; }
     }
 
     public class Sector
@@ -201,15 +328,20 @@ namespace OptionChain.Controllers
     public class SectorsResponse
 
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string? Sector { get; set; }
-        public double? PChange { get; set; }
+        public decimal PChange { get; set; }
     }
 
     public class OptionsResponse
     {
-        public long Id { get; set; }
-        public double OI { get; set; }
-        public string? Time { get; set; }
+        public double? value { get; set; }
+        public long? Time { get; set; }
+    }
+
+    public class AllOptionResponse
+    {
+        public IEnumerable<OptionsResponse>? PositiveValue { get; set; }
+        public IEnumerable<OptionsResponse>? NegetiveValue { get; set; }
     }
 }
