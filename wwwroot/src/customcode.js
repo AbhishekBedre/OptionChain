@@ -1,8 +1,65 @@
 $(document).ready(function(){
 
+    if(sessionStorage.userInfo == null || sessionStorage.userInfo == undefined) {
+        var domain = window.location.origin;
+        var subfolderName = "";
+
+        var arr = window.location.pathname.split('/');
+
+        if (arr.length > 2) {
+            subfolderName = "/" + arr[1];
+        }
+
+        var url = domain + subfolderName + "/index.html";
+
+        window.location.href = url;
+    }
+
+    var userDetails = JSON.parse(sessionStorage.userInfo);
+    $("#profileImage").attr("src", userDetails.picture);
+    $("#ProfileName").text(userDetails.name);
+
+    $("#logout").click(function(){
+        debugger;
+        logout();
+    });
+
     getIndexData();
 
 });
+
+function logout() {
+    if (sessionStorage.accessToken) {
+        const revokeUrl = `https://accounts.google.com/o/oauth2/revoke?token=${sessionStorage.accessToken}`;
+        
+        // Revoke the token
+        fetch(revokeUrl)
+        .then((response) => {
+            if (response.ok) {
+                accessToken = null;
+                window.location.hash = ''; // Clear the URL hash
+            } 
+
+            var domain = window.location.origin;
+            var subfolderName = "";
+
+            var arr = window.location.pathname.split('/');
+
+            if (arr.length > 2) {
+                subfolderName = "/" + arr[1];
+            }
+
+            var url = domain + subfolderName + "/index.html";
+            
+            window.location.href = url;
+        })
+        .catch((error) => {
+            console.error('Error revoking token:', error);
+        });
+    } else {
+        sessionStorage.clear();
+    }
+}
 
 function getIndexData(callback) {
 
