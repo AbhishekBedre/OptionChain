@@ -190,7 +190,7 @@ function getSectorUpdate(callback) {
         subfolderName = "/" + arr[1];
     }
 
-    var selectedDate = $("#sectorDate").val();
+    var selectedDate = $("#currentDate").val();
 
     var url = domain + subfolderName + "/Options/sectors";
 
@@ -325,7 +325,7 @@ const chart04 = () => {
         }
     });
 
-    getNiftyChartData(function(response){
+    /*getNiftyChartData(function(response){
 
         var data = response;
 
@@ -372,7 +372,7 @@ const chart04 = () => {
             );
             chartFour1.render();
         }
-    });
+    });*/
 };
 
 const __WEBPACK_DEFAULT_EXPORT__ = (chart04);

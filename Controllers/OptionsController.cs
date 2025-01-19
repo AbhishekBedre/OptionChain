@@ -140,12 +140,12 @@ namespace OptionChain.Controllers
                         sectorsResponses.Add(new SectorsResponse
                         {
                             Id = lastSectorialIndexUpdate.Id,
-                            Sector = item.IndexSymbol,
+                            Sector = item.IndexSymbol.Replace("NIFTY",""),
                             PChange = lastSectorialIndexUpdate.PercentChange
                         });
                     }
                 }
-            }/*
+            }
             else
             {
                 var query = from s in _optionDbContext.StockMetaData
@@ -165,11 +165,11 @@ namespace OptionChain.Controllers
                 {
                     Id = index,
                     Sector = s.Sector,
-                    PChange = Math.Round(s.AvgPChange, 2)
-                });
-            }*/
+                    PChange = Convert.ToDecimal(Math.Round(s.AvgPChange, 2))
+                }).ToList();
+            }
 
-            return sectorsResponses.OrderByDescending(x=>x.PChange).ToList();
+            return sectorsResponses.OrderByDescending(x => x.PChange).ToList();
         }
 
         [HttpGet("sector-stocks")]
@@ -297,6 +297,40 @@ namespace OptionChain.Controllers
 
             return result;
         }
+
+        [HttpGet("major-index")]
+        public async Task<List<MajorIndexReponse>> GetMajorIndexAsync(string currentDate) 
+        {
+            List<string> majorIndex = new List<string> { "NIFTY 50", "NIFTY NEXT 50", "NIFTY BANK", "NIFTY FIN SERVICE", "NIFTY MID SELECT" };
+
+            var topIndex = await _optionDbContext.BroderMarkets.Where(x => x.EntryDate == Convert.ToDateTime(currentDate) && majorIndex.Contains(x.IndexSymbol ?? "")).OrderByDescending(x=>x.Id).Take(5).ToListAsync();
+
+            List<MajorIndexReponse> response = new List<MajorIndexReponse>();
+
+            foreach (var item in topIndex)
+            {
+                var index = new MajorIndexReponse
+                {
+                    Name = item.Index,
+                    Variation = item.Variation,
+                    PChange = item.PercentChange,
+                    PChangeLast30Days = item.PerChange30d,
+                    LastPrice = item.Last
+                };
+                response.Add(index);
+            }
+
+            return response; 
+        }
+    }
+
+    public class MajorIndexReponse
+    {
+        public string? Name { get; set; }
+        public decimal? Variation { get; set; }
+        public decimal? PChange { get; set; }
+        public decimal? PChangeLast30Days { get; set; }
+        public decimal? LastPrice { get; set; }
     }
 
     public class NiftyChart

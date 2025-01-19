@@ -36,7 +36,8 @@
     <script data-cfasync="false" nonce="933ec671-cee0-49a2-8de7-e905e1857d2e">try { (function (w, d) { !function (a, b, c, d) { if (a.zaraz) console.error("zaraz is loaded twice"); else { a[c] = a[c] || {}; a[c].executed = []; a.zaraz = { deferred: [], listeners: [] }; a.zaraz._v = "5848"; a.zaraz._n = "933ec671-cee0-49a2-8de7-e905e1857d2e"; a.zaraz.q = []; a.zaraz._f = function (e) { return async function () { var f = Array.prototype.slice.call(arguments); a.zaraz.q.push({ m: e, a: f }) } }; for (const g of ["track", "set", "debug"]) a.zaraz[g] = a.zaraz._f(g); a.zaraz.init = () => { var h = b.getElementsByTagName(d)[0], i = b.createElement(d), j = b.getElementsByTagName("title")[0]; j && (a[c].t = b.getElementsByTagName("title")[0].text); a[c].x = Math.random(); a[c].w = a.screen.width; a[c].h = a.screen.height; a[c].j = a.innerHeight; a[c].e = a.innerWidth; a[c].l = a.location.href; a[c].r = b.referrer; a[c].k = a.screen.colorDepth; a[c].n = b.characterSet; a[c].o = (new Date).getTimezoneOffset(); if (a.dataLayer) for (const k of Object.entries(Object.entries(dataLayer).reduce(((l, m) => ({ ...l[1], ...m[1] })), {}))) zaraz.set(k[0], k[1], { scope: "page" }); a[c].q = []; for (; a.zaraz.q.length;) { const n = a.zaraz.q.shift(); a[c].q.push(n) } i.defer = !0; for (const o of [localStorage, sessionStorage]) Object.keys(o || {}).filter((q => q.startsWith("_zaraz_"))).forEach((p => { try { a[c]["z_" + p.slice(7)] = JSON.parse(o.getItem(p)) } catch { a[c]["z_" + p.slice(7)] = o.getItem(p) } })); i.referrerPolicy = "origin"; i.src = "cdn-cgi/zaraz/sd0d9.js?z=" + btoa(encodeURIComponent(JSON.stringify(a[c]))); h.parentNode.insertBefore(i, h) };["complete", "interactive"].includes(b.readyState) ? zaraz.init() : a.addEventListener("DOMContentLoaded", zaraz.init) } }(w, d, "zarazData", "script"); window.zaraz._p = async bs => new Promise((bt => { if (bs) { bs.e && bs.e.forEach((bu => { try { const bv = d.querySelector("script[nonce]"), bw = bv?.nonce || bv?.getAttribute("nonce"), bx = d.createElement("script"); bw && (bx.nonce = bw); bx.innerHTML = bu; bx.onload = () => { d.head.removeChild(bx) }; d.head.appendChild(bx) } catch (by) { console.error(`Error executing script: ${bu}\n`, by) } })); Promise.allSettled((bs.f || []).map((bz => fetch(bz[0], bz[1])))) } bt() })); zaraz._p({ "e": ["(function(w,d){})(window,document)"] }); })(window, document) } catch (e) { throw fetch("/cdn-cgi/zaraz/t"), e; };</script>
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-
+    <script src="src/customcode.js"></script>
+    
     <script>
 
         function autoRefresh() {
@@ -91,21 +92,14 @@
     <div class="flex h-screen overflow-hidden">
         <!-- ===== Sidebar Start ===== -->
         <aside :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
-               class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+               class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark"
                @click.outside="sidebarToggle = false">
 
             <!-- SIDEBAR HEADER -->
             <div class="flex items-center justify-between gap-2 px-6 lg:py-6.5">
                 <a href="index.html">
                     <img src="src/images/logo/logo-icon.svg" alt="Logo" style="">
-                    <h1 style="
-    position: relative;
-    top: -30px;
-    right: -45px;
-    font-size: 30px;
-    color: #fff;
-    font-weight: bold;
-    font-family: inherit;">
+                    <h1 class="lg:block sm:hidden" style="position: relative; top: -30px; right: -45px; font-size: 30px; color: #fff; font-weight: bold; font-family: inherit;">
                         Smart Trade
                     </h1>
                 </a>
@@ -1113,9 +1107,9 @@
             <!-- ===== Header Start ===== -->
             <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
                 <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
-                    <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
+                    <div class="flex items-center gap-2 sm:gap-4">
                         <!-- Hamburger Toggle BTN -->
-                        <button class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+                        <button class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark"
                                 @click.stop="sidebarToggle = !sidebarToggle">
                             <span class="relative block h-5.5 w-5.5 cursor-pointer">
                                 <span class="du-block absolute right-0 h-full w-full">
@@ -1135,43 +1129,19 @@
                             </span>
                         </button>
                         <!-- Hamburger Toggle BTN -->
-                        <a class="block flex-shrink-0 lg:hidden" href="index.html">
-                            <img src="src/images/logo/logo-icon.svg" alt="Logo" />
+                        <a href="index.html" style="height: 30px;">
+                            <img src="src/images/logo/logo-icon.svg" alt="Logo">
+                            <h1 class="lg:block sm:hidden" style="position: relative; top: -30px;right: -45px; font-size: 28px;color: #fff;font-weight: bold; font-family: inherit;">
+                                Smart Trade
+                            </h1>
                         </a>
-                    </div>
-                    <div class="hidden sm:block">
-                        <form action="https://formbold.com/s/unique_form_id" method="POST">
-                            <div class="relative">
-                                <button class="absolute left-0 top-1/2 -translate-y-1/2">
-                                    <svg class="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
-                                         width="20"
-                                         height="20"
-                                         viewBox="0 0 20 20"
-                                         fill="none"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                              clip-rule="evenodd"
-                                              d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
-                                              fill="" />
-                                        <path fill-rule="evenodd"
-                                              clip-rule="evenodd"
-                                              d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
-                                              fill="" />
-                                    </svg>
-                                </button>
-
-                                <input type="text"
-                                       placeholder="Type to search..."
-                                       class="w-full bg-transparent pl-9 pr-4 focus:outline-none xl:w-125" />
-                            </div>
-                        </form>
                     </div>
 
                     <div class="flex items-center gap-3 2xsm:gap-7">
                         <ul class="flex items-center gap-2 2xsm:gap-4">
                             <li>
                                 <!-- Dark Mode Toggler -->
-                                <label :class="darkMode ? 'bg-primary' : 'bg-stroke'"
+                                <!--<label :class="darkMode ? 'bg-primary' : 'bg-stroke'"
                                        class="relative m-0 block h-7.5 w-14 rounded-full">
                                     <input type="checkbox"
                                            :value="darkMode"
@@ -1202,7 +1172,7 @@
                                             </svg>
                                         </span>
                                     </span>
-                                </label>
+                                </label>-->
                                 <!-- Dark Mode Toggler -->
                             </li>
 
@@ -1421,8 +1391,8 @@
                                href="#"
                                @click.prevent="dropdownOpen = ! dropdownOpen">
                                 <span class="hidden text-right lg:block">
-                                    <span class="block text-sm font-medium text-black dark:text-white">Thomas Anree</span>
-                                    <span class="block text-xs font-medium">UX Designer</span>
+                                    <span class="block text-sm font-medium text-black dark:text-white">Abhishek Bedre</span>
+                                    <span class="block text-xs font-medium">Developer</span>
                                 </span>
 
                                 <span class="h-12 w-12 rounded-full">
@@ -1526,82 +1496,171 @@
                     <div class="grid grid-cols-12 gap-4 md:gap-6 2xl:gap-7.5">
 
                         <!-- ====== Data Stats Start -->
-                        <div class="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
-                            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
-                                <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
+                        <div id="IndexPanel" class="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+                            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5 xl:gap-0">
+                                <div class="flex items-center xl:justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
                                     <div>
-                                        <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                        <h4 id="nifty50" class="mb-0.5 text-xl font-bold text-black md:text-title-lg">
                                             $4,350
                                         </h4>
-                                        <p class="text-sm font-medium">Unique Visitors</p>
+                                        <p class="text-sm font-medium">NIFTY 50</p>
                                     </div>
                                     <div class="flex items-center gap-1">
-                                        <svg width="19"
-                                             height="19"
-                                             viewBox="0 0 19 19"
-                                             fill="none"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                  fill="#10B981" />
-                                        </svg>
-                                        <span class="text-sm font-medium text-meta-3">18%</span>
-                                    </div>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <svg width="19"
+                                                        height="19"
+                                                        viewBox="0 0 19 19"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path id="niftyIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                                                fill="#ee544e" />
+                                                    </svg>                                                
+                                                </td>
+                                                <td>
+                                                    <span id="niftyPer" class="text-sm font-medium text-red">18%</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td>
+                                                    <span id="niftyVeri" class="text-sm font-medium text-red">+500</span>
+                                                </td>
+                                            </tr>
+                                        </table>                                        
+                                    </div>                                    
                                 </div>
-                                <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
+                                <div class="flex items-center xl:justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
                                     <div>
-                                        <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                        <h4 id="niftyBank" class="mb-0.5 text-xl font-bold text-black md:text-title-lg">
                                             55.9K
                                         </h4>
-                                        <p class="text-sm font-medium">Total Pageviews</p>
+                                        <p class="text-sm font-medium">NIFTY BANK</p>
                                     </div>
                                     <div class="flex items-center gap-1">
-                                        <svg width="19"
-                                             height="19"
-                                             viewBox="0 0 19 19"
-                                             fill="none"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                  fill="#10B981" />
-                                        </svg>
-                                        <span class="text-sm font-medium text-meta-3">25%</span>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <svg width="19"
+                                                        height="19"
+                                                        viewBox="0 0 19 19"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path id="niftyBankIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                                            fill="#10B981" />
+                                                    </svg>
+                                                </td>
+                                                <td>
+                                                    <span id="niftyBankPer" class="text-sm font-medium text-meta-3">25%</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td>
+                                                    <span id="niftyBankVeri" class="text-sm font-medium text-red">+500</span>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r">
+                                <div class="flex items-center xl:justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r">
                                     <div>
-                                        <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
+                                        <h4 id="niftyNext50" class="mb-0.5 text-xl font-bold text-black md:text-title-lg">
                                             54%
                                         </h4>
-                                        <p class="text-sm font-medium">Bounce Rate</p>
+                                        <p class="text-sm font-medium">NIFTY NEXT 50</p>
                                     </div>
                                     <div class="flex items-center gap-1">
-                                        <svg width="19"
-                                             height="19"
-                                             viewBox="0 0 19 19"
-                                             fill="none"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
-                                                  fill="#F0950C" />
-                                        </svg>
-                                        <span class="text-sm font-medium text-meta-8">7%</span>
+                                        <table>
+                                            <tr>
+                                                <td>                                                    
+                                                    <svg width="19"
+                                                        height="19"
+                                                        viewBox="0 0 19 19"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path id="niftyNext50Icon" d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
+                                                            fill="#F0950C" />
+                                                    </svg>
+                                                </td>
+                                                <td>
+                                                    <span id="niftyNext50Per" class="text-sm font-medium">7%</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td>
+                                                    <span id="niftyNext50Veri" class="text-sm font-medium text-red">+500</span>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-center gap-2">
+                                <div class="flex items-center xl:justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark sm:border-b-0 sm:pb-0 xl:border-r">
                                     <div>
-                                        <h4 class="mb-0.5 text-xl font-bold text-black dark:text-white md:text-title-lg">
-                                            2m 56s
+                                        <h4 id="niftyMidSelect" class="mb-0.5 text-xl font-bold text-black md:text-title-lg">
+                                            54%
                                         </h4>
-                                        <p class="text-sm">Visit Duration</p>
+                                        <p class="text-sm font-medium">NIFTY MIDCAP SELECT</p>
                                     </div>
                                     <div class="flex items-center gap-1">
-                                        <svg width="19"
-                                             height="19"
-                                             viewBox="0 0 19 19"
-                                             fill="none"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                  fill="#10B981" />
-                                        </svg>
-                                        <span class="text-meta-3">12%</span>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <svg width="19"
+                                                            height="19"
+                                                            viewBox="0 0 19 19"
+                                                            fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                        <path id="niftyMidSelectIcon" d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
+                                                                fill="#F0950C" />
+                                                    </svg>
+                                                </td>
+                                                <td>
+                                                    <span id="niftyMidSelectPer" class="text-sm font-medium">7%</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td>
+                                                    <span id="niftyMidSelectVeri" class="text-sm font-medium">7%</span>
+                                                </td>
+                                            </tr>
+                                        </table>                                        
+                                    </div>
+                                </div>
+                                <div class="flex items-center xl:justify-center gap-2">
+                                    <div>
+                                        <h4 id="niftyFinService" class="mb-0.5 text-xl font-bold md:text-title-lg">
+                                            2m 56s
+                                        </h4>
+                                        <p class="text-sm">NIFTY FIN SERVICES</p>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <svg width="19"
+                                                            height="19"
+                                                            viewBox="0 0 19 19"
+                                                            fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                        <path id="niftyFinServiceIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
+                                                                fill="#10B981" />
+                                                    </svg>
+                                                </td>
+                                                <td>
+                                                    <span id="niftyFinServicePer" class="text-meta-3">12%</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td>
+                                                    <span id="niftyFinServiceVeri" class="text-meta-3">12%</span>
+                                                </td>
+                                            </tr>
+                                        </table>                                        
                                     </div>
                                 </div>
                             </div>
@@ -1613,7 +1672,7 @@
                         <div class="col-span-12 flex flex-wrap items-center gap-3">
                             <!-- Datepicker built with flatpickr -->
                             <div class="relative">
-                                <input id="optionDate1" class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary flatpickr-input active"
+                                <input id="currentDate" class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary flatpickr-input active"
                                        placeholder="Select date"
                                        data-class="flatpickr-right" />
                                 <div class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
@@ -1630,7 +1689,7 @@
                             </div>
 
                             <div class="z-1 inline-block rounded bg-white shadow-card-2 dark:bg-boxdark">
-                                <button id="updateChart1" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+                                <button id="UpdateChart" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
                                     Update Chart
                                 </button>
                             </div>
@@ -1648,8 +1707,10 @@
                                     $(document).ready(function(){
                                         tradingViewChat();
 
-                                        $("#updateChart1").click(function(){
+                                        $("#UpdateChart").click(function(){
                                             tradingViewChat();
+
+                                            getIndexData();
                                         });
                                     });
                                     var chart = null;
@@ -1659,7 +1720,7 @@
 
                                         $("div[x-show='loaded']").show();
 
-                                        var selectedDate = $("#optionDate1").val();
+                                        var selectedDate = $("#currentDate").val();
                                         
                                         var domain = window.location.origin;
                                         var subfolderName = "";
@@ -1860,7 +1921,7 @@
                                     $(document).ready(function(){
                                         tradingViewBankNiftyChart();
 
-                                        $("#updateChart1").click(function(){
+                                        $("#UpdateChart").click(function(){
                                             tradingViewBankNiftyChart();
                                         });
                                     });
@@ -1872,7 +1933,7 @@
 
                                         $("div[x-show='loaded']").show();
 
-                                        var selectedDate = $("#optionDate1").val();
+                                        var selectedDate = $("#currentDate").val();
                                         
                                         var domain = window.location.origin;
                                         var subfolderName = "";
