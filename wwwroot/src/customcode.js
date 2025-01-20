@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    if(sessionStorage.userInfo == null || sessionStorage.userInfo == undefined) {
+    if(sessionStorage.userInfo == null || sessionStorage.userInfo == undefined || sessionStorage.accessToken == null) {
         var domain = window.location.origin;
         var subfolderName = "";
 
@@ -20,7 +20,6 @@ $(document).ready(function(){
     $("#ProfileName").text(userDetails.name);
 
     $("#logout").click(function(){
-        debugger;
         logout();
     });
 
@@ -37,6 +36,7 @@ function logout() {
         .then((response) => {
             if (response.ok) {
                 accessToken = null;
+                sessionStorage.clear();
                 window.location.hash = ''; // Clear the URL hash
             } 
 
@@ -54,6 +54,7 @@ function logout() {
             window.location.href = url;
         })
         .catch((error) => {
+            sessionStorage.clear();
             console.error('Error revoking token:', error);
         });
     } else {
