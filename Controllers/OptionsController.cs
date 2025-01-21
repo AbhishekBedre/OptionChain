@@ -140,7 +140,7 @@ namespace OptionChain.Controllers
                         sectorsResponses.Add(new SectorsResponse
                         {
                             Id = lastSectorialIndexUpdate.Id,
-                            Sector = item.IndexSymbol.Replace("NIFTY",""),
+                            Sector = item.IndexSymbol.Replace("NIFTY", ""),
                             PChange = lastSectorialIndexUpdate.PercentChange
                         });
                     }
@@ -173,7 +173,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("sector-stocks")]
-        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-17")
+        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-22")
         {
             List<Sector> sectorsStocks = new List<Sector>();
 
@@ -205,14 +205,26 @@ namespace OptionChain.Controllers
                     Stocks = new List<SectorStocksResponse>()
                 };
 
+                var tFactorDetail = await _optionDbContext.RFactors
+                            .Where(x => !string.IsNullOrEmpty(x.Symbol)
+                                && x.EntryDate == Convert.ToDateTime(currentDate)
+                                && stockNames.Contains(x.Symbol))
+                            .GroupBy(x => x.Symbol) // Group by Symbol
+                            .Select(g => g.OrderByDescending(x => x.Id).FirstOrDefault()) // Get the latest entry by Id
+                            .ToListAsync();
+
                 foreach (var stock in stockNames)
                 {
                     SectorStocksResponse sectorStocksResponse = new SectorStocksResponse();
 
                     var stockDetail = result.Where(x => x.Symbol == stock).OrderByDescending(x => x.Id).FirstOrDefault();
 
+                    var tFactor = tFactorDetail.Where(x => x.Symbol == stock).OrderByDescending(x => x.Id).FirstOrDefault();
+
                     if (stockDetail != null)
-                    {
+                    {                        
+                        double tFact = tFactor?.RFactor ?? 0;
+
                         mySector.Stocks.Add(new SectorStocksResponse
                         {
                             Id = stockDetail.Id,
@@ -222,6 +234,7 @@ namespace OptionChain.Controllers
                             Change = stockDetail.Change,
                             DayHigh = stockDetail.DayHigh,
                             DayLow = stockDetail.DayLow,
+                            TFactor = Math.Round(tFact, 2)
                         });
                     }
                 }
@@ -230,12 +243,12 @@ namespace OptionChain.Controllers
 
                 if (mySector.PChange < 0)
                 {
-                    mySector.Stocks = mySector.Stocks.OrderBy(x => x.PChange).ToList();
+                    mySector.Stocks = mySector.Stocks.OrderBy(x => x.PChange).ThenByDescending(x => x.TFactor).ToList();
                 }
 
                 if (mySector.PChange >= 0)
                 {
-                    mySector.Stocks = mySector.Stocks.OrderByDescending(x => x.PChange).ToList();
+                    mySector.Stocks = mySector.Stocks.OrderByDescending(x => x.PChange).ThenByDescending(x => x.TFactor).ToList();
                 }
 
                 sectorsStocks.Add(mySector);
@@ -299,11 +312,11 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("major-index")]
-        public async Task<List<MajorIndexReponse>> GetMajorIndexAsync(string currentDate) 
+        public async Task<List<MajorIndexReponse>> GetMajorIndexAsync(string currentDate)
         {
             List<string> majorIndex = new List<string> { "NIFTY 50", "NIFTY NEXT 50", "NIFTY BANK", "NIFTY FIN SERVICE", "NIFTY MID SELECT" };
 
-            var topIndex = await _optionDbContext.BroderMarkets.Where(x => x.EntryDate == Convert.ToDateTime(currentDate) && majorIndex.Contains(x.IndexSymbol ?? "")).OrderByDescending(x=>x.Id).Take(5).ToListAsync();
+            var topIndex = await _optionDbContext.BroderMarkets.Where(x => x.EntryDate == Convert.ToDateTime(currentDate) && majorIndex.Contains(x.IndexSymbol ?? "")).OrderByDescending(x => x.Id).Take(5).ToListAsync();
 
             List<MajorIndexReponse> response = new List<MajorIndexReponse>();
 
@@ -320,7 +333,7 @@ namespace OptionChain.Controllers
                 response.Add(index);
             }
 
-            return response; 
+            return response;
         }
     }
 
@@ -357,6 +370,7 @@ namespace OptionChain.Controllers
         public double? Change { get; set; }
         public double? DayHigh { get; set; }
         public double? DayLow { get; set; }
+        public double? TFactor { get; set; }
     }
 
     public class SectorsResponse
