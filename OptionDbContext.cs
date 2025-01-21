@@ -12,6 +12,7 @@ namespace OptionChain
         public DbSet<StockMetaData> StockMetaData { get; set; }
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<Sessions> Sessions { get; set; }
+        public DbSet<RFactorTable> RFactors { get; set; }
 
         // Bank NIFTY Options
         public DbSet<BankOptionData> BankOptionData { get; set; }
@@ -68,8 +69,17 @@ namespace OptionChain
             modelBuilder.Entity<StockData>()
                 .HasIndex(o => o.EntryDate).HasDatabaseName("IX_StockDataIndex_EntryDate");
 
+            modelBuilder.Entity<StockData>()
+                .HasIndex(o => new { o.Symbol, o.EntryDate, o.Time }).HasDatabaseName("IX_StockDataIndex_Symbol_EntryDate_Time");
+
             modelBuilder.Entity<StockMetaData>()
                 .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<RFactorTable>()
+                .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<RFactorTable>()
+                .HasIndex(o => new { o.Symbol, o.EntryDate, o.Time }).HasDatabaseName("IX_RFactorIndex_Symbol_EntryDate_Time");
 
             modelBuilder.Entity<StockMetaData>()
                 .HasIndex(o => o.EntryDate).HasDatabaseName("IX_StockMetaDataIndex_EntryDate");

@@ -518,6 +518,43 @@ namespace OptionChain.Migrations
                     b.ToTable("AllOptionData");
                 });
 
+            modelBuilder.Entity("OptionChain.RFactorTable", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<double>("DayHigh")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DayLow")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<double>("RFactor")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Symbol", "EntryDate", "Time")
+                        .HasDatabaseName("IX_RFactorIndex_Symbol_EntryDate_Time");
+
+                    b.ToTable("RFactors");
+                });
+
             modelBuilder.Entity("OptionChain.Sector", b =>
                 {
                     b.Property<long>("Id")
@@ -631,7 +668,7 @@ namespace OptionChain.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("Symbol")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<TimeSpan?>("Time")
                         .HasColumnType("time");
@@ -652,6 +689,9 @@ namespace OptionChain.Migrations
 
                     b.HasIndex("EntryDate")
                         .HasDatabaseName("IX_StockDataIndex_EntryDate");
+
+                    b.HasIndex("Symbol", "EntryDate", "Time")
+                        .HasDatabaseName("IX_StockDataIndex_Symbol_EntryDate_Time");
 
                     b.ToTable("StockData");
                 });

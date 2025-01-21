@@ -31,6 +31,20 @@ namespace OptionChain
         public TimeSpan? Time { get; set; }
     }
 
+    public class RFactorTable
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+        public string? Symbol { get; set; }
+        public double DayHigh { get; set; }
+        public double DayLow { get; set; }
+        public double Price { get; set; }
+        public double RFactor { get; set; }
+        public TimeSpan? Time { get; set; }
+        public DateTime? EntryDate { get; set; }
+    }
+
     public class FilteredOptionData
     {
         [Key]
