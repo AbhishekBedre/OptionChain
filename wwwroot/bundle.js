@@ -212,6 +212,12 @@ function getSectorUpdate(callback) {
     });
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector("#SectorUpdate").onclick = function () {
+        chart04();
+    }
+});
+
 const chart04 = () => {
 
     getSectorUpdate(function(response){
