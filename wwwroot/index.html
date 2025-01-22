@@ -58,6 +58,8 @@
             margin-bottom: 10px;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+
 </head>
 <body style="background-color: rgb(26 34 44 / 1);" x-data="{ page: 'sector-update', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
       x-init="
@@ -117,6 +119,7 @@
             sessionStorage.userInfo = JSON.stringify(user);
 
             var domain = window.location.origin;
+
             var subfolderName = "";
 
             var arr = window.location.pathname.split('/');
@@ -125,8 +128,38 @@
                 subfolderName = "/" + arr[1];
             }
 
-            var url = domain + subfolderName + "/sector-update.html";
-            window.location.href = url;
+            var url = domain + subfolderName + "/Users";
+            debugger;
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(
+                  { 
+                    "email": user.email, 
+                    "familyName": user.family_name, 
+                    "givenName": user.given_name, 
+                    "profileImgeUrl": user.picture, 
+                    "verifiedEmail": user.verified_email,
+                    "name": user.name
+                  }),
+                success: function (response) {
+                    var domain = window.location.origin;
+                    var subfolderName = "";
+
+                    var arr = window.location.pathname.split('/');
+
+                    if (arr.length > 2) {
+                        subfolderName = "/" + arr[1];
+                    }
+
+                    var url = domain + subfolderName + "/sector-update.html";
+                    window.location.href = url;
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', status, error);
+                }
+            });
         }
     
         // Handle token after login

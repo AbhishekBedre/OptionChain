@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OptionChain.Models;
 
 namespace OptionChain
 {
@@ -13,6 +14,7 @@ namespace OptionChain
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<Sessions> Sessions { get; set; }
         public DbSet<RFactorTable> RFactors { get; set; }
+        public DbSet<Users> Users { get; set; }
 
         // Bank NIFTY Options
         public DbSet<BankOptionData> BankOptionData { get; set; }
@@ -76,6 +78,9 @@ namespace OptionChain
                 .HasKey(s => s.Id); //PK
 
             modelBuilder.Entity<RFactorTable>()
+                .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<Users>()
                 .HasKey(s => s.Id); //PK
 
             modelBuilder.Entity<RFactorTable>()

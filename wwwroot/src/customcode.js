@@ -15,16 +15,17 @@ $(document).ready(function(){
         window.location.href = url;
     }
 
-    var userDetails = JSON.parse(sessionStorage.userInfo);
-    $("#profileImage").attr("src", userDetails.picture);
-    $("#ProfileName").text(userDetails.name);
-
+    setTimeout(function(){
+        var userDetails = JSON.parse(sessionStorage.userInfo);
+        $("#profileImage").attr("src", userDetails.picture);
+        $("#ProfileName").text(userDetails.name);    
+    }, 200)
+    
     $("#logout").click(function(){
         logout();
     });
 
     getIndexData();
-
 });
 
 function logout() {
@@ -242,7 +243,9 @@ function getIndexData(callback) {
                 $("#niftyFinServiceVeri").removeClass("text-meta-3");
                 $("#niftyFinServiceVeri").addClass("text-red");
             }
-            return callback(response);
+            if(callback != null || callback != undefined) {
+                return callback(response);
+            }
         },
         error: function (xhr, status, error) {
             $("div[x-show='loaded']").hide();

@@ -439,6 +439,41 @@ namespace OptionChain.Migrations
                     b.ToTable("CurrentExpiryOptionDaata");
                 });
 
+            modelBuilder.Entity("OptionChain.Models.Users", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FamilyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GivenName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileImgeUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("VerifiedEmail")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("OptionChain.OptionData", b =>
                 {
                     b.Property<long>("Id")
