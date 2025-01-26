@@ -42,36 +42,55 @@ namespace OptionChain.Controllers
         public async Task<AllOptionResponse> GetTradingViewOption(string currentDate)
         {
             Test ob = new Test();
+
+            // Generate time slots from 9:15 AM to 3:30 PM with a 5-minute interval
+            var startTime = new TimeSpan(9, 15, 0);
+            var endTime = new TimeSpan(15, 30, 0);
+            var interval = TimeSpan.FromMinutes(5);
+
+            var timeSlots = Enumerable.Range(0, (int)((endTime - startTime).TotalMinutes / interval.TotalMinutes) + 1)
+                .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 5)))
+                .ToList();
+
             var result = await _optionDbContext.Summary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
 
-            var positiveValue = result.Select(s => new OptionsResponse
+            // Map existing data to a dictionary for quick lookup
+            var resultDictionary = result.ToDictionary(
+            x => new TimeSpan(x.Time.Value.Hours, x.Time.Value.Minutes, 0), // Truncate milliseconds
+            x => new OptionsResponse
             {
-                value = s.CEPEOIPrevDiff * -1,
-                Time = ob.ConvertToUnixTimestamp(s.Time ?? new TimeSpan(), s.EntryDate ?? new DateTime())
+                value = x.CEPEOIPrevDiff * -1,
+                Time = ob.ConvertToUnixTimestamp(x.Time ?? TimeSpan.Zero, x.EntryDate ?? DateTime.MinValue)
+            });
+
+            // Create positive and negative value lists with default values
+            var positiveValue = timeSlots.Select(slot =>
+            {
+                if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value >= 0)
+                {
+                    return existingData;
+                }
+                return new OptionsResponse
+                {
+                    value = null,
+                    Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
+                };
             }).ToList();
 
-            var negetiveValue = result.Select(s => new OptionsResponse
+            var negetiveValue = timeSlots.Select(slot =>
             {
-                value = s.CEPEOIPrevDiff * -1,
-                Time = ob.ConvertToUnixTimestamp(s.Time ?? new TimeSpan(), s.EntryDate ?? new DateTime())
+                if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value < 0)
+                {
+                    return existingData;
+                }
+                return new OptionsResponse
+                {
+                    value = null,
+                    Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
+                };
             }).ToList();
 
             AllOptionResponse allOptionResponse = new AllOptionResponse();
-            positiveValue.ToList().ForEach(s =>
-            {
-                if (s.value < 0)
-                {
-                    s.value = null;
-                }
-            });
-
-            negetiveValue.ForEach(s =>
-            {
-                if (s.value >= 0)
-                {
-                    s.value = null;
-                }
-            });
 
             allOptionResponse.PositiveValue = positiveValue;
             allOptionResponse.NegetiveValue = negetiveValue;
@@ -84,44 +103,62 @@ namespace OptionChain.Controllers
         public async Task<AllOptionResponse> GetBank(string currentDate)
         {
             Test ob = new Test();
+
+            // Generate time slots from 9:15 AM to 3:30 PM with a 5-minute interval
+            var startTime = new TimeSpan(9, 15, 0);
+            var endTime = new TimeSpan(15, 30, 0);
+            var interval = TimeSpan.FromMinutes(5);
+
+            var timeSlots = Enumerable.Range(0, (int)((endTime - startTime).TotalMinutes / interval.TotalMinutes) + 1)
+                .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 5)))
+                .ToList();
+
+
             var result = await _optionDbContext.BankSummary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
 
-
-            var positiveValue = result.Select(s => new OptionsResponse
+            // Map existing data to a dictionary for quick lookup
+            var resultDictionary = result.ToDictionary(
+            x => new TimeSpan(x.Time.Value.Hours, x.Time.Value.Minutes, 0), // Truncate milliseconds
+            x => new OptionsResponse
             {
-                value = s.CEPEOIPrevDiff * -1,
-                Time = ob.ConvertToUnixTimestamp(s.Time ?? new TimeSpan(), s.EntryDate ?? new DateTime())
+                value = x.CEPEOIPrevDiff * -1,
+                Time = ob.ConvertToUnixTimestamp(x.Time ?? TimeSpan.Zero, x.EntryDate ?? DateTime.MinValue)
+            });
+
+            // Create positive and negative value lists with default values
+            var positiveValue = timeSlots.Select(slot =>
+            {
+                if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value >= 0)
+                {
+                    return existingData;
+                }
+                return new OptionsResponse
+                {
+                    value = null,
+                    Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
+                };
             }).ToList();
 
-            var negetiveValue = result.Select(s => new OptionsResponse
+            var negetiveValue = timeSlots.Select(slot =>
             {
-                value = s.CEPEOIPrevDiff * -1,
-                Time = ob.ConvertToUnixTimestamp(s.Time ?? new TimeSpan(), s.EntryDate ?? new DateTime())
+                if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value < 0)
+                {
+                    return existingData;
+                }
+                return new OptionsResponse
+                {
+                    value = null,
+                    Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
+                };
             }).ToList();
 
             AllOptionResponse allOptionResponse = new AllOptionResponse();
-            positiveValue.ToList().ForEach(s =>
-            {
-                if (s.value < 0)
-                {
-                    s.value = null;
-                }
-            });
-
-            negetiveValue.ForEach(s =>
-            {
-                if (s.value >= 0)
-                {
-                    s.value = null;
-                }
-            });
 
             allOptionResponse.PositiveValue = positiveValue;
             allOptionResponse.NegetiveValue = negetiveValue;
 
             return allOptionResponse;
         }
-
 
         [HttpGet("sectors")]
         public async Task<List<SectorsResponse>> GetSectorsTrend(string currentdate = "2025-01-24", int overall = 1)
@@ -322,7 +359,7 @@ namespace OptionChain.Controllers
             return sectorsStocks;
         }
 
-        [HttpGet("nifty-chart")]
+        /*[HttpGet("nifty-chart")]
         public async Task<IEnumerable<NiftyChart>> GetNiftyChartsAsync(string currentDate = "2025-01-16")
         {
             NiftyChart niftyChart = new NiftyChart();
@@ -339,7 +376,7 @@ namespace OptionChain.Controllers
 
 
             return updatedResult; //.OrderBy(x=>x.Id);            
-        }
+        }*/
 
         public static List<NiftyChart> FillMissingData(List<NiftyChart> data, string startTime = "09:15", string endTime = "15:30")
         {
