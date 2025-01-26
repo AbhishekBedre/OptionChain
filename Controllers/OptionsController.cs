@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using OptionChain.Migrations;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 
 namespace OptionChain.Controllers
@@ -26,13 +28,16 @@ namespace OptionChain.Controllers
     {
         private readonly ILogger _logger;
         private readonly OptionDbContext _optionDbContext;
+        private readonly IMemoryCache _memoryCache;
 
-        public OptionsController(ILogger<OptionsController> logger, OptionDbContext optionDbContext)
+        public OptionsController(ILogger<OptionsController> logger, OptionDbContext optionDbContext, IMemoryCache memoryCache)
         {
             _logger = logger;
             _optionDbContext = optionDbContext;
+            _memoryCache = memoryCache;
         }
 
+        // Nifty Option Chart
         [HttpGet("trading-view-option")]
         public async Task<AllOptionResponse> GetTradingViewOption(string currentDate)
         {
@@ -74,6 +79,7 @@ namespace OptionChain.Controllers
             return allOptionResponse;
         }
 
+        // Bank Nifty Option Chart
         [HttpGet("Bank")]
         public async Task<AllOptionResponse> GetBank(string currentDate)
         {
@@ -116,8 +122,9 @@ namespace OptionChain.Controllers
             return allOptionResponse;
         }
 
+
         [HttpGet("sectors")]
-        public async Task<List<SectorsResponse>> GetSectorsTrend(string currentdate, int overall = 1)
+        public async Task<List<SectorsResponse>> GetSectorsTrend(string currentdate = "2025-01-24", int overall = 1)
         {
             List<SectorsResponse> sectorsResponses = new List<SectorsResponse>();
 
@@ -128,7 +135,7 @@ namespace OptionChain.Controllers
                     .GroupBy(x => x.IndexSymbol)
                     .Select(group => new
                     {
-                        IndexSymbol = group.Key,
+                        IndexSymbol = group.Key.Replace("NIFTY", ""),
                         Items = group.ToList() // Retrieves all items in the group if needed
                     }).ToListAsync();
 
@@ -140,11 +147,56 @@ namespace OptionChain.Controllers
                         sectorsResponses.Add(new SectorsResponse
                         {
                             Id = lastSectorialIndexUpdate.Id,
-                            Sector = item.IndexSymbol.Replace("NIFTY", ""),
+                            Sector = item.IndexSymbol.Trim(),
                             PChange = lastSectorialIndexUpdate.PercentChange
                         });
                     }
                 }
+
+                // Add Custom Sectors
+
+                /*var sectorNames = sectorialIndex.Select(s => s.IndexSymbol.Trim()).ToList();
+
+                var otherSectors = await _optionDbContext.Sectors.Select(x => x.MappingName).Distinct().ToListAsync();
+
+                var getPending = otherSectors.Where(x => !sectorNames.Contains(x)).ToList();
+
+                // get stockNames from sectors
+
+                foreach (var item in getPending)
+                {
+                    var sectorStocks = await _optionDbContext.Sectors.Where(x => x.MappingName == item).Select(x => x.Symbol).ToListAsync();
+
+                    var result = await _optionDbContext.StockData.Where(x => x.EntryDate == Convert.ToDateTime(currentdate) && sectorStocks.Contains(x.Symbol)).ToListAsync();
+
+                    Sector mySector = new Sector
+                    {
+                        Id = 0,
+                        Name = item,
+                        Stocks = new List<SectorStocksResponse>(),
+                    };
+
+                    foreach (var stock in sectorStocks)
+                    {
+                        SectorStocksResponse sectorStocksResponse = new SectorStocksResponse();
+
+                        var stockDetail = result.Where(x => x.Symbol == stock).OrderByDescending(x => x.Id).FirstOrDefault();
+
+                        mySector.Stocks.Add(new SectorStocksResponse
+                        {
+                            PChange = stockDetail?.PChange,
+                        });
+                    }
+
+                    mySector.PChange = mySector.Stocks.Average(x => x.PChange);
+
+                    sectorsResponses.Add(new SectorsResponse
+                    {
+                        Id = 0,
+                        Sector = item,
+                        PChange = Math.Round(Convert.ToDecimal(mySector.Stocks.Average(x => x.PChange)), 2)
+                    }); ;
+                }*/
             }
             else
             {
@@ -168,6 +220,10 @@ namespace OptionChain.Controllers
                     PChange = Convert.ToDecimal(Math.Round(s.AvgPChange, 2))
                 }).ToList();
             }
+
+            _memoryCache.Remove("sectorUpdate");
+
+            _memoryCache.Set("sectorUpdate", sectorsResponses);
 
             return sectorsResponses.OrderByDescending(x => x.PChange).ToList();
         }
@@ -222,7 +278,7 @@ namespace OptionChain.Controllers
                     var tFactor = tFactorDetail.Where(x => x.Symbol == stock).OrderByDescending(x => x.Id).FirstOrDefault();
 
                     if (stockDetail != null)
-                    {                        
+                    {
                         double tFact = tFactor?.RFactor ?? 0;
 
                         mySector.Stocks.Add(new SectorStocksResponse
@@ -239,7 +295,16 @@ namespace OptionChain.Controllers
                     }
                 }
 
-                mySector.PChange = Math.Round(mySector.Stocks.Average(x => x.PChange) ?? 0, 2);
+                var sectorUpdate = _memoryCache.Get<List<SectorsResponse>>("sectorUpdate");
+
+                if (sectorUpdate == null || sectorUpdate.Where(x => x.Sector == sector).FirstOrDefault() == null)
+                {
+                    mySector.PChange = Math.Round(mySector.Stocks.Average(x => x.PChange) ?? 0, 2);
+                }
+                else
+                {
+                    mySector.PChange = Convert.ToDouble(sectorUpdate.Where(x => x.Sector == sector).FirstOrDefault()?.PChange);
+                }
 
                 if (mySector.PChange < 0)
                 {

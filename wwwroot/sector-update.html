@@ -31,18 +31,22 @@
         function autoRefresh() {
             const now = new Date();
             const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 15); // 09:15 AM
-            const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 45);  // 03:45 PM
+            const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 30);  // 03:30 PM
 
             if (now >= start && now <= end) {
-                // Calculate the milliseconds to the next minute
-                const nextMinute = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 5, 0, 0);
-                const timeToNextMinute = nextMinute - now;
+                // Calculate the next 5-minute slot
+                const minutes = now.getMinutes();
+                const nextSlot = Math.ceil(minutes / 5) * 5; // Round up to the next multiple of 5
+                const nextRefresh = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), nextSlot, 0, 0);
+                const timeToNextRefresh = nextRefresh - now;
 
-                console.log(`Reloading in ${timeToNextMinute / 1000} seconds`);
+                console.log(`Next refresh scheduled in ${timeToNextRefresh / 1000} seconds at ${nextRefresh.toLocaleTimeString()}`);
 
                 setTimeout(function () {
-                    location.reload(); // Refresh the page
-                }, timeToNextMinute); // Reload at the start of the next minute
+                     // Trigger the click
+                    window.reload();;
+                    //autoRefresh(); // Schedule the next refresh
+                }, timeToNextRefresh); // Reload at the start of the next 5-minute slot
             } else {
                 console.log("Outside refresh hours.");
             }
@@ -172,7 +176,6 @@
             });
         });
 
-
         function getSecorStocks(callback) {
 
             $("div[x-show='loaded']").show();
@@ -209,9 +212,6 @@
         // Start the refresh loop
         autoRefresh();
 
-        // Check every minute if the page should reload
-        setInterval(autoRefresh, 5 * 60 * 1000);
-
         localStorage.setItem("darkMode", true);
 
     </script>
@@ -243,7 +243,7 @@
 
             <!-- SIDEBAR HEADER -->
             <div class="flex items-center justify-between gap-2 px-6 lg:py-6.5">
-                <a href="index.html">
+                <a href="sector-update.html">
                     <img src="src/images/logo/logo-icon.svg" alt="Logo">
                     <h1 style="position: relative; top: -30px;right: -45px; font-size: 30px;color: #fff;font-weight: bold; font-family: inherit;">
                         Smart Trade
@@ -1275,7 +1275,7 @@
                             </span>
                         </button>
                         <!-- Hamburger Toggle BTN -->
-                        <a href="index.html" style="height: 30px;">
+                        <a href="sector-update.html" style="height: 30px;">
                             <img src="src/images/logo/logo-icon.svg" alt="Logo">
                             <h1 class="lg:block sm:hidden" style="position: relative; top: -30px;right: -45px; font-size: 28px;color: #fff;font-weight: bold; font-family: inherit;">
                                 Smart Trade

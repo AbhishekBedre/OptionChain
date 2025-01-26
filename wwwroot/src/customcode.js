@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function() {
 
     if(sessionStorage.userInfo == null || sessionStorage.userInfo == undefined || sessionStorage.accessToken == null) {
         var domain = window.location.origin;
@@ -15,11 +15,11 @@ $(document).ready(function(){
         window.location.href = url;
     }
 
-    setTimeout(function(){
+    setTimeout(function () {
         var userDetails = JSON.parse(sessionStorage.userInfo);
         $("#profileImage").attr("src", userDetails.picture);
-        $("#ProfileName").text(userDetails.name);    
-    }, 200)
+        $("#ProfileName").text(userDetails.name);
+    }, 200);
     
     $("#logout").click(function(){
         logout();
@@ -33,8 +33,7 @@ function logout() {
         const revokeUrl = `https://accounts.google.com/o/oauth2/revoke?token=${sessionStorage.accessToken}`;
         
         // Revoke the token
-        fetch(revokeUrl)
-        .then((response) => {
+        fetch(revokeUrl).then((response) => {
             if (response.ok) {
                 accessToken = null;
                 sessionStorage.clear();
