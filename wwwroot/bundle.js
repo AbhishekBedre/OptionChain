@@ -212,6 +212,38 @@ function getSectorUpdate(callback) {
     });
 }
 
+function loadCEPEPosition(callback) {
+  $("#chartCEPENifty").empty();
+
+  $("div[x-show='loaded']").show();
+
+  var selectedDate = $("#currentDate").val();
+
+  var domain = window.location.origin;
+  var subfolderName = "";
+
+  var arr = window.location.pathname.split('/');
+
+  if (arr.length > 2) {
+      subfolderName = "/" + arr[1];
+  }
+
+  var url = domain + subfolderName + "/Options/CEPEBank";
+
+  $.ajax({
+      url: url,
+      type: 'GET',
+      data: { "currentDate": selectedDate }, // Pass the date as a query parameter
+      success: function (response) {
+          return callback(response);
+      },
+      error: function (xhr, status, error) {
+          //$("div[x-show='loaded']").hide();
+          console.error('Error:', status, error);
+      }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#SectorUpdate").onclick = function () {
         chart04();
@@ -219,6 +251,138 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const chart04 = () => {
+
+  loadCEPEPosition(function(response){
+    debugger;
+
+    $("div[x-show='loaded']").hide();
+          
+    console.log(response);
+
+    var sampleData = Object.values(response);
+    var timeIntervals = Object.keys(response);
+
+    const colors = sampleData.map((value, index) => {
+        if (value >= 0) {
+            // Positive values
+            if (index > 0 && value > sampleData[index - 1]) return '#006400'; // Dark green for increasing values
+            return '#00FF00'; // Light green for positive values
+        } else {
+            // Negative values
+            if (index > 0 && value < sampleData[index - 1]) return '#8B0000'; // Dark red for decreasing values
+            return '#FF0000'; // Light red for negative values
+        }
+    });
+
+    // Create the chart instance
+    var CEPEOptions = {
+      series: [
+          {
+              data: sampleData,
+          },
+      ],
+      colors: ["#3C50E0"],
+      chart: {
+          fontFamily: "Satoshi, sans-serif",
+          type: "bar",
+          height: 350,
+          toolbar: {
+              show: true,
+          },
+      },
+      plotOptions: {
+          bar: {
+              horizontal: false,
+              columnWidth: "55%",
+              endingShape: "rounded",
+              borderRadius: 2,
+              colors: {
+                  ranges: [
+                      {
+                          from: -Infinity,
+                          to: -1,
+                          color: "#dc3545", // Red for negative values
+                      },
+                      {
+                          from: 1,
+                          to: Infinity,
+                          color: "#28a745", // Green for positive values
+                      },
+                  ],
+              },
+          },
+      },
+      dataLabels: {
+          enabled: false,
+      },
+      stroke: {
+          show: true,
+          width: 4,
+          colors: ["transparent"],
+      },
+      xaxis: {
+          categories: timeIntervals,
+          axisBorder: {
+              show: true,
+          },
+          axisTicks: {
+              show: true,
+          },
+          tickAmount: Math.floor(timeIntervals.length / 3), // Show fewer ticks
+          labels: {
+              show: true,
+              rotate: -45, // Rotate labels to avoid overlap
+              style: {
+                  fontSize: "12px", // Adjust font size
+              },
+          },
+      },
+      legend: {
+          show: true,
+          position: "top",
+          horizontalAlign: "left",
+          fontFamily: "Satoshi",
+          markers: {
+              radius: 99,
+          },
+      },
+      yaxis: {
+          title: false,
+      },
+      grid: {
+          yaxis: {
+              lines: {
+                  show: false,
+              },
+          },
+      },
+      tooltip: {
+          x: {
+              formatter: function (val) {
+                  return val;
+              },
+              show: true
+          },
+          y: {
+              formatter: function (val) {
+                  return val;
+              },
+          },
+      },
+    };
+
+    const chartCEPE = document.querySelectorAll("#chartCEPENifty");
+
+    if (chartCEPE.length) {
+        const CEPEChart = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(
+            document.querySelector("#chartCEPENifty"),
+            CEPEOptions
+        );
+        CEPEChart.render();
+    }
+
+
+  });
 
     getSectorUpdate(function(response){
 

@@ -98,6 +98,25 @@ namespace OptionChain.Controllers
             return allOptionResponse;
         }
 
+        [HttpGet("CEPEBank")]
+        public async Task<Dictionary<string,double>> CEPEDiff(string currentDate="2025-01-24")
+        {
+            var cepeDiff = await _optionDbContext.Summary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate)).ToListAsync();
+
+            Dictionary<string, double> response = new Dictionary<string, double>();
+
+            foreach (var item in cepeDiff)
+            {
+                var curDate = Convert.ToDateTime(currentDate);
+                var d = new DateTime(curDate.Year, curDate.Month, curDate.Day, item.Time.Value.Hours, item.Time.Value.Minutes, 0);
+
+                response.Add(d.ToString("hh:mm"), item.CEPEOIDiff);
+            }
+
+            return response;
+        }
+
+
         // Bank Nifty Option Chart
         [HttpGet("Bank")]
         public async Task<AllOptionResponse> GetBank(string currentDate)
@@ -112,7 +131,6 @@ namespace OptionChain.Controllers
             var timeSlots = Enumerable.Range(0, (int)((endTime - startTime).TotalMinutes / interval.TotalMinutes) + 1)
                 .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 5)))
                 .ToList();
-
 
             var result = await _optionDbContext.BankSummary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
 
