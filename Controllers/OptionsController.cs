@@ -524,6 +524,7 @@ namespace OptionChain.Controllers
         public double? DayHigh { get; set; }
         public double? DayLow { get; set; }
         public double? TFactor { get; set; }
+        public string? Time { get; set; }
     }
 
     public class SectorsResponse
