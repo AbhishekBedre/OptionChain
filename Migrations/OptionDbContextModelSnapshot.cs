@@ -360,6 +360,35 @@ namespace OptionChain.Migrations
                     b.ToTable("BroderMarkets");
                 });
 
+            modelBuilder.Entity("OptionChain.Controllers.SectorStocksResponse", b =>
+                {
+                    b.Property<double?>("Change")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("DayHigh")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("DayLow")
+                        .HasColumnType("float");
+
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<double?>("LastPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PChange")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("TFactor")
+                        .HasColumnType("float");
+
+                    b.ToTable("SameOpenLowHigh");
+                });
+
             modelBuilder.Entity("OptionChain.FilteredOptionData", b =>
                 {
                     b.Property<long>("Id")

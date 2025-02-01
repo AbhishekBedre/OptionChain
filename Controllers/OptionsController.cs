@@ -29,6 +29,8 @@ namespace OptionChain.Controllers
         private readonly ILogger _logger;
         private readonly OptionDbContext _optionDbContext;
         private readonly IMemoryCache _memoryCache;
+        private readonly TimeSpan cacheDuration = TimeSpan.FromHours(10); // Set cache expiration time
+
 
         public OptionsController(ILogger<OptionsController> logger, OptionDbContext optionDbContext, IMemoryCache memoryCache)
         {
@@ -99,7 +101,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("CEPEBank")]
-        public async Task<Dictionary<string,double>> CEPEDiff(string currentDate="2025-01-24")
+        public async Task<Dictionary<string, double>> CEPEDiff(string currentDate = "2025-01-24")
         {
             var cepeDiff = await _optionDbContext.Summary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate)).ToListAsync();
 
@@ -455,6 +457,36 @@ namespace OptionChain.Controllers
 
             return response;
         }
+
+        [HttpGet("same-open-low-high")]
+        public async Task<List<SectorStocksResponse>> SameOpenLowHighStocks(string currentDate = "2025-01-31")
+        {
+            try
+            {
+                string cacheKey = $"SectorStocksOpenHighLow_{currentDate}";
+
+                // Check if result exists in cache
+                if (!_memoryCache.TryGetValue(cacheKey, out List<SectorStocksResponse> sectorStocksResponses))
+                {
+                    // Fetch from database
+                    sectorStocksResponses = await _optionDbContext.SameOpenLowHigh
+                        .FromSqlRaw("EXEC [GetOpenLowHighStock] {0}", currentDate)
+                        .ToListAsync();
+
+                    // Store in cache with expiration policy
+                    var cacheOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(cacheDuration); // Cache expires after 5 minutes
+
+                    _memoryCache.Set(cacheKey, sectorStocksResponses, cacheOptions);
+                }
+
+                return sectorStocksResponses;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 
     public class MajorIndexReponse
@@ -487,6 +519,7 @@ namespace OptionChain.Controllers
         public string? Symbol { get; set; }
         public double? PChange { get; set; }
         public double? LastPrice { get; set; }
+        public double? Open { get; set; }
         public double? Change { get; set; }
         public double? DayHigh { get; set; }
         public double? DayLow { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OptionChain.Controllers;
 using OptionChain.Models;
 
 namespace OptionChain
@@ -23,6 +24,9 @@ namespace OptionChain
 
         // Broder Index
         public DbSet<BroderMarkets> BroderMarkets { get; set; }
+
+        // SP Execution
+        public DbSet<SectorStocksResponse> SameOpenLowHigh { get; set; }
 
         // Constructor for DbContext
         public OptionDbContext(DbContextOptions<OptionDbContext> options)
@@ -97,6 +101,8 @@ namespace OptionChain
 
             modelBuilder.Entity<BroderMarkets>()
                 .HasIndex(o => o.EntryDate).HasDatabaseName("IX_BroderMarketsIndex_EntryDate");
+
+            modelBuilder.Entity<SectorStocksResponse>().HasNoKey();
         }
     }
 
