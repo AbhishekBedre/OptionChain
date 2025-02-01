@@ -466,10 +466,10 @@ namespace OptionChain.Controllers
                 string cacheKey = $"SectorStocksOpenHighLow_{currentDate}";
 
                 // Check if result exists in cache
-                if (!_memoryCache.TryGetValue(cacheKey, out List<SectorStocksResponse> sectorStocksResponses))
-                {
+                //if (!_memoryCache.TryGetValue(cacheKey, out List<SectorStocksResponse> sectorStocksResponses))
+                //{
                     // Fetch from database
-                    sectorStocksResponses = await _optionDbContext.SameOpenLowHigh
+                    var sectorStocksResponses = await _optionDbContext.SameOpenLowHigh
                         .FromSqlRaw("EXEC [GetOpenLowHighStock] {0}", currentDate)
                         .ToListAsync();
 
@@ -478,7 +478,7 @@ namespace OptionChain.Controllers
                         .SetAbsoluteExpiration(cacheDuration); // Cache expires after 5 minutes
 
                     _memoryCache.Set(cacheKey, sectorStocksResponses, cacheOptions);
-                }
+                //}
 
                 return sectorStocksResponses;
             }

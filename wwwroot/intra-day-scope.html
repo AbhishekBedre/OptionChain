@@ -77,10 +77,10 @@
                 for (var i = 0; i < data.length; i++) {
 
                     var className = "text-meta-3";
-                    let sectorName = "OPEN = HIGH - [@ " + data[i][0].time + "]";
+                    let sectorName = "GO LONG - [@ " + data[i][0].time + "]";
                     if (data[i][0].pChange < 0) {
                         className = "text-meta-1";
-                        sectorName = "OPEN = LOW - [@ " + data[i][0].time + "]";
+                        sectorName = "GO SHORT - [@ " + data[i][0].time + "]";
                     }
 
                      //data[i].name + " - <span class=" + className + ">(" + data[i].pChange + "%)</span>";
