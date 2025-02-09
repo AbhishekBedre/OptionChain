@@ -5,6 +5,8 @@ using OptionChain.Migrations;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace OptionChain.Controllers
 {
@@ -487,6 +489,71 @@ namespace OptionChain.Controllers
                 throw;
             }
         }
+
+        [HttpGet("weekly-update")]
+        public async Task<List<WeeklySectorUpdate>> WeeklySectorUpdate()
+        {
+            try
+            {
+                List<WeeklySectorUpdate> weeklySectorUpdates = new List<WeeklySectorUpdate>();
+
+                var result = await _optionDbContext.WeeklySectorUpdate
+                    .FromSqlRaw("EXEC [WeeklyMarketUpdate]")
+                    .ToListAsync();
+                var resultGrup = result.GroupBy(x => x.Name).ToList();
+
+                var allKeys = resultGrup.Select(x => x.Key).ToList();
+
+                foreach (var item in allKeys)
+                {
+                    WeeklySectorUpdate week = new WeeklySectorUpdate();
+
+                    var weekData = result.Where(x => x.Name.ToLower() == item.ToLower()).OrderByDescending(x=>x.WeekStartDate).Take(5).ToList();
+
+                    week.Name = item.Replace("NIFTY", "").Trim();
+                    
+                    if(weekData.Count >=5)
+                        week.Week4 = weekData[4].PChange;
+                    
+                    if (weekData.Count >= 3)
+                        week.Week3 = weekData[3].PChange;
+
+                    week.Week2 = weekData[2].PChange;
+                    week.Week1 = weekData[1].PChange;
+                    week.LatestWeek = weekData[0].PChange;
+
+                    weeklySectorUpdates.Add(week);
+                }
+
+                return weeklySectorUpdates;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+    }
+
+    public class WeeklySectorUpdateParse
+    {
+        public string Name { get; set; }
+        public DateTime? WeekStartDate { get; set; }
+        public DateTime? WeekEndDate{ get; set; }
+        public decimal? WeeklyAverage { get; set; }
+        public decimal? PChange { get; set; }
+    }
+
+    public class WeeklySectorUpdate
+    {
+        public string Name { get; set; }
+        public decimal? LatestWeek { get; set; }
+        public decimal? Week1 { get; set; }
+        public decimal? Week2 { get; set; }
+        public decimal? Week3 { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public decimal? Week4 { get; set; }
     }
 
     public class MajorIndexReponse

@@ -27,6 +27,7 @@ namespace OptionChain
 
         // SP Execution
         public DbSet<SectorStocksResponse> SameOpenLowHigh { get; set; }
+        public DbSet<WeeklySectorUpdateParse> WeeklySectorUpdate { get; set; }
 
         // Constructor for DbContext
         public OptionDbContext(DbContextOptions<OptionDbContext> options)
@@ -103,6 +104,7 @@ namespace OptionChain
                 .HasIndex(o => o.EntryDate).HasDatabaseName("IX_BroderMarketsIndex_EntryDate");
 
             modelBuilder.Entity<SectorStocksResponse>().HasNoKey();
+            modelBuilder.Entity<WeeklySectorUpdateParse>().HasNoKey();
         }
     }
 

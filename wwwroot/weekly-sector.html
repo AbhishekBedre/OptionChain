@@ -5,23 +5,12 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Trade</title>
+    <title>Smart Trade - Intra day puls</title>
     <link rel="icon" href="favicon.ico">
     <link href="style.css" rel="stylesheet">
 
     <style>
         #tooltip {
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px;
-            border-radius: 4px;
-            pointer-events: none;
-            display: none; /* Initially hidden */
-            z-index: 9999;
-        }
-
-        #tooltipBankNifty {
             position: absolute;
             background-color: rgba(0, 0, 0, 0.7);
             color: white;
@@ -37,7 +26,6 @@
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script src="src/customcode.js"></script>
-
     <script>
 
         function autoRefresh() {
@@ -55,14 +43,27 @@
                 console.log(`Next refresh scheduled in ${timeToNextRefresh / 1000} seconds at ${nextRefresh.toLocaleTimeString()}`);
 
                 setTimeout(function () {
-                    // Trigger the click
+                     // Trigger the click
                     window.reload();;
-                    //autoRefresh(); // Schedule the next refresh
+                    autoRefresh(); // Schedule the next refresh
                 }, timeToNextRefresh); // Reload at the start of the next 5-minute slot
             } else {
                 console.log("Outside refresh hours.");
             }
         }
+
+        $(document).ready(function () {
+            // Example usage with the AJAX call
+
+            $("#SectorUpdate").click(function () {
+
+                $('.deleteToRefresh').each(function () {
+                    $(this).replaceWith('<div id="sectorStock"></div>');
+                });
+
+                getIndexData();
+            });
+        });
 
         // Start the refresh loop
         autoRefresh();
@@ -72,9 +73,9 @@
     </script>
 
     <script src="src/lightweight-charts.standalone.production.js"></script>
-
+    
 </head>
-<body x-data="{ page: 'option-apex', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+<body x-data="{ page: 'weekly-sector', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
       x-init="
       darkMode=JSON.parse(localStorage.getItem('darkMode'));
       $watch('darkMode', value=>
@@ -98,13 +99,12 @@
 
             <!-- SIDEBAR HEADER -->
             <div class="flex items-center justify-between gap-2 px-6 lg:py-6.5">
-                <a href="option-apex.html">
-                    <img src="src/images/logo/logo-icon.svg" alt="Logo" style="">
-                    <h1 class="lg:block sm:hidden" style="position: relative; top: -30px; right: -45px; font-size: 30px; color: #fff; font-weight: bold; font-family: inherit;">
+                <a href="sector-update.html">
+                    <img src="src/images/logo/logo-icon.svg" alt="Logo">
+                    <h1 style="position: relative; top: -30px;right: -45px; font-size: 30px;color: #fff;font-weight: bold; font-family: inherit;">
                         Smart Trade
                     </h1>
                 </a>
-
             </div>
             <!-- SIDEBAR HEADER -->
 
@@ -122,7 +122,7 @@
                                 <a class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
                                    href="#"
                                    @click.prevent="selected = (selected === 'Dashboard' ? '':'Dashboard')"
-                                   :class="{ 'bg-graydark dark:bg-meta-4': (selected === 'Dashboard') || (page === 'option-apex' || page === 'analytics' || page === 'stocks') }">
+                                   :class="{ 'bg-graydark dark:bg-meta-4': (selected === 'Dashboard') || (page === 'ecommerce' || page === 'analytics' || page === 'stocks') }">
                                     <svg class="fill-current"
                                          width="18"
                                          height="18"
@@ -1110,6 +1110,7 @@
                         <!-- Hamburger Toggle BTN -->
                         <button class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark"
                                 @click.stop="sidebarToggle = !sidebarToggle">
+
                             <span class="relative block h-5.5 w-5.5 cursor-pointer">
                                 <span class="du-block absolute right-0 h-full w-full">
                                     <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"
@@ -1128,12 +1129,13 @@
                             </span>
                         </button>
                         <!-- Hamburger Toggle BTN -->
-                        <a href="option-apex.html" style="height: 30px;">
+                        <a href="sector-update.html" style="height: 30px;">
                             <img src="src/images/logo/logo-icon.svg" alt="Logo">
                             <h1 class="lg:block sm:hidden" style="position: relative; top: -30px;right: -45px; font-size: 28px;color: #fff;font-weight: bold; font-family: inherit;">
                                 Smart Trade
                             </h1>
                         </a>
+
                     </div>
 
                     <div class="flex items-center gap-3 2xsm:gap-7">
@@ -1509,13 +1511,13 @@
                                             <tr>
                                                 <td>
                                                     <svg width="19"
-                                                         height="19"
-                                                         viewBox="0 0 19 19"
-                                                         fill="none"
-                                                         xmlns="http://www.w3.org/2000/svg">
+                                                        height="19"
+                                                        viewBox="0 0 19 19"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                              fill="#ee544e" />
-                                                    </svg>
+                                                                fill="#ee544e" />
+                                                    </svg>                                                
                                                 </td>
                                                 <td>
                                                     <span id="niftyPer" class="text-sm font-medium text-red">18%</span>
@@ -1527,8 +1529,8 @@
                                                     <span id="niftyVeri" class="text-sm font-medium text-red">+500</span>
                                                 </td>
                                             </tr>
-                                        </table>
-                                    </div>
+                                        </table>                                        
+                                    </div>                                    
                                 </div>
                                 <div class="flex items-center xl:justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
                                     <div>
@@ -1542,12 +1544,12 @@
                                             <tr>
                                                 <td>
                                                     <svg width="19"
-                                                         height="19"
-                                                         viewBox="0 0 19 19"
-                                                         fill="none"
-                                                         xmlns="http://www.w3.org/2000/svg">
+                                                        height="19"
+                                                        viewBox="0 0 19 19"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyBankIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                              fill="#10B981" />
+                                                            fill="#10B981" />
                                                     </svg>
                                                 </td>
                                                 <td>
@@ -1573,14 +1575,14 @@
                                     <div class="flex items-center gap-1">
                                         <table>
                                             <tr>
-                                                <td>
+                                                <td>                                                    
                                                     <svg width="19"
-                                                         height="19"
-                                                         viewBox="0 0 19 19"
-                                                         fill="none"
-                                                         xmlns="http://www.w3.org/2000/svg">
+                                                        height="19"
+                                                        viewBox="0 0 19 19"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyNext50Icon" d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
-                                                              fill="#F0950C" />
+                                                            fill="#F0950C" />
                                                     </svg>
                                                 </td>
                                                 <td>
@@ -1608,12 +1610,12 @@
                                             <tr>
                                                 <td>
                                                     <svg width="19"
-                                                         height="19"
-                                                         viewBox="0 0 19 19"
-                                                         fill="none"
-                                                         xmlns="http://www.w3.org/2000/svg">
+                                                            height="19"
+                                                            viewBox="0 0 19 19"
+                                                            fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyMidSelectIcon" d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
-                                                              fill="#F0950C" />
+                                                                fill="#F0950C" />
                                                     </svg>
                                                 </td>
                                                 <td>
@@ -1626,7 +1628,7 @@
                                                     <span id="niftyMidSelectVeri" class="text-sm font-medium">7%</span>
                                                 </td>
                                             </tr>
-                                        </table>
+                                        </table>                                        
                                     </div>
                                 </div>
                                 <div class="flex items-center xl:justify-center gap-2">
@@ -1641,12 +1643,12 @@
                                             <tr>
                                                 <td>
                                                     <svg width="19"
-                                                         height="19"
-                                                         viewBox="0 0 19 19"
-                                                         fill="none"
-                                                         xmlns="http://www.w3.org/2000/svg">
+                                                            height="19"
+                                                            viewBox="0 0 19 19"
+                                                            fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyFinServiceIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                              fill="#10B981" />
+                                                                fill="#10B981" />
                                                     </svg>
                                                 </td>
                                                 <td>
@@ -1659,525 +1661,72 @@
                                                     <span id="niftyFinServiceVeri" class="text-meta-3">12%</span>
                                                 </td>
                                             </tr>
-                                        </table>
+                                        </table>                                        
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- ====== Data Stats End -->
-                        <!-- NIFTY OPTION DATA START -->
-                        <div class="col-span-12 flex flex-wrap items-center gap-3">
+
+
+                        <!-- ====== Sector Chart Start -->
+                        <div class="col-span-12 flex flex-wrap items-center items-center justify-between gap-3">
                             <!-- Datepicker built with flatpickr -->
-                            <div class="relative">
-                                <input id="currentDate" class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary flatpickr-input active"
-                                       placeholder="Select date"
-                                       data-class="flatpickr-right" />
-                                <div class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
-                                    <svg width="18"
-                                         height="18"
-                                         viewBox="0 0 18 18"
-                                         fill="none"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
-                                              fill="#64748B" />
-                                    </svg>
+                            <div class="col-span-9 flex flex-wrap items-center sm\:justify-between gap-2">
+
+                                <div class="relative">
+                                    <input id="currentDate" class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary flatpickr-input active"
+                                           placeholder="Select date"
+                                           data-class="flatpickr-right" />
+                                    <div class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                                        <svg width="18"
+                                             height="18"
+                                             viewBox="0 0 18 18"
+                                             fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                  fill="#64748B" />
+                                        </svg>
+                                    </div>
+
+                                </div>
+
+                                <div class="z-1 inline-block rounded bg-white shadow-card-2 dark:bg-boxdark">
+                                    <button id="SectorUpdate" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+                                        Get Sector Details
+                                    </button>
                                 </div>
 
                             </div>
+                            <div class="col-span-3 flex flex-wrap items-center justify-between gap-2">
+                                <h1 style="position: relative; color: #fff; font-family: inherit;">Show last week only</h1>
 
-                            <div class="z-1 inline-block rounded bg-white shadow-card-2 dark:bg-boxdark">
-                                <button id="UpdateChart" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                                    Update Chart
-                                </button>
+                                <div x-data="{ switcherToggle: true, handleChange(event) {
+                            this.switcherToggle = event.target.checked;
+                            console.log('Checkbox state:', this.switcherToggle); } }">
+
+                                    <label for="toggle4" class="flex cursor-pointer select-none items-center">
+                                        <div class="relative">
+                                            <input type="checkbox" id="toggle4" class="sr-only" @change="handleChange($event);" x-model="switcherToggle" />
+                                            <div id="toggle4-div" :class="switcherToggle && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
+                                            <div :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                 class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
-                            <div>
-                                <h3 class="text-xl font-bold text-black dark:text-white">
-                                    Nifty Option Chart
-                                </h3>
-                            </div>
-                            <div>
-                                <div id="chartFourTradingView" style="width: 100%; background: #24303f; min-height:450px;"></div>
-                                <div id="tooltip"></div>  <!-- Tooltip container -->
-                                <script>
-                                    $(document).ready(function () {
-                                        tradingViewChat();
-
-                                        $("#UpdateChart").click(function () {
-                                            tradingViewChat();
-
-                                            getIndexData();
-                                        });
-                                    });
-                                    var chart = null;
-
-                                    function tradingViewChat() {
-                                        $("#chartFourTradingView").empty();
-
-                                        $("div[x-show='loaded']").show();
-
-                                        var selectedDate = $("#currentDate").val();
-
-                                        var domain = window.location.origin;
-                                        var subfolderName = "";
-
-                                        var arr = window.location.pathname.split('/');
-
-                                        if (arr.length > 2) {
-                                            subfolderName = "/" + arr[1];
-                                        }
-
-                                        var url = domain + subfolderName + "/Options/trading-view-option";
-
-                                        $.ajax({
-                                            url: url,
-                                            type: 'GET',
-                                            data: { "currentDate": selectedDate }, // Pass the date as a query parameter
-                                            success: function (response) {
-
-                                                $("div[x-show='loaded']").hide();
-                                                if (chart) {
-                                                    chart.remove();
-                                                }
-                                                // Create the chart instance
-                                                chart = LightweightCharts.createChart(document.getElementById('chartFourTradingView'), {
-                                                    layout: {
-                                                        background: { color: '#24303f' }, // Background color of the chart
-                                                        textColor: '#ffffff',       // Text color
-                                                    },
-                                                    grid: {
-                                                        vertLines: {
-                                                            color: '#f0f0f0',
-                                                            visible: false,
-                                                        },
-                                                        horzLines: {
-                                                            color: '#f0f0f0',
-                                                            visible: false,
-                                                        },
-                                                        highlightZeroLine: false,
-                                                    },
-                                                    priceScale: {
-                                                        scaleMargins: {
-                                                            top: 0.2, // Extra space above the highest value
-                                                            bottom: 0.2, // Extra space below the lowest value
-                                                        },
-                                                    },
-                                                    crosshair: {
-                                                        mode: LightweightCharts.CrosshairMode.Normal,
-                                                    },
-                                                    timeScale: {
-                                                        borderColor: '#cccccc',
-                                                        timeVisible: true, // Ensures time is visible on the x-axis
-                                                        secondsVisible: false, // Hides seconds if not required
-                                                        tickMarkFormatter: (time) => {
-                                                            const date = new Date(time * 1000);
-                                                            let hours = date.getHours();
-                                                            let minutes = date.getMinutes();
-                                                            // Ensure two digits for hours and minutes
-                                                            hours = hours < 10 ? `0${hours}` : hours;
-                                                            minutes = minutes < 10 ? `0${minutes}` : minutes;
-                                                            return `${hours}:${minutes}`; // Show only hours and minutes
-                                                        }
-                                                    }
-                                                });
-
-                                                // Define the series for positive values (green bars)
-                                                const positiveSeries = chart.addHistogramSeries({
-                                                    color: '#186e31',   // Green for positive values
-                                                    lineWidth: 1,       // Width of the outline line around the bars
-                                                    priceLineVisible: false,  // Disable price line (not needed for column chart)
-                                                });
-
-                                                // Define the series for negative values (red bars)
-                                                const negativeSeries = chart.addHistogramSeries({
-                                                    color: '#c03444',   // Red for negative values
-                                                    lineWidth: 1,       // Width of the outline line around the bars
-                                                    priceLineVisible: false,  // Disable price line (not needed for column chart)
-                                                });
-
-                                                // Add data to the chart, including positive and negative values
-                                                var p = response.positiveValue;
-                                                positiveSeries.setData(p);
-
-                                                var n = response.negetiveValue;
-
-                                                negativeSeries.setData(n);
-
-                                                // Highlight the 0 line with a custom style
-                                                /*const zeroLine = chart.addLineSeries({
-                                                    color: '#000000', // Red color for the zero line
-                                                    lineWidth: 2,     // Make it thicker
-                                                    priceLineVisible: true, // Show the price line on the chart
-                                                });
-
-                                                zeroLine.setData([{ time: 1634160000, value: 0 }, { time: 1634505600, value: 0 }]);*/
-
-                                                // Tooltip for hovering
-                                                const tooltip = document.getElementById('tooltip');
-
-                                                const firstCandleTime = p[0].time; // Start time of the first candle
-                                                const lastCandleTime = p[p.length - 1].time; // End time of the last candle
-
-                                                chart.timeScale().setVisibleRange({
-                                                    from: firstCandleTime,
-                                                    to: lastCandleTime,
-                                                });
-
-                                                // Subscribe to crosshair move events
-                                                chart.subscribeCrosshairMove((event) => {
-                                                    if (!event.time || !event.point) {
-                                                        tooltip.style.display = 'none'; // Hide tooltip if no data is available
-                                                        return;
-                                                    }
-
-                                                    const { point } = event;
-                                                    const seriesData = event.seriesData;
-
-                                                    // Get the value from the series
-                                                    const positiveValue = seriesData.get(positiveSeries);
-                                                    const negativeValue = seriesData.get(negativeSeries);
-
-                                                    let value = null;
-                                                    let color = null;
-
-                                                    if (positiveValue !== undefined && positiveValue !== null && positiveValue.value !== null) {
-                                                        value = positiveValue;
-                                                        color = '#4fff45'; // Green
-                                                    } else if (negativeValue !== undefined && negativeValue !== null) {
-                                                        value = negativeValue;
-                                                        color = '#ff4976'; // Red
-                                                    }
-
-                                                    if (value !== null) {
-
-                                                        console.log(value);
-
-                                                        const formattedTime = new Date(event.time * 1000).toLocaleString(); // Convert UNIX time to readable format
-
-                                                        tooltip.innerHTML = `
-                                                                                                        <div><strong>Time:</strong> ${formattedTime}</div>
-                                                                                                        <div><strong>Value:</strong> <span style="color: ${color}">${value.value}</span></div>`;
-
-                                                        const chartContainer = document.getElementById('chartFourTradingView');
-                                                        const chartRect = chartContainer.getBoundingClientRect();
-
-                                                        tooltip.style.left = `${point.x}px`; // Adjust tooltip x position
-                                                        tooltip.style.top = `${chartRect.top + point.y - 40}px`; // Adjust tooltip y position
-                                                        tooltip.style.display = 'block'; // Show tooltip
-
-                                                    } else {
-                                                        tooltip.style.display = 'none'; // Hide tooltip if no valid data
-                                                    }
-                                                });
-
-                                                //$("div[x-show='loaded']").hide();
-                                                console.log('Success:', response);
-                                                return;
-                                            },
-                                            error: function (xhr, status, error) {
-                                                //$("div[x-show='loaded']").hide();
-                                                console.error('Error:', status, error);
-                                            }
-                                        });
-                                    }
-
-                                    window.addEventListener('resize', () => {
-                                        const container = document.getElementById('chartFourTradingView');
-                                        const width = container.clientWidth;
-                                        const height = container.clientHeight;
-
-                                        // Resize the chart dynamically
-                                        chart.resize(width, height);
-                                    });
-                                </script>
-                            </div>
-                        </div>
-                        <!-- NIFTY OPTION DATA END -->
 
                         <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
                             <div>
                                 <h3 class="text-xl font-bold text-black dark:text-white">
-                                    NIFTY - CE PE POSITION OVERVIEW
+                                    Weekly sector update
                                 </h3>
                             </div>
                             <div>
-                                <div id="chartCEPENifty" style="width: 100%; background: #24303f; min-height:450px;"></div>
-                                <div id="tooltipCEPENifty"></div>  <!-- Tooltip container -->
+                                <div id="sectorWeeklyChart" style="min-height:600px;" class="-ml-5"></div>
                             </div>
                         </div>
-
-
-                        <!-- BNK NIFTY OPTION DATA START -->
-
-                        <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
-                            <div>
-                                <h3 class="text-xl font-bold text-black dark:text-white">
-                                    Bank Nifty Option Chart
-                                </h3>
-                            </div>
-                            <div>
-                                <div id="chartBankNifty" style="width: 100%; background: #24303f; min-height:450px;"></div>
-                                <div id="tooltipBankNifty"></div>  <!-- Tooltip container -->
-                                <script>
-                                    $(document).ready(function () {
-                                        tradingViewBankNiftyChart();
-
-                                        $("#UpdateChart").click(function () {
-                                            tradingViewBankNiftyChart();
-                                        });
-                                    });
-
-                                    var bankChart = null;
-
-                                    function tradingViewBankNiftyChart() {
-                                        $("#chartBankNifty").empty();
-
-                                        $("div[x-show='loaded']").show();
-
-                                        var selectedDate = $("#currentDate").val();
-
-                                        var domain = window.location.origin;
-                                        var subfolderName = "";
-
-                                        var arr = window.location.pathname.split('/');
-
-                                        if (arr.length > 2) {
-                                            subfolderName = "/" + arr[1];
-                                        }
-
-                                        var url = domain + subfolderName + "/Options/Bank";
-
-                                        $.ajax({
-                                            url: url,
-                                            type: 'GET',
-                                            data: { "currentDate": selectedDate }, // Pass the date as a query parameter
-                                            success: function (response) {
-
-                                                $("div[x-show='loaded']").hide();
-                                                if (bankChart) {
-                                                    bankChart.remove();
-                                                }
-                                                // Create the chart instance
-                                                bankChart = LightweightCharts.createChart(document.getElementById('chartBankNifty'), {
-                                                    layout: {
-                                                        background: { color: '#24303f' }, // Background color of the chart
-                                                        textColor: '#ffffff',       // Text color
-                                                    },
-                                                    grid: {
-                                                        vertLines: {
-                                                            color: '#f0f0f0',
-                                                            visible: false,
-                                                        },
-                                                        horzLines: {
-                                                            color: '#f0f0f0',
-                                                            visible: false,
-                                                        },
-                                                        highlightZeroLine: false,
-                                                    },
-                                                    priceScale: {
-                                                        scaleMargins: {
-                                                            top: 0.2, // Extra space above the highest value
-                                                            bottom: 0.2, // Extra space below the lowest value
-                                                        },
-                                                    },
-                                                    crosshair: {
-                                                        mode: LightweightCharts.CrosshairMode.Normal,
-                                                    },
-                                                    timeScale: {
-                                                        borderColor: '#cccccc',
-                                                        timeVisible: true, // Ensures time is visible on the x-axis
-                                                        secondsVisible: false, // Hides seconds if not required
-                                                        tickMarkFormatter: (time) => {
-                                                            const date = new Date(time * 1000);
-                                                            let hours = date.getHours();
-                                                            let minutes = date.getMinutes();
-                                                            // Ensure two digits for hours and minutes
-                                                            hours = hours < 10 ? `0${hours}` : hours;
-                                                            minutes = minutes < 10 ? `0${minutes}` : minutes;
-                                                            return `${hours}:${minutes}`; // Show only hours and minutes
-                                                        }
-                                                    }
-                                                });
-
-                                                // Define the series for positive values (green bars)
-                                                const positiveSeries = bankChart.addHistogramSeries({
-                                                    color: '#186e31',   // Green for positive values
-                                                    lineWidth: 1,       // Width of the outline line around the bars
-                                                    priceLineVisible: false,  // Disable price line (not needed for column chart)
-                                                });
-
-                                                // Define the series for negative values (red bars)
-                                                const negativeSeries = bankChart.addHistogramSeries({
-                                                    color: '#c03444',   // Red for negative values
-                                                    lineWidth: 1,       // Width of the outline line around the bars
-                                                    priceLineVisible: false,  // Disable price line (not needed for column chart)
-                                                });
-
-                                                // Add data to the chart, including positive and negative values
-                                                var p = response.positiveValue;
-                                                positiveSeries.setData(p);
-
-                                                var n = response.negetiveValue;
-
-                                                negativeSeries.setData(n);
-
-                                                // Highlight the 0 line with a custom style
-                                                /*const zeroLine = chart.addLineSeries({
-                                                    color: '#000000', // Red color for the zero line
-                                                    lineWidth: 2,     // Make it thicker
-                                                    priceLineVisible: true, // Show the price line on the chart
-                                                });
-
-                                                zeroLine.setData([{ time: 1634160000, value: 0 }, { time: 1634505600, value: 0 }]);*/
-
-                                                // Tooltip for hovering
-                                                let tooltip = document.getElementById('tooltipBankNifty');
-
-                                                const firstCandleTime = p[0].time; // Start time of the first candle
-                                                const lastCandleTime = p[p.length - 1].time; // End time of the last candle
-
-                                                bankChart.timeScale().setVisibleRange({
-                                                    from: firstCandleTime,
-                                                    to: lastCandleTime,
-                                                });
-
-                                                // Subscribe to crosshair move events
-                                                bankChart.subscribeCrosshairMove((event) => {
-                                                    if (!event.time || !event.point) {
-                                                        tooltip.style.display = 'none'; // Hide tooltip if no data is available
-                                                        return;
-                                                    }
-
-                                                    const { point } = event;
-                                                    const seriesData = event.seriesData;
-
-                                                    // Get the value from the series
-                                                    const positiveValue = seriesData.get(positiveSeries);
-                                                    const negativeValue = seriesData.get(negativeSeries);
-
-                                                    let value = null;
-                                                    let color = null;
-
-                                                    if (positiveValue !== undefined && positiveValue !== null && positiveValue.value !== null) {
-                                                        value = positiveValue;
-                                                        color = '#4fff45'; // Green
-                                                    } else if (negativeValue !== undefined && negativeValue !== null) {
-                                                        value = negativeValue;
-                                                        color = '#ff4976'; // Red
-                                                    }
-
-                                                    if (value !== null) {
-
-                                                        console.log(value);
-
-                                                        const formattedTime = new Date(event.time * 1000).toLocaleString(); // Convert UNIX time to readable format
-
-                                                        tooltip.innerHTML = `
-                                                                                                        <div><strong>Time:</strong> ${formattedTime}</div>
-                                                                                                        <div><strong>Value:</strong> <span style="color: ${color}">${value.value}</span></div>`;
-
-                                                        const chartContainer = document.getElementById('chartBankNifty');
-                                                        const chartRect = chartContainer.getBoundingClientRect();
-
-                                                        console.log(point.x + " " + point.y);
-
-                                                        tooltip.style.left = `${point.x}px`; // Adjust tooltip x position
-                                                        tooltip.style.top = `${point.y + chartRect.bottom + 100}px`;
-                                                        //tooltip.style.top = `${point.y + chartRect.top}px`; // Adjust tooltip y position*/
-                                                        tooltip.style.display = 'block'; // Show tooltip
-                                                    } else {
-                                                        tooltip.style.display = 'none'; // Hide tooltip if no valid data
-                                                    }
-                                                });
-
-                                                //$("div[x-show='loaded']").hide();
-                                                console.log('Success:', response);
-                                                return;
-                                            },
-                                            error: function (xhr, status, error) {
-                                                //$("div[x-show='loaded']").hide();
-                                                console.error('Error:', status, error);
-                                            }
-                                        });
-                                    }
-
-                                    window.addEventListener('resize', () => {
-                                        const container = document.getElementById('chartBankNifty');
-                                        const width = container.clientWidth;
-                                        const height = container.clientHeight;
-
-                                        // Resize the chart dynamically
-                                        bankChart.resize(width, height);
-                                    });
-                                </script>
-
-                            </div>
-                        </div>
-                        
-                        <!-- BNK NIFTY OPTION DATA END -->
-                        <!----
-    // SAMPLE CODE for SECTOR SECTION
-
-    <div class="col-span-12 xl:col-span-6">
-
-        <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
-            <div class="mb-7 flex items-center justify-between">
-                <div>
-                    <h3 class="text-xl font-bold text-black dark:text-white">
-                        OIL & GAS
-                    </h3>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-3 flex items-center">
-                        <p class="font-medium">Stock Name</p>
-                    </div>
-                    <div class="col-span-2 hidden items-center sm:flex">
-                        <p class="font-medium">Last Price</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="font-medium">Change</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="font-medium">% Change</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="font-medium">T Fact</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-3 flex items-center">
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                            <div class="h-12.5 w-15 rounded-md">
-                                <img src="src/images/product/product-01.png" alt="Product" />
-                            </div>
-                            <p class="text-sm font-medium text-black dark:text-white">
-                                OIL
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-span-2 hidden items-center sm:flex">
-                        <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="text-sm font-medium text-black dark:text-white">$269</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="text-sm font-medium text-black dark:text-white">22</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="text-sm font-medium text-meta-3">$45</p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    -->
                         <!-- ====== Table Two Start -->
                         <div class="col-span-12 xl:col-span-7" style="display: none;">
                             <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

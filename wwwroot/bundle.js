@@ -212,6 +212,109 @@ function getSectorUpdate(callback) {
     });
 }
 
+function getWeeklySectorUpdate(callback) {
+  debugger;
+
+  $("#sectorWeeklyChart").empty();
+
+  $("div[x-show='loaded']").show();
+
+  var domain = window.location.origin;
+
+  var subfolderName = "";
+
+  var arr = window.location.pathname.split('/');
+
+  if (arr.length > 2) {
+      subfolderName = "/" + arr[1];
+  }
+
+  var selectedDate = $("#currentDate").val();
+
+  var url = domain + subfolderName + "/Options/weekly-update";
+
+  var overall = $("#toggle4-div").hasClass("!bg-primary");
+
+  $.ajax({
+      url: url,
+      type: 'GET',
+      success: function (response) {
+          $("div[x-show='loaded']").hide();
+          console.log('Success:', response);
+          return callback(response);
+      },
+      error: function (xhr, status, error) {
+          $("div[x-show='loaded']").hide();
+          console.error('Error:', status, error);
+      }
+  });
+}
+
+function getWeekRange() {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+  // Calculate the difference to the previous Monday
+  const daysToSubtract = dayOfWeek === 0 ? 6 : (dayOfWeek === 6 ? 5 : dayOfWeek - 1);
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - daysToSubtract); // Adjust to the previous Monday
+  startOfWeek.setHours(0, 0, 0, 0); // Set the time to midnight
+
+  // Calculate the end of the week (Sunday)
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 4); // Add 6 days to the start of the week (Monday)
+
+  // Format the dates as YYYY-MM/DD
+  const formatDate = (date, onlyDate) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero
+    const day = String(date.getDate()).padStart(2, '0'); // Add leading zero
+    if(onlyDate) 
+      return `${year} - [${day}/${month}`;
+    else 
+      return `${day}/${month}`;
+  };
+
+  return `${formatDate(startOfWeek, true)} - ${formatDate(endOfWeek)}]`;
+}
+
+function getLastFourWeeks() {
+  const getWeekRange = (date) => {
+    const dayOfWeek = date.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : (dayOfWeek === 6 ? 5 : dayOfWeek - 1);
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() - daysToSubtract);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 4);
+
+    const formatDate = (date, onlyDate) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      if(onlyDate) 
+        return `${year} - [${day}/${month}`;
+      else 
+        return `${day}/${month}`;
+    };
+
+    return `${formatDate(startOfWeek, true)} - ${formatDate(endOfWeek)}]`;
+  };
+
+  const weeks = [];
+  let currentDate = new Date();
+
+  // Get the last 4 weeks
+  for (let i = 0; i < 4; i++) {
+    weeks.push(getWeekRange(currentDate));
+    currentDate.setDate(currentDate.getDate() - 7); // Move back 7 days
+  }
+
+  return weeks;
+}
+
+
 function loadCEPEPosition(callback) {
   $("#chartCEPENifty").empty();
 
@@ -253,7 +356,6 @@ document.addEventListener("DOMContentLoaded", function () {
 const chart04 = () => {
 
   loadCEPEPosition(function(response){
-    debugger;
 
     $("div[x-show='loaded']").hide();
           
@@ -384,116 +486,229 @@ const chart04 = () => {
 
   });
 
-    getSectorUpdate(function(response){
+  getSectorUpdate(function(response){
 
-        var data = response.map(m => m.pChange);
+      var data = response.map(m => m.pChange);
 
-        const chartSectorOptions = {
-            series: [
+      const chartSectorOptions = {
+          series: [
+              {
+                  data: data,
+              },
+          ],
+          colors: ["#3C50E0"],
+          chart: {
+              fontFamily: "Satoshi, sans-serif",
+              type: "bar",
+              height: 350,
+              toolbar: {
+                  show: true,
+              },
+          },
+          plotOptions: {
+              bar: {
+                  horizontal: false,
+                  columnWidth: "55%",
+                  endingShape: "rounded",
+                  borderRadius: 2,
+                  colors: {
+                      ranges: [
+                          {
+                              from: -Infinity,
+                              to: -1,
+                              color: "#dc3545", // Red for negative values
+                          },
+                          {
+                              from: 1,
+                              to: Infinity,
+                              color: "#28a745", // Green for positive values
+                          },
+                      ],
+                  },
+              },
+          },
+          dataLabels: {
+              enabled: false,
+          },
+          stroke: {
+              show: true,
+              width: 4,
+              colors: ["transparent"],
+          },
+          xaxis: {
+              categories: response.map(m => m.sector),
+              axisBorder: {
+                  show: true,
+              },
+              axisTicks: {
+                  show: true,
+              },
+              //tickAmount: Math.floor(response.length / 2), // Show fewer ticks
+              labels: {
+                  show: true,
+                  rotate: -45, // Rotate labels to avoid overlap
+                  style: {
+                      fontSize: "12px", // Adjust font size
+                  },
+              },
+          },
+          legend: {
+              show: true,
+              position: "top",
+              horizontalAlign: "left",
+              fontFamily: "Satoshi",
+              markers: {
+                  radius: 99,
+              },
+          },
+          yaxis: {
+              title: false,
+          },
+          grid: {
+              yaxis: {
+                  lines: {
+                      show: false,
+                  },
+              },
+          },
+          tooltip: {
+              x: {
+                  formatter: function (val) {
+                      return val;
+                  },
+                  show: true
+              },
+              y: {
+                  formatter: function (val) {
+                      return val;
+                  },
+              },
+          },
+      };
+
+      const chartSelector = document.querySelectorAll("#sectorChart");
+
+      if (chartSelector.length) {
+          const sectorChart = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(
+              document.querySelector("#sectorChart"),
+              chartSectorOptions
+          );
+          sectorChart.render();
+      }
+  });
+
+  getWeeklySectorUpdate(function(response){
+    debugger;
+    // Color shades
+    const colors = {
+        darkGreen: "#28a745",
+        darkRed: "#dc3545",
+    };
+
+    let seriesData = [];
+    let series = [];
+
+    var overall = $("#toggle4-div").hasClass("!bg-primary");
+    if(overall == true) {
+      seriesData = [        
+        response.map(m => m.week3),
+        response.map(m => m.week2),
+        response.map(m => m.week1),
+        response.map(m => m.latestWeek),
+      ];
+
+      var lastFourWeeks = getLastFourWeeks();
+      series = [
+        { name: lastFourWeeks[3], data: seriesData[0] },
+        { name: lastFourWeeks[2], data: seriesData[1] },
+        { name: lastFourWeeks[1], data: seriesData[2] },
+        { name: getWeekRange(), data: seriesData[3] },
+      ];
+    } else {
+      seriesData = [response.map(m => m.latestWeek)];
+      series = [{ name: getWeekRange(), data: seriesData[0] }]
+    }
+
+    const chartWeeklySectorOptions = {
+        series: series,
+        chart: {
+            fontFamily: "Arial, sans-serif",
+            type: "bar",
+            height: 400,
+            toolbar: { show: false },
+        },
+        colors: ["#3C50E0"],        
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: "80%",
+                borderRadius: 1,
+                dataLabels: { position: "top" },
+                colors: {
+                    ranges: [
+                        {
+                            from: -Infinity,
+                            to: -0.01,
+                            color: colors.darkRed, // Red for negative values
+                        },
+                        {
+                            from: 0.01,
+                            to: Infinity,
+                            color: colors.darkGreen, // Green for positive values
+                        },
+                    ],
+                },
+            },
+        },
+        dataLabels: { enabled: false },
+        stroke: { show: true, width: 1, colors: ["transparent"] },
+        xaxis: {
+          categories: response.map(m => m.name),
+          
+        },        
+        legend: { show: false },        
+        annotations: {
+            yaxis: [
                 {
-                    data: data,
+                    y: 0,
+                    borderColor: "#edf2fa", // Black zero line
+                    strokeDashArray: 0, // Solid line
+                    label: {
+                        position: "left",
+                        style: {
+                            color: "#fff",
+                            background: "#000",
+                            fontWeight: "bold",
+                        },
+                    },
                 },
             ],
-            colors: ["#3C50E0"],
-            chart: {
-                fontFamily: "Satoshi, sans-serif",
-                type: "bar",
-                height: 350,
-                toolbar: {
-                    show: true,
+        },
+        tooltip: {
+            x: {
+                formatter: function (val) {
+                    return val;
+                },
+                show: true
+            },
+            y: {
+                formatter: function (val) {
+                    return val;
                 },
             },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: "55%",
-                    endingShape: "rounded",
-                    borderRadius: 2,
-                    colors: {
-                        ranges: [
-                            {
-                                from: -Infinity,
-                                to: -1,
-                                color: "#dc3545", // Red for negative values
-                            },
-                            {
-                                from: 1,
-                                to: Infinity,
-                                color: "#28a745", // Green for positive values
-                            },
-                        ],
-                    },
-                },
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            stroke: {
-                show: true,
-                width: 4,
-                colors: ["transparent"],
-            },
-            xaxis: {
-                categories: response.map(m => m.sector),
-                axisBorder: {
-                    show: true,
-                },
-                axisTicks: {
-                    show: true,
-                },
-                //tickAmount: Math.floor(response.length / 2), // Show fewer ticks
-                labels: {
-                    show: true,
-                    rotate: -45, // Rotate labels to avoid overlap
-                    style: {
-                        fontSize: "12px", // Adjust font size
-                    },
-                },
-            },
-            legend: {
-                show: true,
-                position: "top",
-                horizontalAlign: "left",
-                fontFamily: "Satoshi",
-                markers: {
-                    radius: 99,
-                },
-            },
-            yaxis: {
-                title: false,
-            },
-            grid: {
-                yaxis: {
-                    lines: {
-                        show: false,
-                    },
-                },
-            },
-            tooltip: {
-                x: {
-                    formatter: function (val) {
-                        return val;
-                    },
-                    show: true
-                },
-                y: {
-                    formatter: function (val) {
-                        return val;
-                    },
-                },
-            },
-        };
+        },
+    };
 
-        const chartSelector = document.querySelectorAll("#sectorChart");
+    const chartWeeklySelector = document.querySelectorAll("#sectorWeeklyChart");
 
-        if (chartSelector.length) {
-            const sectorChart = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(
-                document.querySelector("#sectorChart"),
-                chartSectorOptions
-            );
-            sectorChart.render();
-        }
-    });
+    if (chartWeeklySelector.length) {
+        const sectorWeeklyChart = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(
+            document.querySelector("#sectorWeeklyChart"),
+            chartWeeklySectorOptions
+        );
+        sectorWeeklyChart.render();
+    }
+  });
 
     /*getNiftyChartData(function(response){
 
