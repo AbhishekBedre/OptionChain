@@ -16,6 +16,7 @@ namespace OptionChain
         public DbSet<Sessions> Sessions { get; set; }
         public DbSet<RFactorTable> RFactors { get; set; }
         public DbSet<Users> Users { get; set; }
+        public DbSet<FiiDiiActivity> FiiDiiActivitys { get; set; }
 
         // Bank NIFTY Options
         public DbSet<BankOptionData> BankOptionData { get; set; }
