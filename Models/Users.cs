@@ -16,4 +16,17 @@ namespace OptionChain.Models
         public bool VerifiedEmail { get; set; }
         public DateTime? LastUpdated { get; set; }
     }
+
+    public class FiiDiiActivity
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+        public string Category { get; set; }
+        public DateTime? Date { get; set; }
+        public decimal? BuyValue { get; set; }
+        public decimal? SellValue { get; set; }
+        public decimal? NetValue { get; set; }
+    }
+
 }

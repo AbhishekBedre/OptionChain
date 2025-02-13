@@ -382,6 +382,13 @@ namespace OptionChain.Controllers
             return sectorsStocks;
         }
 
+        [HttpGet("advances")]
+        public async Task<Advance> GetAdvancesDetails(string currentDate="2025-02-12") {            
+            var result = await _optionDbContext.Advance.Where(x=>x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x=>x.Time).FirstOrDefaultAsync();
+            if(result != null)
+                return result;
+        }
+
         /*[HttpGet("nifty-chart")]
         public async Task<IEnumerable<NiftyChart>> GetNiftyChartsAsync(string currentDate = "2025-01-16")
         {
