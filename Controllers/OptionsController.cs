@@ -384,9 +384,8 @@ namespace OptionChain.Controllers
 
         [HttpGet("advances")]
         public async Task<Advance> GetAdvancesDetails(string currentDate="2025-02-12") {            
-            var result = await _optionDbContext.Advance.Where(x=>x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x=>x.Time).FirstOrDefaultAsync();
-            if(result != null)
-                return result;
+            var result = await _optionDbContext.Advance.Where(x=>x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x=>x.Time).FirstOrDefaultAsync();            
+            return result;
         }
 
         /*[HttpGet("nifty-chart")]
