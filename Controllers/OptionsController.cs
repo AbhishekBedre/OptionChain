@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 
 namespace OptionChain.Controllers
@@ -526,6 +527,46 @@ namespace OptionChain.Controllers
                 }
 
                 return weeklySectorUpdates;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        [HttpGet("sectors-stocks")]
+        public async Task<List<SectorStocksResponse>> GetSectorsStocks(string sectorName, string currentDate="2025-02-07")
+        {
+            List<SectorStocksResponse> sectorStocksResponses = new();
+            try
+            {
+                var sectorStock = await _optionDbContext.Sectors.Where(x => x.MappingName.ToLower() == sectorName.ToLower()).Select(x=>x.Symbol).ToListAsync();
+                foreach (var item in sectorStock)
+                {
+                    var stocks = await _optionDbContext.StockData.Where(x => x.Symbol == item && x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x => x.Time).FirstOrDefaultAsync();
+
+                    if (stocks != null)
+                    {
+                        var rFact = await _optionDbContext.RFactors.Where(x => x.Symbol == stocks.Symbol && x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x => x.Time).FirstOrDefaultAsync();
+
+                        sectorStocksResponses.Add(new SectorStocksResponse
+                        {
+                            Id = stocks.Id,
+                            Change = stocks.Change,
+                            DayHigh = stocks.DayHigh,
+                            DayLow = stocks.DayLow,
+                            LastPrice = stocks.LastPrice,
+                            Open = stocks.Open,
+                            PChange = stocks.PChange,
+                            Symbol = stocks.Symbol,
+                            Time = stocks.Time.Value.Hours + ":" + stocks.Time.Value.Minutes,
+                            TFactor = rFact != null ? Math.Round(rFact.RFactor, 2): 0
+                        });
+                    }
+                }
+
+                return sectorStocksResponses;
             }
             catch (Exception)
             {

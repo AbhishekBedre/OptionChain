@@ -62,6 +62,7 @@
                 });
 
                 getIndexData();
+
             });
         });
 
@@ -69,6 +70,143 @@
         autoRefresh();
 
         localStorage.setItem("darkMode", true);
+
+        function renderSectorStocks(name, mydata) {
+            const container = document.getElementById('sectorStock');
+            container.innerHTML = ''; // Clear previous content
+
+
+            //data[0].stocks[0].symbol
+
+            var negSectors = mydata.filter(f => f.pChange < 0).sort((a, b) => (a.pChange - b.pChange));
+            var posSectors = mydata.filter(f => f.pChange > 0).sort((a, b) => (b.pChange - a.pChange));
+
+            const data = [];
+            const maxLength = Math.max(negSectors.length, posSectors.length);
+
+            //for (let i = 0; i < maxLength; i++) {
+                data.push(negSectors); // Add one negative object
+                data.push(posSectors); // Add one positive object                
+            //}
+            if (data != null && data.length > 0) {
+
+                var finalData = ``;
+
+                for (var i = 0; i < data.length; i++) {
+
+                    var className = "text-meta-3";
+                    let sectorName = name + " - Bullish Stocks";
+                    debugger;
+                    if (data != null && data[i].length > 0 && data[i][0].pChange < 0) {
+                        className = "text-meta-1";
+                        sectorName = name + " - Bearish Stocks";
+                    }
+
+                     //data[i].name + " - <span class=" + className + ">(" + data[i].pChange + "%)</span>";
+
+                    var mainDiv = `<div class="col-span-12 xl:col-span-6 deleteToRefresh scroll-container">
+                                      <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                          <div class="mb-7 p-4 flex items-center justify-between">
+                                              <div>
+                                                  <h3 class="text-xl font-bold text-black dark:text-white">
+                                                  ${sectorName}
+                                                  </h3>
+                                              </div>
+                                          </div>
+                                          <div class="flex flex-col gap-2">`;
+
+                    var stockContent = `
+                                              <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                                  <div class="col-span-2 xl:col-span-3 flex items-center">
+                                                      <p class="font-medium">Name</p>
+                                                  </div>
+                                                  <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                                                      <p class="font-medium">Price</p>
+                                                  </div>
+                                                  <!--<div class="col-span-1 flex items-center">
+                                                      <p class="font-medium">Change</p>
+                                                  </div>-->
+                                                  <div class="col-span-2 flex items-center">
+                                                      <p class="font-medium">%</p>
+                                                  </div>
+                                                  <div class="col-span-1 flex items-center">
+                                                      <p class="font-medium">T Fact</p>
+                                                  </div>
+                                              </div>`;
+
+                    for (var j = 0; j < data[i].length; j++) {
+
+                        var stockClassName = "text-success";
+                        if (data[i][j].pChange < 0)
+                            stockClassName = "text-danger";
+
+                        stockContent += `
+                                              <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                                  <div class="col-span-2 xl:col-span-3 flex items-center">
+                                                      <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                                          <p class="text-sm font-medium text-black dark:text-white">
+                                                              <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${data[i][j].symbol}&interval=5">
+                                                                ${data[i][j].symbol}
+                                                              </a>
+                                                          </p>
+                                                      </div>
+                                                  </div>
+                                                  <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                                                      <p class="text-sm font-medium text-black ${stockClassName}">${data[i][j].lastPrice}</p>
+                                                  </div>
+                                                  <!--<div class="col-span-1 flex items-center">
+                                                      <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">${data[i][j].change}</p>
+                                                  </div>-->
+                                                  <div class="col-span-2 flex items-center">
+                                                      <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">${data[i][j].pChange}</p>
+                                                  </div>
+                                                  <div class="col-span-1 flex items-center">
+                                                      <p class="text-sm font-medium text-meta-8">${data[i][j].tFactor}</p>
+                                                  </div>
+                                              </div>
+                                              `;
+                    }
+
+                    finalData += mainDiv + stockContent + `</div>` + `</div></div>`;
+
+                }
+
+                container.outerHTML = finalData;
+            }
+        }
+
+        function getSecorStocks(sectorName, callback) {
+
+            $("div[x-show='loaded']").show();
+
+            var domain = window.location.origin;
+            var subfolderName = "";
+
+            var arr = window.location.pathname.split('/');
+
+            if (arr.length > 2) {
+                subfolderName = "/" + arr[1];
+            }
+
+            var url = domain + subfolderName + "/Options/sectors-stocks";
+
+            var selectedDate = $("#currentDate").val();
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { "sectorName" : sectorName , "currentDate": selectedDate }, // Pass the date as a query parameter
+                success: function (response) {
+                    $("div[x-show='loaded']").hide();
+                    console.log('Success:', response);
+                    return callback(response);
+                },
+                error: function (xhr, status, error) {
+                    $("div[x-show='loaded']").hide();
+                    console.error('Error:', status, error);
+                }
+            });
+            }
 
     </script>
 
@@ -1727,6 +1865,11 @@
                                 <div id="sectorWeeklyChart" style="min-height:600px;" class="-ml-5"></div>
                             </div>
                         </div>
+
+                        <div id="sectorStock"></div>
+
+
+
                         <!-- ====== Table Two Start -->
                         <div class="col-span-12 xl:col-span-7" style="display: none;">
                             <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

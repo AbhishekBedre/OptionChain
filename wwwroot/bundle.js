@@ -636,6 +636,20 @@ const chart04 = () => {
             type: "bar",
             height: 400,
             toolbar: { show: false },
+            events: {
+              dataPointSelection: function(event, chartContext, config) {
+                console.log(event);
+                console.log(config.w.globals.labels[config.dataPointIndex]); // Sector Name                  
+                  debugger;
+                  let sectorName = config.w.globals.labels[config.dataPointIndex];
+                  $('.deleteToRefresh').each(function () {
+                    $(this).replaceWith('<div id="sectorStock"></div>');
+                  });
+                  getSecorStocks(sectorName , function(response){
+                    renderSectorStocks(sectorName, response);
+                  })
+              }
+          }
         },
         colors: ["#3C50E0"],        
         plotOptions: {
@@ -657,7 +671,7 @@ const chart04 = () => {
                             color: colors.darkGreen, // Green for positive values
                         },
                     ],
-                },
+                },                
             },
         },
         dataLabels: { enabled: false },
