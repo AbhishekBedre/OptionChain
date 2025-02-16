@@ -768,7 +768,7 @@ const chart04 = () => {
               dataPointSelection: function(event, chartContext, config) {
                 console.log(event);
                 console.log(config.w.globals.labels[config.dataPointIndex]); // Sector Name                  
-                  debugger;
+                  
                   let sectorName = config.w.globals.labels[config.dataPointIndex];
                   $('.deleteToRefresh').each(function () {
                     $(this).replaceWith('<div id="sectorStock"></div>');
