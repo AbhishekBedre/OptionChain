@@ -29,6 +29,7 @@ namespace OptionChain
         // SP Execution
         public DbSet<SectorStocksResponse> SameOpenLowHigh { get; set; }
         public DbSet<WeeklySectorUpdateParse> WeeklySectorUpdate { get; set; }
+        public DbSet<SectorStocksResponse> WeeklyStockUpdates { get; set; }
 
         // Constructor for DbContext
         public OptionDbContext(DbContextOptions<OptionDbContext> options)

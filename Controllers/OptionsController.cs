@@ -383,8 +383,9 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("advances")]
-        public async Task<Advance> GetAdvancesDetails(string currentDate="2025-02-12") {            
-            var result = await _optionDbContext.Advance.Where(x=>x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x=>x.Time).FirstOrDefaultAsync();            
+        public async Task<Advance> GetAdvancesDetails(string currentDate = "2025-02-12")
+        {
+            var result = await _optionDbContext.Advance.Where(x => x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x => x.Time).FirstOrDefaultAsync();
             return result;
         }
 
@@ -477,16 +478,16 @@ namespace OptionChain.Controllers
                 // Check if result exists in cache
                 //if (!_memoryCache.TryGetValue(cacheKey, out List<SectorStocksResponse> sectorStocksResponses))
                 //{
-                    // Fetch from database
-                    var sectorStocksResponses = await _optionDbContext.SameOpenLowHigh
-                        .FromSqlRaw("EXEC [GetOpenLowHighStock] {0}", currentDate)
-                        .ToListAsync();
+                // Fetch from database
+                var sectorStocksResponses = await _optionDbContext.SameOpenLowHigh
+                    .FromSqlRaw("EXEC [GetOpenLowHighStock] {0}", currentDate)
+                    .ToListAsync();
 
-                    // Store in cache with expiration policy
-                    var cacheOptions = new MemoryCacheEntryOptions()
-                        .SetAbsoluteExpiration(cacheDuration); // Cache expires after 5 minutes
+                // Store in cache with expiration policy
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(cacheDuration); // Cache expires after 5 minutes
 
-                    _memoryCache.Set(cacheKey, sectorStocksResponses, cacheOptions);
+                _memoryCache.Set(cacheKey, sectorStocksResponses, cacheOptions);
                 //}
 
                 return sectorStocksResponses;
@@ -498,15 +499,27 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("weekly-update")]
-        public async Task<List<WeeklySectorUpdate>> WeeklySectorUpdate()
+        public async Task<List<WeeklySectorUpdate>> WeeklySectorUpdate(string currentDate = "2025-02-14", int overall = 1)
         {
             try
             {
+                DateTime selectedDate = Convert.ToDateTime(currentDate); // or any specific date
+                int diff = (7 + (selectedDate.DayOfWeek - DayOfWeek.Monday)) % 7;
+                DateTime mondayDate = selectedDate.AddDays(-diff);
+
+                DateTime fridayDate = mondayDate.AddDays(4);
+
                 List<WeeklySectorUpdate> weeklySectorUpdates = new List<WeeklySectorUpdate>();
 
                 var result = await _optionDbContext.WeeklySectorUpdate
                     .FromSqlRaw("EXEC [WeeklyMarketUpdate]")
                     .ToListAsync();
+
+                if (overall == 1)
+                {
+                    result = result.Where(x => x.WeekStartDate >= mondayDate.Date && x.WeekEndDate <= fridayDate.Date).ToList();
+                }
+
                 var resultGrup = result.GroupBy(x => x.Name).ToList();
 
                 var allKeys = resultGrup.Select(x => x.Key).ToList();
@@ -515,19 +528,24 @@ namespace OptionChain.Controllers
                 {
                     WeeklySectorUpdate week = new WeeklySectorUpdate();
 
-                    var weekData = result.Where(x => x.Name.ToLower() == item.ToLower()).OrderByDescending(x=>x.WeekStartDate).Take(5).ToList();
+                    var weekData = result.Where(x => x.Name.ToLower() == item.ToLower()).OrderByDescending(x => x.WeekStartDate).Take(5).ToList();
 
                     week.Name = item.Replace("NIFTY", "").Trim();
-                    
-                    if(weekData.Count >=5)
+
+                    if (weekData.Count > 5)
                         week.Week4 = weekData[4].PChange;
-                    
-                    if (weekData.Count >= 3)
+
+                    if (weekData.Count > 3)
                         week.Week3 = weekData[3].PChange;
 
-                    week.Week2 = weekData[2].PChange;
-                    week.Week1 = weekData[1].PChange;
-                    week.LatestWeek = weekData[0].PChange;
+                    if (weekData.Count > 2)
+                        week.Week2 = weekData[2].PChange;
+
+                    if (weekData.Count > 1)
+                        week.Week1 = weekData[1].PChange;
+
+                    if (weekData.Count > 0)
+                        week.LatestWeek = weekData[0].PChange;
 
                     weeklySectorUpdates.Add(week);
                 }
@@ -536,41 +554,28 @@ namespace OptionChain.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
 
         [HttpGet("sectors-stocks")]
-        public async Task<List<SectorStocksResponse>> GetSectorsStocks(string sectorName, string currentDate="2025-02-07")
+        public async Task<List<SectorStocksResponse>> GetSectorsStocks(string sectorName, string currentDate = "2025-02-07")
         {
-            List<SectorStocksResponse> sectorStocksResponses = new();
             try
             {
-                var sectorStock = await _optionDbContext.Sectors.Where(x => x.MappingName.ToLower() == sectorName.ToLower()).Select(x=>x.Symbol).ToListAsync();
-                foreach (var item in sectorStock)
+                DateTime selectedDate = Convert.ToDateTime(currentDate); // or any specific date
+                int diff = (7 + (selectedDate.DayOfWeek - DayOfWeek.Monday)) % 7;
+                DateTime mondayDate = selectedDate.AddDays(-diff);
+
+                DateTime fridayDate = mondayDate.AddDays(4);
+
+                var sectorStocksResponses = await _optionDbContext.WeeklyStockUpdates.FromSqlRaw("EXEC [WeeklyStockUpdate] '" + mondayDate.ToString("yyyy-MM-dd") + "', '" + fridayDate.ToString("yyyy-MM-dd") + "' ").ToListAsync();
+
+                sectorStocksResponses.ForEach(x =>
                 {
-                    var stocks = await _optionDbContext.StockData.Where(x => x.Symbol == item && x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x => x.Time).FirstOrDefaultAsync();
-
-                    if (stocks != null)
-                    {
-                        var rFact = await _optionDbContext.RFactors.Where(x => x.Symbol == stocks.Symbol && x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x => x.Time).FirstOrDefaultAsync();
-
-                        sectorStocksResponses.Add(new SectorStocksResponse
-                        {
-                            Id = stocks.Id,
-                            Change = stocks.Change,
-                            DayHigh = stocks.DayHigh,
-                            DayLow = stocks.DayLow,
-                            LastPrice = stocks.LastPrice,
-                            Open = stocks.Open,
-                            PChange = stocks.PChange,
-                            Symbol = stocks.Symbol,
-                            Time = stocks.Time.Value.Hours + ":" + stocks.Time.Value.Minutes,
-                            TFactor = rFact != null ? Math.Round(rFact.RFactor, 2): 0
-                        });
-                    }
-                }
+                    x.PChange = Convert.ToDouble(Math.Round(Convert.ToDecimal(x.PChange), 2));
+                    x.TFactor = Convert.ToDouble(Math.Round(Convert.ToDecimal(x.TFactor), 2));
+                });
 
                 return sectorStocksResponses;
             }
@@ -580,13 +585,56 @@ namespace OptionChain.Controllers
                 throw;
             }
         }
+
+        [HttpGet("watchlist-stocks")]
+        public async Task<List<SectorStocksResponse>> GetWatchlistStocks()
+        {
+            try
+            {
+                List<SectorStocksResponse> finalResult = new();
+
+                DateTime today = DateTime.Today;
+
+                // Find the most recent Monday (start of the current week)
+                DateTime currentWeekMonday = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+
+                // Get previous week's Monday and Friday
+                DateTime previousWeekMonday = currentWeekMonday.AddDays(-7);
+                DateTime previousWeekFriday = previousWeekMonday.AddDays(4);
+
+                var result = await _optionDbContext.WeeklyStockUpdates.FromSqlRaw("EXEC [WeeklyStockUpdate] '" + previousWeekMonday.ToString("yyyy-MM-dd") + "', '" + previousWeekFriday.ToString("yyyy-MM-dd") + "' ").ToListAsync();
+
+                result.ForEach(x =>
+                {
+                    x.PChange = Convert.ToDouble(Math.Round(Convert.ToDecimal(x.PChange), 2));
+                    x.TFactor = Convert.ToDouble(Math.Round(Convert.ToDecimal(x.TFactor), 2));
+                });
+
+                var positiveStocks = result.Where(x => x.PChange > 10).OrderByDescending(x => x.PChange).Take(10).ToList();
+                var negetiveStocks = result.Where(x => x.PChange < -10).OrderBy(x => x.PChange).Take(10).ToList();
+
+                if(positiveStocks.Any())
+                    finalResult.AddRange(positiveStocks);
+
+                if (negetiveStocks.Any())
+                    finalResult.AddRange(negetiveStocks);
+
+                return finalResult;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 
     public class WeeklySectorUpdateParse
     {
         public string Name { get; set; }
         public DateTime? WeekStartDate { get; set; }
-        public DateTime? WeekEndDate{ get; set; }
+        public DateTime? WeekEndDate { get; set; }
         public decimal? WeeklyAverage { get; set; }
         public decimal? PChange { get; set; }
     }

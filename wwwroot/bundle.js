@@ -103,10 +103,140 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var apexcharts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! apexcharts */ \"./node_modules/apexcharts/dist/apexcharts.common.js\");\n/* harmony import */ var apexcharts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(apexcharts__WEBPACK_IMPORTED_MODULE_0__);\n\n\n// ===== chartThree\nconst chart03 = () => {\n  const chartThreeOptions = {\n    series: [65, 34, 45, 12],\n    chart: {\n      type: \"donut\",\n      width: 380\n    },\n    colors: [\"#3C50E0\", \"#6577F3\", \"#8FD0EF\", \"#0FADCF\"],\n    labels: [\"Desktop\", \"Tablet\", \"Mobile\", \"Unknown\"],\n    legend: {\n      show: false,\n      position: \"bottom\"\n    },\n    plotOptions: {\n      pie: {\n        donut: {\n          size: \"65%\",\n          background: \"transparent\"\n        }\n      }\n    },\n    dataLabels: {\n      enabled: false\n    },\n    responsive: [{\n      breakpoint: 640,\n      options: {\n        chart: {\n          width: 200\n        }\n      }\n    }]\n  };\n  const chartSelector = document.querySelectorAll(\"#chartThree\");\n  if (chartSelector.length) {\n    const chartThree = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(document.querySelector(\"#chartThree\"), chartThreeOptions);\n    chartThree.render();\n  }\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (chart03);\n\n//# sourceURL=webpack://tailadmin-pro/./src/js/components/chart-03.js?");
+//"use strict";
+//eval("
+  __webpack_require__.r(__webpack_exports__);
+  /* harmony export */ 
+  __webpack_require__.d(__webpack_exports__, {
+    /* harmony export */   
+    "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+    /* harmony export */ 
+  });
+  /* harmony import */ 
+  var apexcharts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
+    /*! apexcharts */ "./node_modules/apexcharts/dist/apexcharts.common.js");
+    /* harmony import */ var apexcharts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(apexcharts__WEBPACK_IMPORTED_MODULE_0__);
+    // ===== chartThree\n
 
-/***/ }),
+    function getAdvancesAndDecline(callback) {
+
+        $("div[x-show='loaded']").show();
+    
+        var selectedDate = $("#currentDate").val();
+        var domain = window.location.origin;
+        var subfolderName = "";
+    
+        var arr = window.location.pathname.split('/');
+    
+        if (arr.length > 2) {
+            subfolderName = "/" + arr[1];
+        }
+    
+        var url = domain + subfolderName + "/Options/advances";
+    
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: { "currentDate": selectedDate }, // Pass the date as a query parameter
+            success: function (response) {
+                //$("div[x-show='loaded']").hide();
+                console.log('Success:', response);
+                return callback(response);
+            },
+            error: function (xhr, status, error) {
+                //$("div[x-show='loaded']").hide();
+                console.error('Error:', status, error);
+            }
+        });
+    
+    }  
+
+    document.addEventListener("DOMContentLoaded", function () {
+      
+      $("#SectorUpdate").click(function(){
+        chart03();  
+      });
+
+    });
+
+    const chart03 = () => {
+
+      let ad = 0;
+      let de = 0;
+      let un = 0;
+
+      getAdvancesAndDecline(function(response) {
+
+        $("#chartThree").empty();
+        ad =  parseInt(response.advances);
+        de = parseInt(response.declines);
+        un = parseInt(response.unchanged);      
+        
+        document.querySelector("#spnAdvance").textContent = ad;
+        document.querySelector("#spnDecline").textContent = de;
+        document.querySelector("#spnUnchanged").textContent = un;
+      
+        const chartThreeOptions = {
+          series: [ad, de, un],
+          chart: {
+            type: "donut",
+            width: 380
+          },
+          colors: ["#28a745", "#dc3545", "#6775e3"],
+          labels: ["Advance", "Decline", "Unchanged"],
+          legend: {
+            show: false,
+            position: "bottom"
+          },
+          plotOptions: {
+            pie: {
+              donut: {
+                size: "65%",
+                background: "transparent",
+                labels: {
+                  show: true,
+                  total: {
+                    show: true,
+                    label: 'Total'
+                  }
+                }
+              }
+            }
+          },
+          dataLabels: {
+            enabled: true,
+            formatter: function (val, opts) {
+              return val.toFixed(1) + "%";
+            },
+          },
+          responsive: [{
+            breakpoint: 640,
+            options: {
+              chart: {
+                width: 200
+              }
+            }
+          }]
+        };
+        
+        const chartSelector = document.querySelectorAll("#chartThree");
+        
+        if (chartSelector.length) {
+          const chartThree = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())
+          (document.querySelector("#chartThree"), chartThreeOptions);
+
+          chartThree.render();
+        }
+      });
+
+    };
+
+      /* harmony default export */ 
+    const __WEBPACK_DEFAULT_EXPORT__ = (chart03);
+      //# sourceURL=webpack://tailadmin-pro/./src/js/components/chart-03.js?");
+
+/***/ 
+}),
 
 /***/ "./src/js/components/chart-04.js":
 /*!***************************************!*\
@@ -213,7 +343,7 @@ function getSectorUpdate(callback) {
 }
 
 function getWeeklySectorUpdate(callback) {
-  debugger;
+  var overall = $("#toggle4-div").hasClass("!bg-primary");
 
   $("#sectorWeeklyChart").empty();
 
@@ -238,6 +368,7 @@ function getWeeklySectorUpdate(callback) {
   $.ajax({
       url: url,
       type: 'GET',
+      data: { "currentDate": selectedDate, "overall": overall ? 0 : 1 }, // Pass the date as a query parameter
       success: function (response) {
           $("div[x-show='loaded']").hide();
           console.log('Success:', response);
@@ -358,9 +489,7 @@ const chart04 = () => {
   loadCEPEPosition(function(response){
 
     $("div[x-show='loaded']").hide();
-          
-    console.log(response);
-
+        
     var sampleData = Object.values(response);
     var timeIntervals = Object.keys(response);
 
@@ -598,7 +727,6 @@ const chart04 = () => {
   });
 
   getWeeklySectorUpdate(function(response){
-    debugger;
     // Color shades
     const colors = {
         darkGreen: "#28a745",
