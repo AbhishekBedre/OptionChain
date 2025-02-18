@@ -165,7 +165,8 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
       let de = 0;
       let un = 0;
 
-      getAdvancesAndDecline(function(response) {
+      if(window.location.href.toLowerCase().indexOf("dashboard") > -1) {
+        getAdvancesAndDecline(function(response) {
 
         $("#chartThree").empty();
         ad =  parseInt(response.advances);
@@ -228,6 +229,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
           chartThree.render();
         }
       });
+      }
 
     };
 
@@ -486,7 +488,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const chart04 = () => {
 
-  loadCEPEPosition(function(response){
+  if (window.location.href.toLowerCase().indexOf("option-apex") > -1) {
+    loadCEPEPosition(function(response){
 
     $("div[x-show='loaded']").hide();
         
@@ -614,8 +617,11 @@ const chart04 = () => {
 
 
   });
+  }
 
-  getSectorUpdate(function(response){
+    if ((window.location.href.toLowerCase().indexOf("sector-update") > -1) || (window.location.href.toLowerCase().indexOf("intra-day-scope") > -1)
+        || (window.location.href.toLowerCase().indexOf("weekly-sector") > -1) || (window.location.href.toLowerCase().indexOf("dashboard") > -1)) {
+    getSectorUpdate(function(response){
 
       var data = response.map(m => m.pChange);
 
@@ -725,8 +731,10 @@ const chart04 = () => {
           sectorChart.render();
       }
   });
+  }
 
-  getWeeklySectorUpdate(function(response){
+  if (window.location.href.toLowerCase().indexOf("weekly-sector") > -1) {  
+   getWeeklySectorUpdate(function(response){
     // Color shades
     const colors = {
         darkGreen: "#28a745",
@@ -851,7 +859,7 @@ const chart04 = () => {
         sectorWeeklyChart.render();
     }
   });
-
+  }
     /*getNiftyChartData(function(response){
 
         var data = response;
