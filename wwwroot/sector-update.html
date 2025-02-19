@@ -193,10 +193,14 @@
 
             var selectedDate = $("#currentDate").val();
 
+            var isFNO = $("#toggle4FNO-div").hasClass("!bg-primary");
+
+            alert(isFNO);
+
             $.ajax({
                 url: url,
                 type: 'GET',
-                data: { "currentDate": selectedDate, "overall": 1 }, // Pass the date as a query parameter
+                data: { "currentDate": selectedDate, "overall": 1, "isFNO": isFNO }, // Pass the date as a query parameter
                 success: function (response) {
                     $("div[x-show='loaded']").hide();
                     console.log('Success:', response);
@@ -1852,7 +1856,7 @@
                                     <label for="toggle4FNO" class="flex cursor-pointer select-none items-center">
                                         <div class="relative">
                                             <input type="checkbox" id="toggle4FNO" class="sr-only" @change="handleChange($event);" x-model="switcherFNOToggle" />
-                                            <div id="toggle4-div" :class="switcherFNOToggle && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
+                                            <div id="toggle4FNO-div" :class="switcherFNOToggle && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
                                             <div :class="switcherFNOToggle && '!right-1 !translate-x-full'"
                                                  class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
                                         </div>

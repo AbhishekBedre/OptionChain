@@ -289,7 +289,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("sector-stocks")]
-        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-22")
+        public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-22", bool isFNO = true)
         {
             List<Sector> sectorsStocks = new List<Sector>();
 
@@ -312,7 +312,23 @@ namespace OptionChain.Controllers
                 var result = await _optionDbContext.StockData.AsQueryable()
                                 .Where(x => !string.IsNullOrEmpty(x.Symbol)
                                     && x.EntryDate == Convert.ToDateTime(currentDate).Date
-                                    && stockNames.Contains(x.Symbol)).ToListAsync();
+                                    && stockNames.Contains(x.Symbol))
+                                .Join(_optionDbContext.StockMetaData.AsQueryable(), stock => stock.Symbol, meta => meta.Symbol,
+                                (stock, meta) => new { 
+                                    stock.Id,
+                                    stock.Symbol,
+                                    stock.LastPrice,
+                                    stock.PChange,
+                                    stock.Change,
+                                    stock.DayHigh,
+                                    stock.DayLow,
+                                    meta.IsFNOSec 
+                                }).ToListAsync();
+
+                if (isFNO)
+                {
+                    result = result.Where(x => x.IsFNOSec == isFNO).ToList();
+                }
 
                 Sector mySector = new Sector
                 {
