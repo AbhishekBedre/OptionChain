@@ -626,8 +626,8 @@ namespace OptionChain.Controllers
                     x.TFactor = Convert.ToDouble(Math.Round(Convert.ToDecimal(x.TFactor), 2));
                 });
 
-                var positiveStocks = result.Where(x => x.PChange > 10).OrderByDescending(x => x.PChange).Take(10).ToList();
-                var negetiveStocks = result.Where(x => x.PChange < -10).OrderBy(x => x.PChange).Take(10).ToList();
+                var positiveStocks = result.Where(x => x.PChange > 8).OrderByDescending(x => x.PChange).Take(10).ToList();
+                var negetiveStocks = result.Where(x => x.PChange < -8).OrderBy(x => x.PChange).Take(10).ToList();
 
                 if(positiveStocks.Any())
                     finalResult.AddRange(positiveStocks);
