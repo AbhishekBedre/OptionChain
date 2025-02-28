@@ -510,8 +510,8 @@ namespace OptionChain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Date")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal?>("NetValue")
                         .HasColumnType("decimal(18,2)");
