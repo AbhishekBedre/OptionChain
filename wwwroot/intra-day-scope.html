@@ -77,10 +77,10 @@
                 for (var i = 0; i < data.length; i++) {
 
                     var className = "text-meta-3";
-                    let sectorName = "GO LONG - [@ " + data[i][0].time + "]";
-                    if (data[i][0].pChange < 0) {
+                    let sectorName = "GO LONG - [@ " + (data[0][0]?.time ?? '') + "] - Triggered";
+                    if (data[i][0]?.pChange ?? 0 < 0) {
                         className = "text-meta-1";
-                        sectorName = "GO SHORT - [@ " + data[i][0].time + "]";
+                        sectorName = "GO SHORT - [@ " + (data[0][0]?.time ?? '') + "] - Triggered";
                     }
 
                      //data[i].name + " - <span class=" + className + ">(" + data[i].pChange + "%)</span>";
@@ -115,7 +115,9 @@
                                                   </div>
                                               </div>`;
 
-                    for (var j = 0; j < data[i].length; j++) {
+                                              let count = data[i].length > 10 ? 10 : data[i].length;
+
+                    for (var j = 0; j < count; j++) {
 
                         var stockClassName = "text-success";
                         if (data[i][j].pChange < 0)
@@ -142,7 +144,7 @@
                                                       <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">${data[i][j].pChange}</p>
                                                   </div>
                                                   <div class="col-span-1 flex items-center">
-                                                      <p class="text-sm font-medium text-meta-8">${data[i][j].tFactor}</p>
+                                                      <p class="text-sm font-medium text-meta-8">${data[i][j].tFactor.toFixed(2)}</p>
                                                   </div>
                                               </div>
                                               `;

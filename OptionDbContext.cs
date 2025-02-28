@@ -22,6 +22,7 @@ namespace OptionChain
         public DbSet<BankOptionData> BankOptionData { get; set; }
         public DbSet<BankExpiryOptionData> BankExpiryOptionData { get; set; }
         public DbSet<BankSummary> BankSummary { get; set; }
+        public DbSet<IntradayBlast> IntradayBlasts { get; set; }
 
         // Broder Index
         public DbSet<BroderMarkets> BroderMarkets { get; set; }
@@ -42,6 +43,12 @@ namespace OptionChain
             // Configure the primary keys and relationships
             modelBuilder.Entity<OptionData>()
                 .HasKey(o => o.Id); // OptionData Primary Key
+
+            modelBuilder.Entity<IntradayBlast>()
+                .HasKey(o => o.Id);
+
+            modelBuilder.Entity<IntradayBlast>()
+                .HasIndex(o => new { o.Symbol, o.EntryDate, o.Time }).HasDatabaseName("IX_IntradayBlastIndex_Symbol_EntryDate_Time");
 
             modelBuilder.Entity<OptionData>()
                 .HasIndex(o => o.EntryDate).HasDatabaseName("IX_OptionDataIndex_EntryDate");

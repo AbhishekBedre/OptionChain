@@ -377,6 +377,9 @@ namespace OptionChain.Migrations
                     b.Property<double?>("LastPrice")
                         .HasColumnType("float");
 
+                    b.Property<double?>("Open")
+                        .HasColumnType("float");
+
                     b.Property<double?>("PChange")
                         .HasColumnType("float");
 
@@ -386,7 +389,31 @@ namespace OptionChain.Migrations
                     b.Property<double?>("TFactor")
                         .HasColumnType("float");
 
-                    b.ToTable("SameOpenLowHigh");
+                    b.Property<string>("Time")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("SectorStocksResponse");
+                });
+
+            modelBuilder.Entity("OptionChain.Controllers.WeeklySectorUpdateParse", b =>
+                {
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("PChange")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("WeekEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("WeekStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("WeeklyAverage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.ToTable("WeeklySectorUpdate");
                 });
 
             modelBuilder.Entity("OptionChain.FilteredOptionData", b =>
@@ -466,6 +493,72 @@ namespace OptionChain.Migrations
                         .HasDatabaseName("IX_FilteredOptionDataIndex_EntryDate");
 
                     b.ToTable("CurrentExpiryOptionDaata");
+                });
+
+            modelBuilder.Entity("OptionChain.Models.FiiDiiActivity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<decimal?>("BuyValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("NetValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("SellValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FiiDiiActivitys");
+                });
+
+            modelBuilder.Entity("OptionChain.Models.IntradayBlast", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<int>("Counter")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("LastPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PChange")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PrevLastPrice")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Symbol", "EntryDate", "Time")
+                        .HasDatabaseName("IX_IntradayBlastIndex_Symbol_EntryDate_Time");
+
+                    b.ToTable("IntradayBlasts");
                 });
 
             modelBuilder.Entity("OptionChain.Models.Users", b =>
