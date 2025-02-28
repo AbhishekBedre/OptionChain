@@ -23,10 +23,9 @@ namespace OptionChain.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string Category { get; set; }
-        public DateTime? Date { get; set; }
+        public string? Date { get; set; }
         public decimal? BuyValue { get; set; }
         public decimal? SellValue { get; set; }
         public decimal? NetValue { get; set; }
     }
-
 }
