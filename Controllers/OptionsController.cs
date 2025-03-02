@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using OptionChain.Migrations;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using OptionChain.Models;
 using System.Text.Json.Serialization;
 
 namespace OptionChain.Controllers
@@ -33,7 +28,6 @@ namespace OptionChain.Controllers
         private readonly OptionDbContext _optionDbContext;
         private readonly IMemoryCache _memoryCache;
         private readonly TimeSpan cacheDuration = TimeSpan.FromHours(10); // Set cache expiration time
-
 
         public OptionsController(ILogger<OptionsController> logger, OptionDbContext optionDbContext, IMemoryCache memoryCache)
         {
@@ -644,6 +638,24 @@ namespace OptionChain.Controllers
             }
         }
 
+        [HttpGet("intra-day-blaster")]
+        public async Task<List<IntradayBlast>> GetIntraDayBlaster(string currentDate = "2025-02-28")
+        {
+            try
+            {
+                DateTime selectedDate = Convert.ToDateTime(currentDate); // or any specific date
+
+                var intraDayBlaster = await _optionDbContext.IntradayBlasts.AsQueryable()
+                    .Where(x => x.EntryDate.HasValue && x.EntryDate.Value.Date == selectedDate.Date)
+                    .ToListAsync();
+
+                return intraDayBlaster;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 
     public class WeeklySectorUpdateParse
@@ -706,7 +718,6 @@ namespace OptionChain.Controllers
     }
 
     public class SectorsResponse
-
     {
         public long Id { get; set; }
         public string? Sector { get; set; }

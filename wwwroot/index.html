@@ -59,7 +59,7 @@
         }
     </style>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 </head>
 <body style="background-color: rgb(26 34 44 / 1);" x-data="{ page: 'sector-update', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
       x-init="
@@ -116,7 +116,7 @@
     
         // Display user details
         function displayUserDetails(user) {
-            sessionStorage.userInfo = JSON.stringify(user);
+          localStorage.userInfo = JSON.stringify(user);
 
             var domain = window.location.origin;
 
@@ -166,7 +166,7 @@
         window.onload = async () => {
           accessToken = getTokenFromUrl();
           if (accessToken) {
-            sessionStorage.accessToken = accessToken;
+            localStorage.accessToken = accessToken;
             
             const user = await fetchUserDetails(accessToken);
             displayUserDetails(user);

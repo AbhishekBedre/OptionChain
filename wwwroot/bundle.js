@@ -165,7 +165,8 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
       let de = 0;
       let un = 0;
 
-      if(window.location.href.toLowerCase().indexOf("dashboard") > -1) {
+      if(window.location.href.toLowerCase().indexOf("dashboard") > -1 || window.location.href.toLowerCase().indexOf("intra-day-scope") > -1) {
+        
         getAdvancesAndDecline(function(response) {
 
         $("#chartThree").empty();

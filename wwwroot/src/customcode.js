@@ -1,42 +1,89 @@
+localStorage.setItem("darkMode", true);
+
+async function isTokenValid(token) {
+    try {
+        const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            return true;
+        } else {
+            console.warn("Token is invalid:", data);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error verifying token:", error);
+        return false;
+    }
+}
+
 $(document).ready(function() {
 
-    if(sessionStorage.userInfo == null || sessionStorage.userInfo == undefined || sessionStorage.accessToken == null) {
-        var domain = window.location.origin;
-        var subfolderName = "";
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/notificationHub")
+        .build();
+    
+    connection.on("NewStock", (name) => {
+        playBeep();
+        console.log("Signal R on NewStock event : " + name);
+        getWatchlistIntradayStocks(function(response){
+            renderWatchListIntradayStocks(response);
+        });    
+    });
 
-        var arr = window.location.pathname.split('/');
+    connection.on("DataUpdate", (name) => {
+        console.log("Reload the data. Server has latest synced data.");  
+    });
 
-        if (arr.length > 2) {
-            subfolderName = "/" + arr[1];
-        }
+    connection.start().catch(err => console.error(err));
 
-        var url = domain + subfolderName + "/index.html";
+    autoRefresh();
+    var tokenResult = false;
+    isTokenValid(localStorage.accessToken)
+        .then(tokenResult => { 
+            if(tokenResult == false || (localStorage.userInfo == null 
+                || localStorage.userInfo == undefined 
+                || localStorage.accessToken == null)) {
+    
+                var domain = window.location.origin;
+                var subfolderName = "";
+        
+                var arr = window.location.pathname.split('/');
+        
+                if (arr.length > 2) {
+                    subfolderName = "/" + arr[1];
+                }
+        
+                var url = domain + subfolderName + "/index.html";
+        
+                window.location.href = url;        
+            }        
+        });
 
-        window.location.href = url;
-    }
-
+    
     setTimeout(function () {
-        var userDetails = JSON.parse(sessionStorage.userInfo);
+        var userDetails = JSON.parse(localStorage.userInfo);
         $("#profileImage").attr("src", userDetails.picture);
         $("#ProfileName").text(userDetails.name);
+        document.dispatchEvent(new Event("click"));
     }, 200);
     
     $("#logout").click(function(){
         logout();
     });
 
-    getIndexData();
+    getIndexData();    
 });
 
 function logout() {
-    if (sessionStorage.accessToken) {
-        const revokeUrl = `https://accounts.google.com/o/oauth2/revoke?token=${sessionStorage.accessToken}`;
+    if (localStorage.accessToken) {
+        const revokeUrl = `https://accounts.google.com/o/oauth2/revoke?token=${localStorage.accessToken}`;
         
         // Revoke the token
         fetch(revokeUrl).then((response) => {
             if (response.ok) {
                 accessToken = null;
-                sessionStorage.clear();
+                localStorage.clear();
                 window.location.hash = ''; // Clear the URL hash
             } 
 
@@ -54,11 +101,11 @@ function logout() {
             window.location.href = url;
         })
         .catch((error) => {
-            sessionStorage.clear();
+            localStorage.clear();
             console.error('Error revoking token:', error);
         });
     } else {
-        sessionStorage.clear();
+        localStorage.clear();
     }
 }
 
@@ -259,4 +306,81 @@ function formatToThousands(decimalNumber) {
     }
 
     return decimalNumber.toLocaleString("en-US");
+}
+
+function autoRefresh() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 15); // 09:15 AM
+    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 30);  // 03:30 PM
+
+    //if (now >= start && now <= end) {
+        // Calculate the next 5-minute slot
+        // Calculate the next 5-minute slot
+        const minutes = now.getMinutes();
+        const nextSlot = Math.ceil((minutes + 1) / 5) * 5; // Ensures the next interval
+        const nextRefresh = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), nextSlot, 0, 0);
+        
+        // If the next slot moves to the next hour, adjust the hour accordingly
+        if (nextSlot === 60) {
+            nextRefresh.setHours(now.getHours() + 1);
+            nextRefresh.setMinutes(0);
+        }
+
+        const timeToNextRefresh = nextRefresh - now;
+
+        console.log(`Next refresh scheduled in ${timeToNextRefresh / 1000} seconds at ${nextRefresh.toLocaleTimeString()}`);
+
+        setTimeout(function () {
+             // Trigger the click
+            window.location.reload();
+            //autoRefresh(); // Schedule the next refresh
+        }, timeToNextRefresh); // Reload at the start of the next 5-minute slot
+    //} else {
+        //console.log("Outside refresh hours.");
+    //}
+}
+
+/*function playBeep() {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = ctx.createOscillator();
+    oscillator.type = "sine"; 
+    oscillator.frequency.setValueAtTime(1000, ctx.currentTime); // 1000 Hz beep
+    oscillator.connect(ctx.destination);
+    oscillator.start();
+    setTimeout(() => oscillator.stop(), 300); // Stops after 300ms
+}*/
+
+let audioContext;
+
+function initializeAudioContext() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+}
+
+document.addEventListener("click", initializeAudioContext, { once: true });
+document.addEventListener("keydown", initializeAudioContext, { once: true });
+document.addEventListener("touchstart", initializeAudioContext, { once: true });
+document.addEventListener("pointerdown", initializeAudioContext, { once: true });
+document.addEventListener("mousedown", initializeAudioContext, { once: true });
+
+function playBeep() {
+    if (!audioContext) {
+        console.warn("Audio context not initialized. User interaction required.");
+        return;
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(2000, audioContext.currentTime); // 1000 Hz beep
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    setTimeout(() => oscillator.stop(), 300); // Stops after 300ms
 }
