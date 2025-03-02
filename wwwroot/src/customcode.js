@@ -18,9 +18,17 @@ async function isTokenValid(token) {
 }
 
 $(document).ready(function() {
+    var domain = window.location.origin;
+    var subfolderName = "";
+
+    var arr = window.location.pathname.split('/');
+
+    if (arr.length > 2) {
+        subfolderName = "/" + arr[1];
+    }
 
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/notificationHub")
+        .withUrl(domain + subfolderName + "/notificationHub")
         .build();
     
     connection.on("NewStock", (name) => {
@@ -43,16 +51,7 @@ $(document).ready(function() {
         .then(tokenResult => { 
             if(tokenResult == false || (localStorage.userInfo == null 
                 || localStorage.userInfo == undefined 
-                || localStorage.accessToken == null)) {
-    
-                var domain = window.location.origin;
-                var subfolderName = "";
-        
-                var arr = window.location.pathname.split('/');
-        
-                if (arr.length > 2) {
-                    subfolderName = "/" + arr[1];
-                }
+                || localStorage.accessToken == null)) {                
         
                 var url = domain + subfolderName + "/index.html";
         
