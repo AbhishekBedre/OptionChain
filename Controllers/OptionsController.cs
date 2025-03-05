@@ -612,7 +612,7 @@ namespace OptionChain.Controllers
                 DateTime previousWeekMonday = currentWeekMonday.AddDays(-7);
                 DateTime previousWeekFriday = previousWeekMonday.AddDays(4);
 
-                var result = await _optionDbContext.WeeklyStockUpdates.FromSqlRaw("EXEC [WeeklyStockUpdate] '" + previousWeekMonday.ToString("yyyy-MM-dd") + "', '" + previousWeekFriday.ToString("yyyy-MM-dd") + "' ").ToListAsync();
+                var result = await _optionDbContext.WeeklyStockUpdates.FromSqlRaw(@"EXEC [WeeklyStockUpdate] '" + previousWeekMonday.ToString("yyyy-MM-dd") + "', '" + previousWeekFriday.ToString("yyyy-MM-dd") + "'").ToListAsync();
 
                 result.ForEach(x =>
                 {
