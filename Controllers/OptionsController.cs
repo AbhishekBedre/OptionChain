@@ -316,7 +316,10 @@ namespace OptionChain.Controllers
                                     stock.Change,
                                     stock.DayHigh,
                                     stock.DayLow,
-                                    meta.IsFNOSec 
+                                    meta.IsFNOSec,
+                                    meta.IsNifty50,
+                                    meta.IsNifty100,
+                                    meta.IsNifty200
                                 }).ToListAsync();
 
                 if (isFNO)
@@ -360,7 +363,10 @@ namespace OptionChain.Controllers
                             Change = stockDetail.Change,
                             DayHigh = stockDetail.DayHigh,
                             DayLow = stockDetail.DayLow,
-                            TFactor = Math.Round(tFact, 2)
+                            TFactor = Math.Round(tFact, 2),
+                            IsNifty50 = stockDetail.IsNifty50,
+                            IsNifty100 = stockDetail.IsNifty100,
+                            IsNifty200 = stockDetail.IsNifty200
                         });
                     }
                 }
@@ -715,6 +721,9 @@ namespace OptionChain.Controllers
         public double? DayLow { get; set; }
         public double? TFactor { get; set; }
         public string? Time { get; set; }
+        public bool IsNifty50 { get; set; }
+        public bool IsNifty100 { get; set; }
+        public bool IsNifty200 { get; set; }
     }
 
     public class SectorsResponse

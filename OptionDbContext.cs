@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OptionChain.Controllers;
 using OptionChain.Models;
+using System.Xml;
 
 namespace OptionChain
 {
@@ -123,6 +124,26 @@ namespace OptionChain
 
             modelBuilder.Entity<SectorStocksResponse>().HasNoKey();
             modelBuilder.Entity<WeeklySectorUpdateParse>().HasNoKey();
+
+            modelBuilder.Entity<SectorStocksResponse>()
+                .Property(e => e.IsNifty50)
+                .HasConversion(
+                    v => v ? 1 : 0, // Convert bool to int when saving
+                    v => v == 1      // Convert int to bool when reading
+                );
+
+            modelBuilder.Entity<SectorStocksResponse>()
+                .Property(e => e.IsNifty100)
+                .HasConversion(
+                    v => v ? 1 : 0, // Convert bool to int when saving
+                    v => v == 1      // Convert int to bool when reading
+                );
+            modelBuilder.Entity<SectorStocksResponse>()
+                .Property(e => e.IsNifty200)
+                .HasConversion(
+                    v => v ? 1 : 0, // Convert bool to int when saving
+                    v => v == 1      // Convert int to bool when reading
+                );
         }
     }
 }
