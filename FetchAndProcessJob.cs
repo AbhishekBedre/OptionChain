@@ -397,6 +397,9 @@ namespace OptionChain
                                 ListingDate = f.Meta.ListingDate,
                                 IsMunicipalBond = f.Meta.IsMunicipalBond,
                                 EntryDate = DateTime.Now.Date,
+                                IsNifty50 =false,
+                                IsNifty100 = false,
+                                IsNifty200 = false
                             };
 
                             stockMetaDatas.Add(meta);

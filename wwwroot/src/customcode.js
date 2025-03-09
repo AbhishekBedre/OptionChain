@@ -1,23 +1,14 @@
 localStorage.setItem("darkMode", true);
 
-async function isTokenValid(token) {
-    try {
-        const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`);
-        const data = await response.json();
-
-        if (response.ok) {
-            return true;
-        } else {
-            console.warn("Token is invalid:", data);
-            return false;
-        }
-    } catch (error) {
-        console.error("Error verifying token:", error);
-        return false;
-    }
-}
+const FILTERS = [
+    "NIFTY 500",
+    "NIFTY 50",
+    "NIFTY 100",
+    "NIFTY 200"
+];
 
 $(document).ready(function() {
+    updateFilterOptionsOnDashboard();
     var domain = window.location.origin;
     var subfolderName = "";
 
@@ -46,19 +37,19 @@ $(document).ready(function() {
     connection.start().catch(err => console.error(err));
 
     autoRefresh();
+
     var tokenResult = false;
     isTokenValid(localStorage.accessToken)
-        .then(tokenResult => { 
-            if(tokenResult == false || (localStorage.userInfo == null 
-                || localStorage.userInfo == undefined 
-                || localStorage.accessToken == null)) {                
-        
-                var url = domain + subfolderName + "/index.html";
-        
-                window.location.href = url;        
-            }        
-        });
-
+    .then(tokenResult => { 
+        if(tokenResult == false || (localStorage.userInfo == null 
+            || localStorage.userInfo == undefined 
+            || localStorage.accessToken == null)) {                
+    
+            var url = domain + subfolderName + "/index.html";
+    
+            window.location.href = url;        
+        }        
+    });
     
     setTimeout(function () {
         var userDetails = JSON.parse(localStorage.userInfo);
@@ -73,6 +64,39 @@ $(document).ready(function() {
 
     getIndexData();    
 });
+
+
+function GenerateFilerOptions() {
+    let options = ``;
+    for(let i=0;i<FILTERS.length;i++) {
+        let j = i+1;
+        options += `<option value="${j}">${FILTERS[i]}</option>`;
+    }
+    return options;
+}
+
+function updateFilterOptionsOnDashboard()
+{
+    let options = GenerateFilerOptions();
+    $("#stocksFilter").html(options);
+}
+
+async function isTokenValid(token) {
+    try {
+        const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            return true;
+        } else {
+            console.warn("Token is invalid:", data);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error verifying token:", error);
+        return false;
+    }
+}
 
 function logout() {
     if (localStorage.accessToken) {
@@ -312,7 +336,7 @@ function autoRefresh() {
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 15); // 09:15 AM
     const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 30);  // 03:30 PM
 
-    //if (now >= start && now <= end) {
+    if (now >= start && now <= end) {
         // Calculate the next 5-minute slot
         // Calculate the next 5-minute slot
         const minutes = now.getMinutes();
@@ -334,20 +358,10 @@ function autoRefresh() {
             window.location.reload();
             //autoRefresh(); // Schedule the next refresh
         }, timeToNextRefresh); // Reload at the start of the next 5-minute slot
-    //} else {
-        //console.log("Outside refresh hours.");
-    //}
+    } else {
+        console.log("Outside refresh hours.");
+    }
 }
-
-/*function playBeep() {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = ctx.createOscillator();
-    oscillator.type = "sine"; 
-    oscillator.frequency.setValueAtTime(1000, ctx.currentTime); // 1000 Hz beep
-    oscillator.connect(ctx.destination);
-    oscillator.start();
-    setTimeout(() => oscillator.stop(), 300); // Stops after 300ms
-}*/
 
 let audioContext;
 

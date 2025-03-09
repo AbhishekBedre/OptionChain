@@ -11,6 +11,7 @@ namespace OptionChain
         public DbSet<Summary> Summary { get; set; }
         public DbSet<Advance> Advance { get; set; }
         public DbSet<StockData> StockData { get; set; }
+        public DbSet<DailyStock> DailyStocks { get; set; }
         public DbSet<StockMetaData> StockMetaData { get; set; }
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<Sessions> Sessions { get; set; }
@@ -85,8 +86,16 @@ namespace OptionChain
             modelBuilder.Entity<StockData>()
                 .HasIndex(o => o.EntryDate).HasDatabaseName("IX_StockDataIndex_EntryDate");
 
+            modelBuilder.Entity<DailyStock>()
+                .HasKey(s => s.Id); //PK
+            modelBuilder.Entity<DailyStock>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_DailyStockIndex_EntryDate");
+
             modelBuilder.Entity<StockData>()
                 .HasIndex(o => new { o.Symbol, o.EntryDate, o.Time }).HasDatabaseName("IX_StockDataIndex_Symbol_EntryDate_Time");
+
+            modelBuilder.Entity<DailyStock>()
+                .HasIndex(o => new { o.Symbol, o.EntryDate, o.Time }).HasDatabaseName("IX_DailyStockIndex_Symbol_EntryDate_Time");
 
             modelBuilder.Entity<StockMetaData>()
                 .HasKey(s => s.Id); //PK
@@ -116,5 +125,4 @@ namespace OptionChain
             modelBuilder.Entity<WeeklySectorUpdateParse>().HasNoKey();
         }
     }
-
 }
