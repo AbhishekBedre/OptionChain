@@ -291,13 +291,13 @@ namespace OptionChain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IndexSymbol")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("IndicativeClose")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Key")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Last")
                         .HasColumnType("decimal(18,2)");
@@ -357,6 +357,12 @@ namespace OptionChain.Migrations
                     b.HasIndex("EntryDate")
                         .HasDatabaseName("IX_BroderMarketsIndex_EntryDate");
 
+                    b.HasIndex("Key", "IndexSymbol", "EntryDate")
+                        .HasDatabaseName("IX_BroderMarketsIndex_Symbol_EntryDate_Key");
+
+                    b.HasIndex("Key", "IndexSymbol", "EntryDate", "Time")
+                        .HasDatabaseName("IX_BroderMarketsIndex_Symbol_EntryDate_Time_Key");
+
                     b.ToTable("BroderMarkets");
                 });
 
@@ -373,6 +379,15 @@ namespace OptionChain.Migrations
 
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("IsNifty100")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IsNifty200")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IsNifty50")
+                        .HasColumnType("int");
 
                     b.Property<double?>("LastPrice")
                         .HasColumnType("float");
