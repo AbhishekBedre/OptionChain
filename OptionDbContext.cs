@@ -122,6 +122,12 @@ namespace OptionChain
             modelBuilder.Entity<BroderMarkets>()
                 .HasIndex(o => o.EntryDate).HasDatabaseName("IX_BroderMarketsIndex_EntryDate");
 
+            modelBuilder.Entity<BroderMarkets>()
+                .HasIndex(o => new { o.Key, o.IndexSymbol, o.EntryDate, o.Time }).HasDatabaseName("IX_BroderMarketsIndex_Symbol_EntryDate_Time_Key");
+
+            modelBuilder.Entity<BroderMarkets>()
+                .HasIndex(o => new { o.Key, o.IndexSymbol, o.EntryDate }).HasDatabaseName("IX_BroderMarketsIndex_Symbol_EntryDate_Key");
+
             modelBuilder.Entity<SectorStocksResponse>().HasNoKey();
             modelBuilder.Entity<WeeklySectorUpdateParse>().HasNoKey();
 
