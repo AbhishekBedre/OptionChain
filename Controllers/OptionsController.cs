@@ -185,6 +185,7 @@ namespace OptionChain.Controllers
             if (overall == 1)
             {
                 var sectorialIndex = await _optionDbContext.BroderMarkets
+                    .AsNoTracking()
                     .Where(x => x.Key == "SECTORAL INDICES" && x.EntryDate == Convert.ToDateTime(currentdate))
                     .GroupBy(x => x.IndexSymbol)
                     .Select(group => new
