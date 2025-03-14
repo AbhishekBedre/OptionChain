@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OptionChain
@@ -9,23 +10,37 @@ namespace OptionChain
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string? Identifier { get; set; }
-        //public decimal AskPrice { get; set; }
-        //public int AskQty { get; set; }
-        //public decimal BidPrice { get; set; }
-        //public int BidQty { get; set; }
+
+        [Precision(18, 4)]
         public decimal Change { get; set; }
+
+        [Precision(18, 4)]
         public decimal ChangeInOpenInterest { get; set; }
         public string? ExpiryDate { get; set; }
+
+        [Precision(18, 4)]
         public decimal ImpliedVolatility { get; set; }
+
+        [Precision(18, 4)]
         public decimal LastPrice { get; set; }
+
+        [Precision(18, 4)]
         public decimal OpenInterest { get; set; }
+
+        [Precision(18, 4)]
         public decimal PChange { get; set; }
+
+        [Precision(18, 4)]
         public decimal PChangeInOpenInterest { get; set; }
+
+        [Precision(18, 4)]
         public decimal StrikePrice { get; set; }
         public int TotalBuyQuantity { get; set; }
         public int TotalSellQuantity { get; set; }
         public int TotalTradedVolume { get; set; }
         public string? Underlying { get; set; }
+
+        [Precision(18, 4)]
         public decimal UnderlyingValue { get; set; }
         public DateTime? EntryDate { get; set; }
         public TimeSpan? Time { get; set; }
@@ -51,23 +66,45 @@ namespace OptionChain
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string? Identifier { get; set; }
+
+        [Precision(18, 4)]
         public decimal AskPrice { get; set; }
         public int AskQty { get; set; }
+
+        [Precision(18, 4)]
         public decimal BidPrice { get; set; }
         public int BidQty { get; set; }
+
+        [Precision(18, 4)]
         public decimal Change { get; set; }
+
+        [Precision(18, 4)]
         public decimal ChangeInOpenInterest { get; set; }
         public string? ExpiryDate { get; set; }
+
+        [Precision(18, 4)]
         public decimal ImpliedVolatility { get; set; }
+
+        [Precision(18, 4)]
         public decimal LastPrice { get; set; }
+
+        [Precision(18, 4)]
         public decimal OpenInterest { get; set; }
+
+        [Precision(18, 4)]
         public decimal PChange { get; set; }
+
+        [Precision(18, 4)]
         public decimal PChangeInOpenInterest { get; set; }
+
+        [Precision(18, 4)]
         public decimal StrikePrice { get; set; }
         public int TotalBuyQuantity { get; set; }
         public int TotalSellQuantity { get; set; }
         public int TotalTradedVolume { get; set; }
         public string? Underlying { get; set; }
+
+        [Precision(18, 4)]
         public decimal UnderlyingValue { get; set; }
         public DateTime? EntryDate { get; set; }
         public TimeSpan? Time { get; set; }
@@ -139,7 +176,7 @@ namespace OptionChain
         public int Priority { get; set; }
         public string? Symbol { get; set; }
         public string? Identifier { get; set; }
-        public string? Series { get; set; }
+        //public string? Series { get; set; }
         public double Open { get; set; }
         public double DayHigh { get; set; }
         public double DayLow { get; set; }
@@ -159,25 +196,24 @@ namespace OptionChain
 
         //[JsonConverter(typeof(IntOrDashConverter))]
         //public double PerChange365d { get; set; }
-        public string? Date365dAgo { get; set; }
-        public string? Chart365dPath { get; set; }
-        public string? Date30dAgo { get; set; }
+        //public string? Date365dAgo { get; set; }
+        //public string? Chart365dPath { get; set; }
+        //public string? Date30dAgo { get; set; }
         //public double PerChange30d { get; set; }
-        public string? Chart30dPath { get; set; }
-        public string? ChartTodayPath { get; set; }
+        //public string? Chart30dPath { get; set; }
+        //public string? ChartTodayPath { get; set; }
         public TimeSpan? Time { get; set; }
         public DateTime? EntryDate { get; set; }
     }
 
-    public class DailyStock
+    public class DailyStockData
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public int Priority { get; set; }
-        public string? Symbol { get; set; }
+        public string Symbol { get; set; }
         public string? Identifier { get; set; }
-        public string? Series { get; set; }
         public double Open { get; set; }
         public double DayHigh { get; set; }
         public double DayLow { get; set; }
@@ -186,7 +222,6 @@ namespace OptionChain
         public double Change { get; set; }
         public double PChange { get; set; }
         public long TotalTradedVolume { get; set; }
-        public double StockIndClosePrice { get; set; }
         public double TotalTradedValue { get; set; }
         public string? LastUpdateTime { get; set; }
         public double YearHigh { get; set; }
@@ -194,15 +229,6 @@ namespace OptionChain
         public double YearLow { get; set; }
         public double NearWKH { get; set; }
         public double NearWKL { get; set; }
-
-        //[JsonConverter(typeof(IntOrDashConverter))]
-        //public double PerChange365d { get; set; }
-        public string? Date365dAgo { get; set; }
-        public string? Chart365dPath { get; set; }
-        public string? Date30dAgo { get; set; }
-        //public double PerChange30d { get; set; }
-        public string? Chart30dPath { get; set; }
-        public string? ChartTodayPath { get; set; }
         public TimeSpan? Time { get; set; }
         public DateTime? EntryDate { get; set; }
     }
@@ -260,23 +286,45 @@ namespace OptionChain
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string? Identifier { get; set; }
+
+        [Precision(18, 4)]
         public decimal AskPrice { get; set; }
         public int AskQty { get; set; }
+
+        [Precision(18, 4)]
         public decimal BidPrice { get; set; }
         public int BidQty { get; set; }
+
+        [Precision(18, 4)]
         public decimal Change { get; set; }
+
+        [Precision(18, 4)]
         public decimal ChangeInOpenInterest { get; set; }
         public string? ExpiryDate { get; set; }
+
+        [Precision(18, 4)]
         public decimal ImpliedVolatility { get; set; }
+
+        [Precision(18, 4)]
         public decimal LastPrice { get; set; }
+
+        [Precision(18, 4)]
         public decimal OpenInterest { get; set; }
+
+        [Precision(18, 4)]
         public decimal PChange { get; set; }
+
+        [Precision(18, 4)]
         public decimal PChangeInOpenInterest { get; set; }
+
+        [Precision(18, 4)]
         public decimal StrikePrice { get; set; }
         public int TotalBuyQuantity { get; set; }
         public int TotalSellQuantity { get; set; }
         public int TotalTradedVolume { get; set; }
         public string? Underlying { get; set; }
+
+        [Precision(18, 4)]
         public decimal UnderlyingValue { get; set; }
         public DateTime? EntryDate { get; set; }
         public TimeSpan? Time { get; set; }
@@ -288,23 +336,45 @@ namespace OptionChain
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string? Identifier { get; set; }
+
+        [Precision(18, 4)]
         public decimal AskPrice { get; set; }
         public int AskQty { get; set; }
+
+        [Precision(18, 4)]
         public decimal BidPrice { get; set; }
         public int BidQty { get; set; }
+
+        [Precision(18, 4)]
         public decimal Change { get; set; }
+
+        [Precision(18, 4)]
         public decimal ChangeInOpenInterest { get; set; }
         public string? ExpiryDate { get; set; }
+
+        [Precision(18, 4)]
         public decimal ImpliedVolatility { get; set; }
+
+        [Precision(18, 4)]
         public decimal LastPrice { get; set; }
+
+        [Precision(18, 4)]
         public decimal OpenInterest { get; set; }
+
+        [Precision(18, 4)]
         public decimal PChange { get; set; }
+
+        [Precision(18, 4)]
         public decimal PChangeInOpenInterest { get; set; }
+
+        [Precision(18, 4)]
         public decimal StrikePrice { get; set; }
         public int TotalBuyQuantity { get; set; }
         public int TotalSellQuantity { get; set; }
         public int TotalTradedVolume { get; set; }
         public string? Underlying { get; set; }
+
+        [Precision(18, 4)]
         public decimal UnderlyingValue { get; set; }
         public DateTime? EntryDate { get; set; }
         public TimeSpan? Time { get; set; }

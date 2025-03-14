@@ -33,24 +33,20 @@ namespace OptionChain.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Identifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AskPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    AskQty = table.Column<int>(type: "int", nullable: false),
-                    BidPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BidQty = table.Column<int>(type: "int", nullable: false),
-                    Change = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Change = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    ChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     ExpiryDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImpliedVolatility = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    LastPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PChange = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StrikePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImpliedVolatility = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    LastPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    OpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    PChange = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    PChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    StrikePrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     TotalBuyQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalSellQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalTradedVolume = table.Column<int>(type: "int", nullable: false),
                     Underlying = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UnderlyingValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnderlyingValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Time = table.Column<TimeSpan>(type: "time", nullable: true)
                 },
@@ -66,24 +62,24 @@ namespace OptionChain.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Identifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AskPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AskPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     AskQty = table.Column<int>(type: "int", nullable: false),
-                    BidPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BidPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     BidQty = table.Column<int>(type: "int", nullable: false),
-                    Change = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Change = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    ChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     ExpiryDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImpliedVolatility = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    LastPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PChange = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StrikePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImpliedVolatility = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    LastPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    OpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    PChange = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    PChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    StrikePrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     TotalBuyQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalSellQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalTradedVolume = table.Column<int>(type: "int", nullable: false),
                     Underlying = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UnderlyingValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnderlyingValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Time = table.Column<TimeSpan>(type: "time", nullable: true)
                 },
@@ -99,24 +95,24 @@ namespace OptionChain.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Identifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AskPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AskPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     AskQty = table.Column<int>(type: "int", nullable: false),
-                    BidPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BidPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     BidQty = table.Column<int>(type: "int", nullable: false),
-                    Change = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Change = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    ChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     ExpiryDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImpliedVolatility = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    LastPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PChange = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StrikePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImpliedVolatility = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    LastPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    OpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    PChange = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    PChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    StrikePrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     TotalBuyQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalSellQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalTradedVolume = table.Column<int>(type: "int", nullable: false),
                     Underlying = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UnderlyingValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnderlyingValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Time = table.Column<TimeSpan>(type: "time", nullable: true)
                 },
@@ -196,24 +192,24 @@ namespace OptionChain.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Identifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AskPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AskPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     AskQty = table.Column<int>(type: "int", nullable: false),
-                    BidPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BidPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     BidQty = table.Column<int>(type: "int", nullable: false),
-                    Change = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Change = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    ChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     ExpiryDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImpliedVolatility = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    LastPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PChange = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StrikePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImpliedVolatility = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    LastPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    OpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    PChange = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    PChangeInOpenInterest = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    StrikePrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     TotalBuyQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalSellQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalTradedVolume = table.Column<int>(type: "int", nullable: false),
                     Underlying = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UnderlyingValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnderlyingValue = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Time = table.Column<TimeSpan>(type: "time", nullable: true)
                 },
@@ -223,15 +219,14 @@ namespace OptionChain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DailyStocks",
+                name: "DailyStockData",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Priority = table.Column<int>(type: "int", nullable: false),
-                    Symbol = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Symbol = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Identifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Series = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Open = table.Column<double>(type: "float", nullable: false),
                     DayHigh = table.Column<double>(type: "float", nullable: false),
                     DayLow = table.Column<double>(type: "float", nullable: false),
@@ -240,7 +235,6 @@ namespace OptionChain.Migrations
                     Change = table.Column<double>(type: "float", nullable: false),
                     PChange = table.Column<double>(type: "float", nullable: false),
                     TotalTradedVolume = table.Column<long>(type: "bigint", nullable: false),
-                    StockIndClosePrice = table.Column<double>(type: "float", nullable: false),
                     TotalTradedValue = table.Column<double>(type: "float", nullable: false),
                     LastUpdateTime = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     YearHigh = table.Column<double>(type: "float", nullable: false),
@@ -248,17 +242,12 @@ namespace OptionChain.Migrations
                     YearLow = table.Column<double>(type: "float", nullable: false),
                     NearWKH = table.Column<double>(type: "float", nullable: false),
                     NearWKL = table.Column<double>(type: "float", nullable: false),
-                    Date365dAgo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Chart365dPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date30dAgo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Chart30dPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ChartTodayPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Time = table.Column<TimeSpan>(type: "time", nullable: true),
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DailyStocks", x => x.Id);
+                    table.PrimaryKey("PK_DailyStockData", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -376,7 +365,6 @@ namespace OptionChain.Migrations
                     Priority = table.Column<int>(type: "int", nullable: false),
                     Symbol = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Identifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Series = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Open = table.Column<double>(type: "float", nullable: false),
                     DayHigh = table.Column<double>(type: "float", nullable: false),
                     DayLow = table.Column<double>(type: "float", nullable: false),
@@ -393,11 +381,6 @@ namespace OptionChain.Migrations
                     YearLow = table.Column<double>(type: "float", nullable: false),
                     NearWKH = table.Column<double>(type: "float", nullable: false),
                     NearWKL = table.Column<double>(type: "float", nullable: false),
-                    Date365dAgo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Chart365dPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date30dAgo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Chart30dPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ChartTodayPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Time = table.Column<TimeSpan>(type: "time", nullable: true),
                     EntryDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -528,16 +511,6 @@ namespace OptionChain.Migrations
                 column: "EntryDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DailyStockIndex_EntryDate",
-                table: "DailyStocks",
-                column: "EntryDate");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DailyStockIndex_Symbol_EntryDate_Time",
-                table: "DailyStocks",
-                columns: new[] { "Symbol", "EntryDate", "Time" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_IntradayBlastIndex_Symbol_EntryDate_Time",
                 table: "IntradayBlasts",
                 columns: new[] { "Symbol", "EntryDate", "Time" });
@@ -587,7 +560,7 @@ namespace OptionChain.Migrations
                 name: "CurrentExpiryOptionDaata");
 
             migrationBuilder.DropTable(
-                name: "DailyStocks");
+                name: "DailyStockData");
 
             migrationBuilder.DropTable(
                 name: "FiiDiiActivitys");
