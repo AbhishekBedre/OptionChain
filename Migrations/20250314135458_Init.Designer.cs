@@ -12,8 +12,8 @@ using OptionChain;
 namespace OptionChain.Migrations
 {
     [DbContext(typeof(OptionDbContext))]
-    [Migration("20250228080847_IntradayBlaster")]
-    partial class IntradayBlaster
+    [Migration("20250314135458_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -60,23 +60,23 @@ namespace OptionChain.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<double>("AskPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("AskPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("AskQty")
                         .HasColumnType("int");
 
-                    b.Property<double>("BidPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("BidPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("BidQty")
                         .HasColumnType("int");
 
-                    b.Property<double>("Change")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Change")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("ChangeInOpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ChangeInOpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("EntryDate")
                         .HasColumnType("datetime2");
@@ -87,23 +87,23 @@ namespace OptionChain.Migrations
                     b.Property<string>("Identifier")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("ImpliedVolatility")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ImpliedVolatility")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("LastPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("LastPrice")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("OpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("OpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("PChange")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PChange")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("PChangeInOpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PChangeInOpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("StrikePrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("StrikePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<TimeSpan?>("Time")
                         .HasColumnType("time");
@@ -120,8 +120,8 @@ namespace OptionChain.Migrations
                     b.Property<string>("Underlying")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("UnderlyingValue")
-                        .HasColumnType("float");
+                    b.Property<decimal>("UnderlyingValue")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -139,23 +139,23 @@ namespace OptionChain.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<double>("AskPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("AskPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("AskQty")
                         .HasColumnType("int");
 
-                    b.Property<double>("BidPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("BidPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("BidQty")
                         .HasColumnType("int");
 
-                    b.Property<double>("Change")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Change")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("ChangeInOpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ChangeInOpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("EntryDate")
                         .HasColumnType("datetime2");
@@ -166,23 +166,23 @@ namespace OptionChain.Migrations
                     b.Property<string>("Identifier")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("ImpliedVolatility")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ImpliedVolatility")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("LastPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("LastPrice")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("OpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("OpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("PChange")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PChange")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("PChangeInOpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PChangeInOpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("StrikePrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("StrikePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<TimeSpan?>("Time")
                         .HasColumnType("time");
@@ -199,8 +199,8 @@ namespace OptionChain.Migrations
                     b.Property<string>("Underlying")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("UnderlyingValue")
-                        .HasColumnType("float");
+                    b.Property<decimal>("UnderlyingValue")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -293,13 +293,13 @@ namespace OptionChain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IndexSymbol")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("IndicativeClose")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Key")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Last")
                         .HasColumnType("decimal(18,2)");
@@ -359,6 +359,12 @@ namespace OptionChain.Migrations
                     b.HasIndex("EntryDate")
                         .HasDatabaseName("IX_BroderMarketsIndex_EntryDate");
 
+                    b.HasIndex("Key", "IndexSymbol", "EntryDate")
+                        .HasDatabaseName("IX_BroderMarketsIndex_Symbol_EntryDate_Key");
+
+                    b.HasIndex("Key", "IndexSymbol", "EntryDate", "Time")
+                        .HasDatabaseName("IX_BroderMarketsIndex_Symbol_EntryDate_Time_Key");
+
                     b.ToTable("BroderMarkets");
                 });
 
@@ -375,6 +381,15 @@ namespace OptionChain.Migrations
 
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("IsNifty100")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IsNifty200")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IsNifty50")
+                        .HasColumnType("int");
 
                     b.Property<double?>("LastPrice")
                         .HasColumnType("float");
@@ -418,6 +433,106 @@ namespace OptionChain.Migrations
                     b.ToTable("WeeklySectorUpdate");
                 });
 
+            modelBuilder.Entity("OptionChain.DailyStock", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<double>("Change")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Chart30dPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Chart365dPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChartTodayPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Date30dAgo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Date365dAgo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("DayHigh")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DayLow")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Ffmc")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Identifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("LastPrice")
+                        .HasColumnType("float");
+
+                    b.Property<string>("LastUpdateTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("NearWKH")
+                        .HasColumnType("float");
+
+                    b.Property<double>("NearWKL")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Open")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PChange")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PreviousClose")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Series")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("StockIndClosePrice")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("time");
+
+                    b.Property<double>("TotalTradedValue")
+                        .HasColumnType("float");
+
+                    b.Property<long>("TotalTradedVolume")
+                        .HasColumnType("bigint");
+
+                    b.Property<double>("YearHigh")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YearLow")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_DailyStockIndex_EntryDate");
+
+                    b.HasIndex("Symbol", "EntryDate", "Time")
+                        .HasDatabaseName("IX_DailyStockIndex_Symbol_EntryDate_Time");
+
+                    b.ToTable("DailyStocks");
+                });
+
             modelBuilder.Entity("OptionChain.FilteredOptionData", b =>
                 {
                     b.Property<long>("Id")
@@ -426,23 +541,23 @@ namespace OptionChain.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<double>("AskPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("AskPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("AskQty")
                         .HasColumnType("int");
 
-                    b.Property<double>("BidPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("BidPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("BidQty")
                         .HasColumnType("int");
 
-                    b.Property<double>("Change")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Change")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("ChangeInOpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ChangeInOpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("EntryDate")
                         .HasColumnType("datetime2");
@@ -453,23 +568,23 @@ namespace OptionChain.Migrations
                     b.Property<string>("Identifier")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("ImpliedVolatility")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ImpliedVolatility")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("LastPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("LastPrice")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("OpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("OpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("PChange")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PChange")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("PChangeInOpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PChangeInOpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("StrikePrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("StrikePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<TimeSpan?>("Time")
                         .HasColumnType("time");
@@ -486,8 +601,8 @@ namespace OptionChain.Migrations
                     b.Property<string>("Underlying")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("UnderlyingValue")
-                        .HasColumnType("float");
+                    b.Property<decimal>("UnderlyingValue")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -606,23 +721,23 @@ namespace OptionChain.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<double>("AskPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("AskPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("AskQty")
                         .HasColumnType("int");
 
-                    b.Property<double>("BidPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("BidPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("BidQty")
                         .HasColumnType("int");
 
-                    b.Property<double>("Change")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Change")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("ChangeInOpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ChangeInOpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("EntryDate")
                         .HasColumnType("datetime2");
@@ -633,23 +748,23 @@ namespace OptionChain.Migrations
                     b.Property<string>("Identifier")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("ImpliedVolatility")
-                        .HasColumnType("float");
+                    b.Property<decimal>("ImpliedVolatility")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("LastPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("LastPrice")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("OpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("OpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("PChange")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PChange")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("PChangeInOpenInterest")
-                        .HasColumnType("float");
+                    b.Property<decimal>("PChangeInOpenInterest")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("StrikePrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("StrikePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<TimeSpan?>("Time")
                         .HasColumnType("time");
@@ -666,8 +781,8 @@ namespace OptionChain.Migrations
                     b.Property<string>("Underlying")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("UnderlyingValue")
-                        .HasColumnType("float");
+                    b.Property<decimal>("UnderlyingValue")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -888,6 +1003,15 @@ namespace OptionChain.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsMunicipalBond")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNifty100")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNifty200")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNifty50")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsSLBSec")

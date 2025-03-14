@@ -719,18 +719,6 @@ namespace OptionChain.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<decimal>("AskPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("AskQty")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("BidPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("BidQty")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Change")
                         .HasColumnType("decimal(18,2)");
 

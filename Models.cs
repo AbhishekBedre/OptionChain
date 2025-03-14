@@ -9,10 +9,10 @@ namespace OptionChain
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string? Identifier { get; set; }
-        public decimal AskPrice { get; set; }
-        public int AskQty { get; set; }
-        public decimal BidPrice { get; set; }
-        public int BidQty { get; set; }
+        //public decimal AskPrice { get; set; }
+        //public int AskQty { get; set; }
+        //public decimal BidPrice { get; set; }
+        //public int BidQty { get; set; }
         public decimal Change { get; set; }
         public decimal ChangeInOpenInterest { get; set; }
         public string? ExpiryDate { get; set; }
@@ -77,10 +77,10 @@ namespace OptionChain
             return optionDatas.Select(s => new FilteredOptionData
             {
                 Identifier = s.Identifier,
-                AskPrice = s.AskPrice,
-                AskQty = s.AskQty,
-                BidPrice = s.BidPrice,
-                BidQty = s.BidQty,
+                //AskPrice = s.AskPrice,
+                //AskQty = s.AskQty,
+                //BidPrice = s.BidPrice,
+                //BidQty = s.BidQty,
                 Change = s.Change,
                 ChangeInOpenInterest = s.ChangeInOpenInterest,
                 ExpiryDate = s.ExpiryDate,
