@@ -33,6 +33,7 @@ namespace OptionChain
         public DbSet<SectorStocksResponse> SameOpenLowHigh { get; set; }
         public DbSet<WeeklySectorUpdateParse> WeeklySectorUpdate { get; set; }
         public DbSet<SectorStocksResponse> WeeklyStockUpdates { get; set; }
+        public DbSet<ResponseSectorsStocks> ResponseSectorsStocks { get; set; }
 
         // Constructor for DbContext
         public OptionDbContext(DbContextOptions<OptionDbContext> options)
@@ -84,7 +85,10 @@ namespace OptionChain
 
             modelBuilder.Entity<StockData>()
                 .HasKey(s => s.Id); //PK
-            
+
+            modelBuilder.Entity<StockData>()
+                .HasIndex(o => o.Symbol).HasDatabaseName("IX_StockDataIndex_Symbol");
+
             modelBuilder.Entity<StockData>()
                 .HasIndex(o => o.EntryDate).HasDatabaseName("IX_StockDataIndex_EntryDate");
             
@@ -104,6 +108,12 @@ namespace OptionChain
 
             modelBuilder.Entity<RFactorTable>()
                 .HasKey(s => s.Id); //PK
+
+            modelBuilder.Entity<RFactorTable>()
+                .HasIndex(o => o.Symbol).HasDatabaseName("IX_RFactorIndex_Symbol");
+
+            modelBuilder.Entity<RFactorTable>()
+                .HasIndex(o => new { o.Symbol, o.EntryDate, o.Time }).HasDatabaseName("IX_RFactorIndex_Symbol_EntryDate_Time");
 
             modelBuilder.Entity<Users>()
                 .HasKey(s => s.Id); //PK
@@ -131,6 +141,7 @@ namespace OptionChain
 
             modelBuilder.Entity<SectorStocksResponse>().HasNoKey();
             modelBuilder.Entity<WeeklySectorUpdateParse>().HasNoKey();
+            modelBuilder.Entity<ResponseSectorsStocks>().HasNoKey();
 
             modelBuilder.Entity<SectorStocksResponse>()
                 .Property(e => e.IsNifty50)

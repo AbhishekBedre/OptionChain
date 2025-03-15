@@ -288,40 +288,17 @@ namespace OptionChain.Controllers
         {
             List<Sector> sectorsStocks = new List<Sector>();
 
-            var sectorWithStockName = await _optionDbContext.Sectors
-                .AsQueryable()
-                .GroupBy(g => new { g.MappingName, g.Symbol })
-                .Select(s => new
-                {
-                    Name = s.Key.MappingName,
-                    Symbol = s.Key.Symbol ?? ""
-                })
-            .ToListAsync();
+            var responseSectorsStocks = await _optionDbContext.ResponseSectorsStocks.FromSqlRaw(@"EXEC [StockWithSectors] '" + currentDate + "'").ToListAsync();
 
-            var sectors = sectorWithStockName.GroupBy(g => g.Name).Select(s => s.Key).ToList();
+            var sectors = responseSectorsStocks.GroupBy(x => x.SectorName).ToList();
+
+            var sectorUpdate = _memoryCache.Get<List<SectorsResponse>>("sectorUpdate");
 
             foreach (var sector in sectors)
             {
-                var stockNames = sectorWithStockName.Where(x => x.Name == sector?.ToString()).Select(s => s.Symbol).ToList();
+                var stockNames = sectors.Where(s => s.Key == sector?.Key?.ToString()).FirstOrDefault();
 
-                var result = await _optionDbContext.StockData.AsQueryable()
-                                .Where(x => !string.IsNullOrEmpty(x.Symbol)
-                                    && x.EntryDate == Convert.ToDateTime(currentDate).Date
-                                    && stockNames.Contains(x.Symbol))
-                                .Join(_optionDbContext.StockMetaData.AsQueryable(), stock => stock.Symbol, meta => meta.Symbol,
-                                (stock, meta) => new { 
-                                    stock.Id,
-                                    stock.Symbol,
-                                    stock.LastPrice,
-                                    stock.PChange,
-                                    stock.Change,
-                                    stock.DayHigh,
-                                    stock.DayLow,
-                                    meta.IsFNOSec,
-                                    meta.IsNifty50,
-                                    meta.IsNifty100,
-                                    meta.IsNifty200
-                                }).ToListAsync();
+                var result = responseSectorsStocks.Where(x => x.SectorName == sector?.Key?.ToString()).ToList();
 
                 if (isFNO)
                 {
@@ -331,30 +308,18 @@ namespace OptionChain.Controllers
                 Sector mySector = new Sector
                 {
                     Id = 0,
-                    Name = sector,
+                    Name = sector.Key ?? "",
                     Stocks = new List<SectorStocksResponse>()
                 };
-
-                var tFactorDetail = await _optionDbContext.RFactors
-                            .Where(x => !string.IsNullOrEmpty(x.Symbol)
-                                && x.EntryDate == Convert.ToDateTime(currentDate)
-                                && stockNames.Contains(x.Symbol))
-                            .GroupBy(x => x.Symbol) // Group by Symbol
-                            .Select(g => g.OrderByDescending(x => x.Id).FirstOrDefault()) // Get the latest entry by Id
-                            .ToListAsync();
 
                 foreach (var stock in stockNames)
                 {
                     SectorStocksResponse sectorStocksResponse = new SectorStocksResponse();
 
-                    var stockDetail = result.Where(x => x.Symbol == stock).OrderByDescending(x => x.Id).FirstOrDefault();
-
-                    var tFactor = tFactorDetail.Where(x => x.Symbol == stock).OrderByDescending(x => x.Id).FirstOrDefault();
+                    var stockDetail = result.Where(x => x.Symbol == stock.Symbol).FirstOrDefault();
 
                     if (stockDetail != null)
                     {
-                        double tFact = tFactor?.RFactor ?? 0;
-
                         mySector.Stocks.Add(new SectorStocksResponse
                         {
                             Id = stockDetail.Id,
@@ -364,23 +329,23 @@ namespace OptionChain.Controllers
                             Change = stockDetail.Change,
                             DayHigh = stockDetail.DayHigh,
                             DayLow = stockDetail.DayLow,
-                            TFactor = Math.Round(tFact, 2),
+                            TFactor = Math.Round(Convert.ToDouble(stockDetail.TFactor),2),
+                            Open = stockDetail.Open,
+                            Time = stockDetail.Time,
                             IsNifty50 = stockDetail.IsNifty50,
                             IsNifty100 = stockDetail.IsNifty100,
                             IsNifty200 = stockDetail.IsNifty200
                         });
                     }
                 }
-
-                var sectorUpdate = _memoryCache.Get<List<SectorsResponse>>("sectorUpdate");
-
-                if (sectorUpdate == null || sectorUpdate.Where(x => x.Sector == sector).FirstOrDefault() == null)
+                
+                if (sectorUpdate == null || sectorUpdate.Where(x => x.Sector == sector.Key).FirstOrDefault() == null)
                 {
                     mySector.PChange = Math.Round(mySector.Stocks.Average(x => x.PChange) ?? 0, 2);
                 }
                 else
                 {
-                    mySector.PChange = Convert.ToDouble(sectorUpdate.Where(x => x.Sector == sector).FirstOrDefault()?.PChange);
+                    mySector.PChange = Convert.ToDouble(sectorUpdate.Where(x => x.Sector == sector.Key).FirstOrDefault()?.PChange);
                 }
 
                 if (mySector.PChange < 0)
@@ -630,7 +595,7 @@ namespace OptionChain.Controllers
                 var positiveStocks = result.Where(x => x.PChange > 8).OrderByDescending(x => x.PChange).Take(10).ToList();
                 var negetiveStocks = result.Where(x => x.PChange < -8).OrderBy(x => x.PChange).Take(10).ToList();
 
-                if(positiveStocks.Any())
+                if (positiveStocks.Any())
                     finalResult.AddRange(positiveStocks);
 
                 if (negetiveStocks.Any())
@@ -744,5 +709,24 @@ namespace OptionChain.Controllers
     {
         public IEnumerable<OptionsResponse>? PositiveValue { get; set; }
         public IEnumerable<OptionsResponse>? NegetiveValue { get; set; }
+    }
+
+    public class ResponseSectorsStocks
+    {
+        public long Id { get; set; }
+        public string? Symbol { get; set; }
+        public string? SectorName { get; set; }
+        public double? PChange { get; set; }
+        public double? LastPrice { get; set; }
+        public double? Open { get; set; }
+        public double? Change { get; set; }
+        public double? DayHigh { get; set; }
+        public double? DayLow { get; set; }
+        public double? TFactor { get; set; }
+        public string? Time { get; set; }
+        public bool IsFNOSec { get; set; }
+        public bool IsNifty50 { get; set; }
+        public bool IsNifty100 { get; set; }
+        public bool IsNifty200 { get; set; }
     }
 }

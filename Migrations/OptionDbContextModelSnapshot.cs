@@ -825,6 +825,9 @@ namespace OptionChain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Symbol")
+                        .HasDatabaseName("IX_RFactorIndex_Symbol");
+
                     b.HasIndex("Symbol", "EntryDate", "Time")
                         .HasDatabaseName("IX_RFactorIndex_Symbol_EntryDate_Time");
 
@@ -947,6 +950,9 @@ namespace OptionChain.Migrations
 
                     b.HasIndex("EntryDate")
                         .HasDatabaseName("IX_StockDataIndex_EntryDate");
+
+                    b.HasIndex("Symbol")
+                        .HasDatabaseName("IX_StockDataIndex_Symbol");
 
                     b.HasIndex("Symbol", "EntryDate", "Time")
                         .HasDatabaseName("IX_StockDataIndex_Symbol_EntryDate_Time");
