@@ -388,6 +388,56 @@ namespace OptionChain.Migrations
                     b.ToTable("BroderMarkets");
                 });
 
+            modelBuilder.Entity("OptionChain.Controllers.ResponseSectorsStocks", b =>
+                {
+                    b.Property<double?>("Change")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("DayHigh")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("DayLow")
+                        .HasColumnType("float");
+
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsFNOSec")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNifty100")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNifty200")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsNifty50")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("LastPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Open")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PChange")
+                        .HasColumnType("float");
+
+                    b.Property<string>("SectorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("TFactor")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Time")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("ResponseSectorsStocks");
+                });
+
             modelBuilder.Entity("OptionChain.Controllers.SectorStocksResponse", b =>
                 {
                     b.Property<double?>("Change")
@@ -824,6 +874,9 @@ namespace OptionChain.Migrations
                         .HasColumnType("time");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_RFactorIndex_EntryDate");
 
                     b.HasIndex("Symbol")
                         .HasDatabaseName("IX_RFactorIndex_Symbol");

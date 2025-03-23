@@ -97,12 +97,7 @@ namespace OptionChain
 
             modelBuilder.Entity<DailyStockData>()
                 .HasKey(s => s.Id); //PK
-            /*modelBuilder.Entity<DailyStockData>()
-                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_DailyStockIndex_EntryDate");
             
-            modelBuilder.Entity<DailyStockData>()
-                .HasIndex(o => new { o.Symbol, o.EntryDate, o.Time }).HasDatabaseName("IX_DailyStockIndex_Symbol_EntryDate_Time");*/
-
             modelBuilder.Entity<StockMetaData>()
                 .HasKey(s => s.Id); //PK
 
@@ -111,6 +106,9 @@ namespace OptionChain
 
             modelBuilder.Entity<RFactorTable>()
                 .HasIndex(o => o.Symbol).HasDatabaseName("IX_RFactorIndex_Symbol");
+
+            modelBuilder.Entity<RFactorTable>()
+                .HasIndex(o => o.EntryDate).HasDatabaseName("IX_RFactorIndex_EntryDate");
 
             modelBuilder.Entity<RFactorTable>()
                 .HasIndex(o => new { o.Symbol, o.EntryDate, o.Time }).HasDatabaseName("IX_RFactorIndex_Symbol_EntryDate_Time");
