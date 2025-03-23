@@ -555,7 +555,7 @@ namespace OptionChain.Migrations
 
                     b.Property<string>("Symbol")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<TimeSpan?>("Time")
                         .HasColumnType("time");
@@ -573,6 +573,12 @@ namespace OptionChain.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_DailyStockDataIndex_EntryDate");
+
+                    b.HasIndex("Symbol")
+                        .HasDatabaseName("IX_DailyStockDataIndex_Symbol");
 
                     b.ToTable("DailyStockData");
                 });

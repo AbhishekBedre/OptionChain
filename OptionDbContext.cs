@@ -97,7 +97,13 @@ namespace OptionChain
 
             modelBuilder.Entity<DailyStockData>()
                 .HasKey(s => s.Id); //PK
-            
+
+            modelBuilder.Entity<DailyStockData>()
+                .HasIndex(s => s.Symbol).HasDatabaseName("IX_DailyStockDataIndex_Symbol");
+
+            modelBuilder.Entity<DailyStockData>()
+                .HasIndex(s => s.EntryDate).HasDatabaseName("IX_DailyStockDataIndex_EntryDate");
+
             modelBuilder.Entity<StockMetaData>()
                 .HasKey(s => s.Id); //PK
 
