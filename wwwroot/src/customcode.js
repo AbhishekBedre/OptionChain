@@ -333,8 +333,15 @@ function formatToThousands(decimalNumber) {
 
 function autoRefresh() {
     const now = new Date();
+    const day = now.getDay();
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 15); // 09:15 AM
     const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 30);  // 03:30 PM
+
+    // Prevent refresh on Saturday (6) and Sunday (0)
+    if (day === 6 || day === 0) {
+        console.log("No refresh on weekends.");
+        return;
+    }
 
     if (now >= start && now <= end) {
         // Calculate the next 5-minute slot
@@ -354,9 +361,7 @@ function autoRefresh() {
         console.log(`Next refresh scheduled in ${timeToNextRefresh / 1000} seconds at ${nextRefresh.toLocaleTimeString()}`);
 
         setTimeout(function () {
-             // Trigger the click
             window.location.reload();
-            //autoRefresh(); // Schedule the next refresh
         }, timeToNextRefresh); // Reload at the start of the next 5-minute slot
     } else {
         console.log("Outside refresh hours.");
