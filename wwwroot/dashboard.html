@@ -156,7 +156,45 @@ ${options}
             }
         }
 
+        function getCurrentDateTime() {
+            var dt = new Date();
+
+            var hours = dt.getHours();
+            var minutes = dt.getMinutes();
+            var seconds = dt.getSeconds();
+            var ampm = hours >= 12 ? "PM" : "AM";
+
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 → 12
+
+            var strTime =
+                hours +
+                ":" +
+                (minutes < 10 ? "0" + minutes : minutes) +
+                ":" +
+                (seconds < 10 ? "0" + seconds : seconds) +
+                " " +
+                ampm;
+
+            var strDate =
+                dt.getDate().toString().padStart(2, "0") +
+                "-" +
+                (dt.getMonth() + 1).toString().padStart(2, "0") +
+                "-" +
+                dt.getFullYear();
+
+            return strDate + " " + strTime;
+        }
+
+
+
         $(document).ready(function () {
+
+            var dt = new Date();
+            var hours = dt.getHours();
+            var ampm = hours >= 12 ? "PM" : "AM";
+            $("#spnLastUpdate").text("Last synced: " + getCurrentDateTime());
+
             // Example usage with the AJAX call
             getSecorStocks(function (response) {
                 renderSectorStocks(response);
@@ -1025,6 +1063,12 @@ ${options}
                                     <button id="SectorUpdate" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
                                         Get Sector Details
                                     </button>
+                                </div>
+
+                                <div style="vertical-align: bottom; margin-top: 25px;">
+                                    <span id="spnLastUpdate">
+                                        Last synced: 2025-09-01 11:00 AM
+                                    </span>
                                 </div>
 
                             </div>
