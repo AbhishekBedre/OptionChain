@@ -628,6 +628,23 @@ namespace OptionChain.Controllers
                 throw;
             }
         }
+
+        [HttpGet("breakout-stocks")]
+        public async Task<List<BreakoutStock>> GetBreakoutStocksAsync(string currentDate = "2025-09-19")
+        {
+            try
+            {
+                var result = await _optionDbContext.BreakoutStocks
+                    .FromSqlRaw("EXEC [GetDayHighBreakouts] '" + currentDate + "'").ToListAsync();
+
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
     public class WeeklySectorUpdateParse

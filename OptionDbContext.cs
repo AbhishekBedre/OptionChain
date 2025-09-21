@@ -34,6 +34,7 @@ namespace OptionChain
         public DbSet<WeeklySectorUpdateParse> WeeklySectorUpdate { get; set; }
         public DbSet<SectorStocksResponse> WeeklyStockUpdates { get; set; }
         public DbSet<ResponseSectorsStocks> ResponseSectorsStocks { get; set; }
+        public DbSet<BreakoutStock> BreakoutStocks { get; set; }
 
         // Constructor for DbContext
         public OptionDbContext(DbContextOptions<OptionDbContext> options)
@@ -146,6 +147,7 @@ namespace OptionChain
             modelBuilder.Entity<SectorStocksResponse>().HasNoKey();
             modelBuilder.Entity<WeeklySectorUpdateParse>().HasNoKey();
             modelBuilder.Entity<ResponseSectorsStocks>().HasNoKey();
+            modelBuilder.Entity<BreakoutStock>().HasNoKey();
 
             modelBuilder.Entity<SectorStocksResponse>()
                 .Property(e => e.IsNifty50)

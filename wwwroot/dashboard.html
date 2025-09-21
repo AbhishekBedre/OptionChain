@@ -200,8 +200,12 @@ ${options}
                 renderSectorStocks(response);
             });
 
-            getWatchlistStocks(function(response){
+            /*getWatchlistStocks(function(response){
                 renderWatchListStocks(response);
+            });*/
+
+            getBreakOutStocks(function (response) {
+                renderBreakoutStocks(response);
             });
 
             $("#SectorUpdate").click(function () {
@@ -283,6 +287,39 @@ ${options}
             });
         }
 
+        function getBreakOutStocks(callback) {
+            $("div[x-show='loaded']").show();
+
+            var domain = window.location.origin;
+            var subfolderName = "";
+
+            var arr = window.location.pathname.split('/');
+
+            if (arr.length > 2) {
+                subfolderName = "/" + arr[1];
+            }
+
+            var url = domain + subfolderName + "/Options/breakout-stocks";
+
+            var selectedDate = $("#currentDate").val();
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { "currentDate": selectedDate }, // Pass the date as a query parameter
+                success: function (response) {
+                    $("div[x-show='loaded']").hide();
+                    console.log('Success:', response);
+                    return callback(response);
+                },
+                error: function (xhr, status, error) {
+                    $("div[x-show='loaded']").hide();
+                    console.error('Error:', status, error);
+                }
+            });
+        }
+
+
         function renderWatchListStocks(response) {
             $("#watchListStocks").empty();
             var finalContent = ``;
@@ -336,6 +373,84 @@ ${options}
             }
 
             $("#watchListStocks").html(headerContent + finalContent+ "</div>");
+        }
+
+        function toAmPmFormat(timeStr) {
+            // Trim to hh:mm:ss.SSS (JavaScript only supports milliseconds)
+            const clean = timeStr.slice(0, 12); // "22:37:34.046"
+
+            // Split into parts
+            const [h, m, rest] = clean.split(":");
+            const [s] = rest.split("."); // ignore milliseconds if not needed
+
+            let hours = parseInt(h, 10);
+            const minutes = m.padStart(2, "0");
+            const seconds = s.padStart(2, "0");
+
+            const ampm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12 || 12; // Convert 0 -> 12, 13 -> 1, etc.
+
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        // Example
+        console.log(toAmPmFormat("22:37:34.0467530")); // "10:37:34 PM"
+        console.log(toAmPmFormat("09:05:02.1234567")); // "9:05:02 AM"
+
+
+        function renderBreakoutStocks(response) {
+            $("#watchListStocks").empty();
+            var finalContent = ``;
+            var headerContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+            <div class="col-span-2 xl:col-span-3 flex items-center">
+                <p class="font-medium">Name</p>
+            </div>
+            <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                <p class="font-medium">Price</p>
+            </div>
+            <div class="col-span-2 flex items-center">
+                <p class="font-medium">%</p>
+            </div>
+            <div class="col-span-1 flex items-center">
+                <p class="font-medium">T Fact</p>
+            </div>
+            </div><div style="max-height: 400px; overflow-y: scroll; scrollbar-width: thin">`;
+
+                for (let i = 0; i < response.length; i++) {
+
+                    var stockClassName = "text-success";
+                    if (response[i].pChange < 0)
+                        stockClassName = "text-danger";
+
+                    var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                <div class="col-span-2 xl:col-span-3 flex items-center">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <p class="text-sm font-medium text-black dark:text-white">
+                            <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                ${response[i].symbol}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                    <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
+                </div>
+                <div class="col-span-2 flex items-center">
+                    <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
+                    ${response[i].pChange}
+                    </p>
+                </div>
+                <div class="col-span-1 flex items-center">
+                    <p class="text-sm font-medium text-meta-8">
+                        ${ toAmPmFormat(response[i].time) }
+                    </p>
+                </div>
+            </div>`;
+
+                finalContent = finalContent + stockContent;
+            }
+
+            $("#watchListStocks").html(headerContent + finalContent + "</div>");
         }
 
     </script>
@@ -1181,7 +1296,7 @@ ${options}
                             <div class="mb-3 justify-between gap-4 sm:flex">
                                 <div>
                                     <h4 class="text-xl font-bold text-black dark:text-white">
-                                        Stocks to watch for next week
+                                        Breakout Beacon
                                     </h4>
                                 </div>
 
