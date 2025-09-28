@@ -51,43 +51,62 @@ namespace OptionChain.Controllers
                 .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 5)))
                 .ToList();
 
-            var result = await _optionDbContext.Summary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
+            var responseOptionValues = await _optionDbContext.OptionValues.FromSqlRaw(@"EXEC [NiftyOptions] '" + currentDate + "'").ToListAsync();
+            var positiveValue = new List<OptionsResponse>();
+            var negetiveValue = new List<OptionsResponse>();
 
-            // Map existing data to a dictionary for quick lookup
-            var resultDictionary = result.ToDictionary(
-            x => new TimeSpan(x.Time.Value.Hours, x.Time.Value.Minutes, 0), // Truncate milliseconds
-            x => new OptionsResponse
+            for (int i=0;i<timeSlots.Count;i++)
             {
-                value = x.CEPEOIPrevDiff * -1,
-                Time = ob.ConvertToUnixTimestamp(x.Time ?? TimeSpan.Zero, x.EntryDate ?? DateTime.MinValue)
-            });
+                var row = responseOptionValues.FirstOrDefault(x => x.Time == timeSlots?.ElementAt(i).ToString(@"hh\:mm"));
 
-            // Create positive and negative value lists with default values
-            var positiveValue = timeSlots.Select(slot =>
-            {
-                if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value >= 0)
+                positiveValue.Add(new OptionsResponse
                 {
-                    return existingData;
-                }
-                return new OptionsResponse
-                {
-                    value = null,
-                    Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
-                };
-            }).ToList();
+                    Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i), DateTime.Now),
+                    value = row?.Value > 0 ? row.Value : null
+                });
 
-            var negetiveValue = timeSlots.Select(slot =>
-            {
-                if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value < 0)
+                negetiveValue.Add(new OptionsResponse
                 {
-                    return existingData;
-                }
-                return new OptionsResponse
-                {
-                    value = null,
-                    Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
-                };
-            }).ToList();
+                    Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i), DateTime.Now),
+                    value = row?.Value < 0 ? row.Value : null
+                });
+            }
+
+            //// Map existing data to a dictionary for quick lookup
+            //var resultDictionary = result.ToDictionary(
+            //x => new TimeSpan(x.Time.Value.Hours, x.Time.Value.Minutes, 0), // Truncate milliseconds
+            //x => new OptionsResponse
+            //{
+            //    value = x.CEPEOIPrevDiff * -1,
+            //    Time = ob.ConvertToUnixTimestamp(x.Time ?? TimeSpan.Zero, x.EntryDate ?? DateTime.MinValue)
+            //});
+
+            //// Create positive and negative value lists with default values
+            //var positiveValue = timeSlots.Select(slot =>
+            //{
+            //    if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value >= 0)
+            //    {
+            //        return existingData;
+            //    }
+            //    return new OptionsResponse
+            //    {
+            //        value = null,
+            //        Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
+            //    };
+            //}).ToList();
+
+            //var negetiveValue = timeSlots.Select(slot =>
+            //{
+            //    if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value < 0)
+            //    {
+            //        return existingData;
+            //    }
+            //    return new OptionsResponse
+            //    {
+            //        value = null,
+            //        Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
+            //    };
+            //}).ToList();
 
             AllOptionResponse allOptionResponse = new AllOptionResponse();
 
@@ -350,12 +369,12 @@ namespace OptionChain.Controllers
 
                 if (mySector.PChange < 0)
                 {
-                    mySector.Stocks = mySector.Stocks.OrderBy(x => x.PChange).ThenByDescending(x => x.TFactor).ToList();
+                    mySector.Stocks = mySector.Stocks.OrderByDescending(x => x.TFactor).ToList();
                 }
 
                 if (mySector.PChange >= 0)
                 {
-                    mySector.Stocks = mySector.Stocks.OrderByDescending(x => x.PChange).ThenByDescending(x => x.TFactor).ToList();
+                    mySector.Stocks = mySector.Stocks.OrderByDescending(x => x.TFactor).ToList();
                 }
 
                 sectorsStocks.Add(mySector);
@@ -645,6 +664,23 @@ namespace OptionChain.Controllers
                 throw;
             }
         }
+
+        [HttpGet("breakdown-stocks")]
+        public async Task<List<BreakoutStock>> GetBreakdownStocksAsync(string currentDate = "2025-09-19")
+        {
+            try
+            {
+                var result = await _optionDbContext.BreakoutStocks
+                    .FromSqlRaw("EXEC [GetDayLowBreakdowns] '" + currentDate + "'").ToListAsync();
+
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
     public class WeeklySectorUpdateParse
@@ -707,6 +743,12 @@ namespace OptionChain.Controllers
         public bool IsNifty50 { get; set; }
         public bool IsNifty100 { get; set; }
         public bool IsNifty200 { get; set; }
+    }
+
+    public class OptionValues
+    {
+        public string? Time { get; set; }
+        public double? Value { get; set; }
     }
 
     public class SectorsResponse

@@ -26,7 +26,9 @@ namespace OptionChain.Models
         public double LastPrice { get; set; }
         public double PChange { get; set; }
         public double PrevDayHigh { get; set; }
+        public double PrevDayLow { get; set; }
         public double NewDayHigh { get; set; }
+        public double NewDayLow { get; set; }
         public TimeSpan? Time { get; set; }
         public DateTime? EntryDate { get; set; }
     }

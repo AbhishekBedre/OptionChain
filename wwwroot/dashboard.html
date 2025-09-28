@@ -65,7 +65,7 @@
 
                     var mainDiv = `<div class="col-span-12 xl:col-span-6 deleteToRefresh scroll-container">
                                       <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                                          <div class="mb-7 p-4 flex items-center justify-between">
+                                          <div class="p-4 flex items-center justify-between">
                                               <div>
                                                   <h3 class="text-xl font-bold text-black dark:text-white">
                                                   ${sectorName}
@@ -193,20 +193,24 @@ ${options}
             var dt = new Date();
             var hours = dt.getHours();
             var ampm = hours >= 12 ? "PM" : "AM";
-            $("#spnLastUpdate").text("Last synced: " + getCurrentDateTime());
+            $("#spnLastUpdate").text("Last sync: " + getCurrentDateTime());
 
             // Example usage with the AJAX call
             getSecorStocks(function (response) {
                 renderSectorStocks(response);
             });
 
-            /*getWatchlistStocks(function(response){
+            getWatchlistStocks(function(response){
                 renderWatchListStocks(response);
-            });*/
-
-            getBreakOutStocks(function (response) {
-                renderBreakoutStocks(response);
             });
+
+            getStockDetails(function (response) {
+                renderBreakoutStocks(response);
+            }, "/Options/breakout-stocks");
+
+            getStockDetails(function (response) {
+                renderBreakdownStocks(response);
+            }, "/Options/breakdown-stocks");
 
             $("#SectorUpdate").click(function () {
 
@@ -287,7 +291,7 @@ ${options}
             });
         }
 
-        function getBreakOutStocks(callback) {
+        function getStockDetails(callback, endPoint) {
             $("div[x-show='loaded']").show();
 
             var domain = window.location.origin;
@@ -299,7 +303,7 @@ ${options}
                 subfolderName = "/" + arr[1];
             }
 
-            var url = domain + subfolderName + "/Options/breakout-stocks";
+            var url = domain + subfolderName + endPoint;
 
             var selectedDate = $("#currentDate").val();
 
@@ -318,7 +322,6 @@ ${options}
                 }
             });
         }
-
 
         function renderWatchListStocks(response) {
             $("#watchListStocks").empty();
@@ -397,9 +400,8 @@ ${options}
         console.log(toAmPmFormat("22:37:34.0467530")); // "10:37:34 PM"
         console.log(toAmPmFormat("09:05:02.1234567")); // "9:05:02 AM"
 
-
         function renderBreakoutStocks(response) {
-            $("#watchListStocks").empty();
+            $("#breakoutStocks").empty();
             var finalContent = ``;
             var headerContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
             <div class="col-span-2 xl:col-span-3 flex items-center">
@@ -450,8 +452,64 @@ ${options}
                 finalContent = finalContent + stockContent;
             }
 
-            $("#watchListStocks").html(headerContent + finalContent + "</div>");
+            $("#breakoutStocks").html(headerContent + finalContent + "</div>");
         }
+
+        function renderBreakdownStocks(response) {
+            $("#breakdownStocks").empty();
+            var finalContent = ``;
+            var headerContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+            <div class="col-span-2 xl:col-span-3 flex items-center">
+                <p class="font-medium">Name</p>
+            </div>
+            <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                <p class="font-medium">Price</p>
+            </div>
+            <div class="col-span-2 flex items-center">
+                <p class="font-medium">%</p>
+            </div>
+            <div class="col-span-1 flex items-center">
+                <p class="font-medium">T Fact</p>
+            </div>
+            </div><div style="max-height: 400px; overflow-y: scroll; scrollbar-width: thin">`;
+
+            for (let i = 0; i < response.length; i++) {
+
+                var stockClassName = "text-success";
+                if (response[i].pChange < 0)
+                    stockClassName = "text-danger";
+
+                var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                <div class="col-span-2 xl:col-span-3 flex items-center">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <p class="text-sm font-medium text-black dark:text-white">
+                            <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                ${response[i].symbol}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                    <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
+                </div>
+                <div class="col-span-2 flex items-center">
+                    <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
+                    ${response[i].pChange}
+                    </p>
+                </div>
+                <div class="col-span-1 flex items-center">
+                    <p class="text-sm font-medium text-meta-8">
+                        ${toAmPmFormat(response[i].time)}
+                    </p>
+                </div>
+            </div>`;
+
+                finalContent = finalContent + stockContent;
+            }
+
+            $("#breakdownStocks").html(headerContent + finalContent + "</div>");
+        }
+
 
     </script>
 
@@ -876,7 +934,7 @@ ${options}
                                @click.prevent="dropdownOpen = ! dropdownOpen">
                                 <span class="hidden text-right lg:block">
                                     <span id="ProfileName" class="block text-sm font-medium text-black dark:text-white">Abhishek Bedre</span>
-                                    <span class="block text-xs font-medium">Developer</span>
+                                    <span id="spnLastUpdate" class="block text-xs font-medium">Developer</span>
                                 </span>
 
                                 <span class="h-12 w-12 rounded-full">
@@ -994,13 +1052,13 @@ ${options}
                                             <tr>
                                                 <td>
                                                     <svg width="19"
-                                                        height="19"
-                                                        viewBox="0 0 19 19"
-                                                        fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
+                                                         height="19"
+                                                         viewBox="0 0 19 19"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                                fill="#ee544e" />
-                                                    </svg>                                                
+                                                              fill="#ee544e" />
+                                                    </svg>
                                                 </td>
                                                 <td>
                                                     <span id="niftyPer" class="text-sm font-medium text-red">18%</span>
@@ -1012,8 +1070,8 @@ ${options}
                                                     <span id="niftyVeri" class="text-sm font-medium text-red">+500</span>
                                                 </td>
                                             </tr>
-                                        </table>                                        
-                                    </div>                                    
+                                        </table>
+                                    </div>
                                 </div>
                                 <div class="flex items-center xl:justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
                                     <div>
@@ -1027,12 +1085,12 @@ ${options}
                                             <tr>
                                                 <td>
                                                     <svg width="19"
-                                                        height="19"
-                                                        viewBox="0 0 19 19"
-                                                        fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
+                                                         height="19"
+                                                         viewBox="0 0 19 19"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyBankIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                            fill="#10B981" />
+                                                              fill="#10B981" />
                                                     </svg>
                                                 </td>
                                                 <td>
@@ -1058,14 +1116,14 @@ ${options}
                                     <div class="flex items-center gap-1 sm:sm-auto xl:sm-auto">
                                         <table>
                                             <tr>
-                                                <td>                                                    
+                                                <td>
                                                     <svg width="19"
-                                                        height="19"
-                                                        viewBox="0 0 19 19"
-                                                        fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
+                                                         height="19"
+                                                         viewBox="0 0 19 19"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyNext50Icon" d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
-                                                            fill="#F0950C" />
+                                                              fill="#F0950C" />
                                                     </svg>
                                                 </td>
                                                 <td>
@@ -1093,12 +1151,12 @@ ${options}
                                             <tr>
                                                 <td>
                                                     <svg width="19"
-                                                            height="19"
-                                                            viewBox="0 0 19 19"
-                                                            fill="none"
-                                                            xmlns="http://www.w3.org/2000/svg">
+                                                         height="19"
+                                                         viewBox="0 0 19 19"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyMidSelectIcon" d="M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z"
-                                                                fill="#F0950C" />
+                                                              fill="#F0950C" />
                                                     </svg>
                                                 </td>
                                                 <td>
@@ -1111,7 +1169,7 @@ ${options}
                                                     <span id="niftyMidSelectVeri" class="text-sm font-medium">7%</span>
                                                 </td>
                                             </tr>
-                                        </table>                                        
+                                        </table>
                                     </div>
                                 </div>
                                 <div class="flex items-center xl:justify-center gap-2">
@@ -1126,12 +1184,12 @@ ${options}
                                             <tr>
                                                 <td>
                                                     <svg width="19"
-                                                            height="19"
-                                                            viewBox="0 0 19 19"
-                                                            fill="none"
-                                                            xmlns="http://www.w3.org/2000/svg">
+                                                         height="19"
+                                                         viewBox="0 0 19 19"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path id="niftyFinServiceIcon" d="M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z"
-                                                                fill="#10B981" />
+                                                              fill="#10B981" />
                                                     </svg>
                                                 </td>
                                                 <td>
@@ -1144,14 +1202,12 @@ ${options}
                                                     <span id="niftyFinServiceVeri" class="text-meta-3">12%</span>
                                                 </td>
                                             </tr>
-                                        </table>                                        
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- ====== Data Stats End -->
-
-
                         <!-- ====== Sector Chart Start -->
                         <div class="col-span-12 flex flex-wrap items-center items-center justify-between gap-3">
                             <!-- Datepicker built with flatpickr -->
@@ -1180,12 +1236,6 @@ ${options}
                                     </button>
                                 </div>
 
-                                <div style="vertical-align: bottom; margin-top: 25px;">
-                                    <span id="spnLastUpdate">
-                                        Last synced: 2025-09-01 11:00 AM
-                                    </span>
-                                </div>
-
                             </div>
                             <div class="col-span-3 flex flex-wrap items-center justify-between gap-2">
                                 <h1 style="position: relative; color: #fff; font-family: inherit;">Overall</h1>
@@ -1207,124 +1257,136 @@ ${options}
                         </div>
 
                         <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-5">
-                        <div class="mb-3 justify-between gap-4 sm:flex">
-                            <div>
-                            <h4 class="text-xl font-bold text-black dark:text-white">
-                                Market Mood
-                            </h4>
+                            <div class="mb-3 justify-between gap-4 sm:flex">
+                                <div>
+                                    <h4 class="text-xl font-bold text-black dark:text-white">
+                                        MARKET MOOD
+                                    </h4>
+                                </div>
+                                <div>
+                                    <div class="relative z-20 inline-block">
+
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                            <div class="relative z-20 inline-block">
-                                <!--<select
-                                name=""
-                                id=""
-                                class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
-                                >
-                                <option value="">Monthly</option>
-                                <option value="">Yearly</option>
-                                </select>
-                                <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
-                                <svg
-                                    width="10"
-                                    height="6"
-                                    viewBox="0 0 10 6"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                    d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
-                                    fill="#637381"
-                                    />
-                                    <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
-                                    fill="#637381"
-                                    />
-                                </svg>
-                                </span>-->
+                            <div class="mb-2">
+                                <div id="chartThree" class="mx-auto flex justify-center"></div>
                             </div>
+                            <div class="-mx-8 flex flex-wrap items-center gap-y-3">
+                                <div class="w-full px-8 sm:w-1/2">
+                                    <div class="flex w-full items-center">
+                                        <span class="mr-2 block h-3 w-full max-w-3 rounded-full" style="background-color: #28a745;"></span>
+                                        <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                                            <span> Advance </span>
+                                            <span id="spnAdvance"> 65% </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="w-full px-8 sm:w-1/2">
+                                    <div class="flex w-full items-center">
+                                        <span class="mr-2 block h-3 w-full max-w-3 rounded-full" style="background-color: #dc3545;"></span>
+                                        <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                                            <span> Decline </span>
+                                            <span id="spnDecline"> 34% </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="w-full px-8 sm:w-1/2">
+                                    <div class="flex w-full items-center">
+                                        <span class="mr-2 block h-3 w-full max-w-3 rounded-full" style="background-color: #6775e3;"></span>
+                                        <p class="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                                            <span> Unchanged </span>
+                                            <span id="spnUnchanged"> 45% </span>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-2">
-                            <div id="chartThree" class="mx-auto flex justify-center"></div>
-                        </div>
-                        <div class="-mx-8 flex flex-wrap items-center gap-y-3">
-                            <div class="w-full px-8 sm:w-1/2">
-                            <div class="flex w-full items-center">
-                                <span
-                                class="mr-2 block h-3 w-full max-w-3 rounded-full" style="background-color: #28a745;"
-                                ></span>
-                                <p
-                                class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
-                                >
-                                <span> Advance </span>
-                                <span id="spnAdvance"> 65% </span>
-                                </p>
-                            </div>
-                            </div>
-                            <div class="w-full px-8 sm:w-1/2">
-                            <div class="flex w-full items-center">
-                                <span
-                                class="mr-2 block h-3 w-full max-w-3 rounded-full" style="background-color: #dc3545;"
-                                ></span>
-                                <p
-                                class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
-                                >
-                                <span> Decline </span>
-                                <span id="spnDecline"> 34% </span>
-                                </p>
-                            </div>
-                            </div>
-                            <div class="w-full px-8 sm:w-1/2">
-                            <div class="flex w-full items-center">
-                                <span
-                                class="mr-2 block h-3 w-full max-w-3 rounded-full" style="background-color: #6775e3;"
-                                ></span>
-                                <p
-                                class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
-                                >
-                                <span> Unchanged </span>
-                                <span id="spnUnchanged"> 45% </span>
-                                </p>
-                            </div>
-                            </div>
-                        </div>
                         </div>
 
                         <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-7">
                             <div class="mb-3 justify-between gap-4 sm:flex">
                                 <div>
                                     <h4 class="text-xl font-bold text-black dark:text-white">
-                                        Breakout Beacon
+                                        WEEKLY BREAKOUT STOCKS
                                     </h4>
                                 </div>
 
                                 <div class="relative z-20 inline-block">
-                                <select
-                                    name="stocksFilter" id="stocksFilter"
-                                    class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
-
-                                </select>
-                                <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
-                                    <svg
-                                    width="10" height="6" viewBox="0 0 10 6"
-                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
-                                        fill="#637381"
-                                    />
-                                    <path
-                                        fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
-                                        fill="#637381"
-                                    />
-                                    </svg>
-                                </span>
+                                    <select name="stocksFilter" id="stocksFilter"
+                                            class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
+                                    </select>
+                                    <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
+                                        <svg width="10" height="6" viewBox="0 0 10 6"
+                                             fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
+                                                  fill="#637381" />
+                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                  d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
+                                                  fill="#637381" />
+                                        </svg>
+                                    </span>
                                 </div>
                             </div>
                             <div id="watchListStocks" class="flex flex-col gap-2">
-                                
+
+                            </div>
+                        </div>
+
+                        <div class="col-span-12 xl:col-span-6 deleteToRefresh scroll-container">
+                            <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                <div class="p-4 flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-black dark:text-white">
+                                            BREAKOUT STOCKS
+                                        </h3>
+                                    </div>
+                                    <div class="relative z-20 inline-block">
+                                        <select name="stocksFilter1" id="stocksFilter1" class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
+                                            <option value="1">NIFTY 500</option>
+                                            <option value="2">NIFTY 50</option>
+                                            <option value="3">NIFTY 100</option>
+                                            <option value="4">NIFTY 200</option>
+                                        </select>
+                                        <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
+                                            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z" fill="#637381"></path>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z" fill="#637381"></path>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="breakoutStocks" class="flex flex-col gap-2">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-span-12 xl:col-span-6 deleteToRefresh scroll-container">
+                            <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                <div class="p-4 flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-black dark:text-white">
+                                            BREAKDOWN STOCKS
+                                        </h3>
+                                    </div>
+                                    <div class="relative z-20 inline-block">
+                                        <select name="stocksFilter0" id="stocksFilter0" class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
+                                            <option value="1">NIFTY 500</option>
+                                            <option value="2">NIFTY 50</option>
+                                            <option value="3">NIFTY 100</option>
+                                            <option value="4">NIFTY 200</option>
+                                        </select>
+                                        <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
+                                            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z" fill="#637381"></path>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z" fill="#637381"></path>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="breakdownStocks" class="flex flex-col gap-2">
+
+                                </div>
                             </div>
                         </div>
 
@@ -1344,67 +1406,67 @@ ${options}
                         <div id="sectorStock"></div>
 
                         <!----
-                        // SAMPLE CODE for SECTOR SECTION
+    // SAMPLE CODE for SECTOR SECTION
 
-                        <div class="col-span-12 xl:col-span-6">
+    <div class="col-span-12 xl:col-span-6">
 
-                            <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
-                                <div class="mb-7 flex items-center justify-between">
-                                    <div>
-                                        <h3 class="text-xl font-bold text-black dark:text-white">
-                                            OIL & GAS
-                                        </h3>
-                                    </div>
-                                </div>
+        <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
+            <div class="mb-7 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-black dark:text-white">
+                        OIL & GAS
+                    </h3>
+                </div>
+            </div>
 
-                                <div class="flex flex-col gap-2">
-                                    <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                                        <div class="col-span-3 flex items-center">
-                                            <p class="font-medium">Stock Name</p>
-                                        </div>
-                                        <div class="col-span-2 hidden items-center sm:flex">
-                                            <p class="font-medium">Last Price</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="font-medium">Change</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="font-medium">% Change</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="font-medium">T Fact</p>
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                                        <div class="col-span-3 flex items-center">
-                                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                                <div class="h-12.5 w-15 rounded-md">
-                                                    <img src="src/images/product/product-01.png" alt="Product" />
-                                                </div>
-                                                <p class="text-sm font-medium text-black dark:text-white">
-                                                    OIL
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-span-2 hidden items-center sm:flex">
-                                            <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="text-sm font-medium text-black dark:text-white">$269</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="text-sm font-medium text-black dark:text-white">22</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="text-sm font-medium text-meta-3">$45</p>
-                                        </div>
-                                    </div>
-
-                                </div>
+            <div class="flex flex-col gap-2">
+                <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                    <div class="col-span-3 flex items-center">
+                        <p class="font-medium">Stock Name</p>
+                    </div>
+                    <div class="col-span-2 hidden items-center sm:flex">
+                        <p class="font-medium">Last Price</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="font-medium">Change</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="font-medium">% Change</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="font-medium">T Fact</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                    <div class="col-span-3 flex items-center">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                            <div class="h-12.5 w-15 rounded-md">
+                                <img src="src/images/product/product-01.png" alt="Product" />
                             </div>
+                            <p class="text-sm font-medium text-black dark:text-white">
+                                OIL
+                            </p>
                         </div>
+                    </div>
+                    <div class="col-span-2 hidden items-center sm:flex">
+                        <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="text-sm font-medium text-black dark:text-white">$269</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="text-sm font-medium text-black dark:text-white">22</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="text-sm font-medium text-meta-3">$45</p>
+                    </div>
+                </div>
 
-                        -->
+            </div>
+        </div>
+    </div>
+
+    -->
                         <!-- ====== Table Two Start -->
                         <div class="col-span-12 xl:col-span-7" style="display: none;">
                             <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
