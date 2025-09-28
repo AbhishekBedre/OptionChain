@@ -1,4 +1,4 @@
-localStorage.setItem("darkMode", true);
+﻿localStorage.setItem("darkMode", true);
 
 const FILTERS = [
     "NIFTY 500",
@@ -7,7 +7,12 @@ const FILTERS = [
     "NIFTY 200"
 ];
 
-$(document).ready(function() {
+$(document).ready(function () {
+    var dt = new Date();
+    var hours = dt.getHours();
+    var ampm = hours >= 12 ? "PM" : "AM";
+    $("#spnLastUpdate").text("Last sync: " + getCurrentDateTime());
+
     updateFilterOptionsOnDashboard();
     var domain = window.location.origin;
     var subfolderName = "";
@@ -73,6 +78,36 @@ function GenerateFilerOptions() {
         options += `<option value="${j}">${FILTERS[i]}</option>`;
     }
     return options;
+}
+
+function getCurrentDateTime() {
+    var dt = new Date();
+
+    var hours = dt.getHours();
+    var minutes = dt.getMinutes();
+    var seconds = dt.getSeconds();
+    var ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 → 12
+
+    var strTime =
+        hours +
+        ":" +
+        (minutes < 10 ? "0" + minutes : minutes) +
+        ":" +
+        (seconds < 10 ? "0" + seconds : seconds) +
+        " " +
+        ampm;
+
+    var strDate =
+        dt.getDate().toString().padStart(2, "0") +
+        "-" +
+        (dt.getMonth() + 1).toString().padStart(2, "0") +
+        "-" +
+        dt.getFullYear();
+
+    return strDate + " " + strTime;
 }
 
 function updateFilterOptionsOnDashboard()

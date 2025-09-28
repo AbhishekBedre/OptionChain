@@ -156,44 +156,7 @@ ${options}
             }
         }
 
-        function getCurrentDateTime() {
-            var dt = new Date();
-
-            var hours = dt.getHours();
-            var minutes = dt.getMinutes();
-            var seconds = dt.getSeconds();
-            var ampm = hours >= 12 ? "PM" : "AM";
-
-            hours = hours % 12;
-            hours = hours ? hours : 12; // 0 → 12
-
-            var strTime =
-                hours +
-                ":" +
-                (minutes < 10 ? "0" + minutes : minutes) +
-                ":" +
-                (seconds < 10 ? "0" + seconds : seconds) +
-                " " +
-                ampm;
-
-            var strDate =
-                dt.getDate().toString().padStart(2, "0") +
-                "-" +
-                (dt.getMonth() + 1).toString().padStart(2, "0") +
-                "-" +
-                dt.getFullYear();
-
-            return strDate + " " + strTime;
-        }
-
-
-
         $(document).ready(function () {
-
-            var dt = new Date();
-            var hours = dt.getHours();
-            var ampm = hours >= 12 ? "PM" : "AM";
-            $("#spnLastUpdate").text("Last sync: " + getCurrentDateTime());
 
             // Example usage with the AJAX call
             getSecorStocks(function (response) {
@@ -414,7 +377,7 @@ ${options}
                 <p class="font-medium">%</p>
             </div>
             <div class="col-span-1 flex items-center">
-                <p class="font-medium">T Fact</p>
+                <p class="font-medium">Time</p>
             </div>
             </div><div style="max-height: 400px; overflow-y: scroll; scrollbar-width: thin">`;
 
@@ -469,7 +432,7 @@ ${options}
                 <p class="font-medium">%</p>
             </div>
             <div class="col-span-1 flex items-center">
-                <p class="font-medium">T Fact</p>
+                <p class="font-medium">Time</p>
             </div>
             </div><div style="max-height: 400px; overflow-y: scroll; scrollbar-width: thin">`;
 
@@ -1393,7 +1356,7 @@ ${options}
                         <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
                             <div>
                                 <h3 class="text-xl font-bold text-black dark:text-white">
-                                    Sector Update
+                                    SECTOR UPDATE
                                 </h3>
                             </div>
                             <div>

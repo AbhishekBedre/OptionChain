@@ -504,6 +504,11 @@ namespace OptionChain.Controllers
         {
             try
             {
+                var weeklySectorUpdate = _memoryCache.Get<List<WeeklySectorUpdate>>("weeklySectorUpdate");
+
+                if (weeklySectorUpdate != null)
+                    return weeklySectorUpdate;
+
                 DateTime selectedDate = Convert.ToDateTime(currentDate); // or any specific date
                 int diff = (7 + (selectedDate.DayOfWeek - DayOfWeek.Monday)) % 7;
                 DateTime mondayDate = selectedDate.AddDays(-diff);
@@ -551,6 +556,11 @@ namespace OptionChain.Controllers
                     weeklySectorUpdates.Add(week);
                 }
 
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(cacheDuration); // Cache expires after 5 minutes
+
+                _memoryCache.Set("weeklySectorUpdate", weeklySectorUpdates, cacheOptions);
+
                 return weeklySectorUpdates;
             }
             catch (Exception)
@@ -592,6 +602,11 @@ namespace OptionChain.Controllers
         {
             try
             {
+                var weeklyWatchListResponse = _memoryCache.Get<List<SectorStocksResponse>>("weekly-watch-list-update");
+
+                if (weeklyWatchListResponse != null)
+                    return weeklyWatchListResponse;
+
                 List<SectorStocksResponse> finalResult = new();
 
                 DateTime today = DateTime.Today;
@@ -619,6 +634,11 @@ namespace OptionChain.Controllers
 
                 if (negetiveStocks.Any())
                     finalResult.AddRange(negetiveStocks);
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(cacheDuration); // Cache expires after 5 minutes
+
+                _memoryCache.Set("weekly-watch-list-update", finalResult, cacheOptions);
 
                 return finalResult;
             }

@@ -20,7 +20,7 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 Console.WriteLine(connectionString);
 
 builder.Services.AddDbContext<OptionDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, options => options.CommandTimeout(2000)));
 
 builder.Services.AddCors(options =>
 {
