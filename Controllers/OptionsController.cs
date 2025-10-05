@@ -119,7 +119,7 @@ namespace OptionChain.Controllers
         [HttpGet("CEPEBank")]
         public async Task<Dictionary<string, double>> CEPEDiff(string currentDate = "2025-01-24")
         {
-            var cepeDiff = await _optionDbContext.Summary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate)).ToListAsync();
+            var cepeDiff = await _optionDbContext.Summary.AsNoTracking().Where(x => x.EntryDate == Convert.ToDateTime(currentDate)).ToListAsync();
 
             Dictionary<string, double> response = new Dictionary<string, double>();
 
@@ -128,7 +128,7 @@ namespace OptionChain.Controllers
                 var curDate = Convert.ToDateTime(currentDate);
                 var d = new DateTime(curDate.Year, curDate.Month, curDate.Day, item.Time.Value.Hours, item.Time.Value.Minutes, 0);
 
-                response.Add(d.ToString("hh:mm"), item.CEPEOIDiff);
+                response.TryAdd(d.ToString("hh:mm"), item.CEPEOIDiff);
             }
 
             return response;
@@ -150,7 +150,7 @@ namespace OptionChain.Controllers
                 .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 5)))
                 .ToList();
 
-            var result = await _optionDbContext.BankSummary.Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
+            var result = await _optionDbContext.BankSummary.AsNoTracking().Where(x => x.EntryDate == Convert.ToDateTime(currentDate).Date).ToListAsync();
 
             // Map existing data to a dictionary for quick lookup
             var resultDictionary = result.ToDictionary(
@@ -201,11 +201,13 @@ namespace OptionChain.Controllers
         {
             List<SectorsResponse> sectorsResponses = new List<SectorsResponse>();
 
+            DateTime dt = DateTime.Parse(currentdate);
+
             if (overall == 1)
             {
                 var sectorialIndex = await _optionDbContext.BroderMarkets
                     .AsNoTracking()
-                    .Where(x => x.Key == "SECTORAL INDICES" && x.EntryDate == Convert.ToDateTime(currentdate))
+                    .Where(x => x.Key == "SECTORAL INDICES" && x.EntryDate.Value.Date == dt.Date)
                     .GroupBy(x => x.IndexSymbol)
                     .Select(group => new
                     {
@@ -274,8 +276,8 @@ namespace OptionChain.Controllers
             }
             else
             {
-                var query = from s in _optionDbContext.StockMetaData
-                            join sd in _optionDbContext.StockData.Where(x => x.EntryDate == Convert.ToDateTime(currentdate).Date)
+                var query = from s in _optionDbContext.StockMetaData.AsNoTracking()
+                            join sd in _optionDbContext.StockData.AsNoTracking().Where(x => x.EntryDate == Convert.ToDateTime(currentdate).Date)
                             on s.Symbol equals sd.Symbol
                             group sd by s.Industry into g
                             select new
@@ -307,7 +309,11 @@ namespace OptionChain.Controllers
         {
             List<Sector> sectorsStocks = new List<Sector>();
 
+            _logger.LogInformation("START - Executing [StockWithSectors] stored procedure.");
+
             var responseSectorsStocks = await _optionDbContext.ResponseSectorsStocks.FromSqlRaw(@"EXEC [StockWithSectors] '" + currentDate + "'").ToListAsync();
+
+            _logger.LogInformation("END - Executing [StockWithSectors] stored procedure.");
 
             var sectors = responseSectorsStocks.GroupBy(x => x.SectorName).ToList();
 
@@ -386,7 +392,7 @@ namespace OptionChain.Controllers
         [HttpGet("advances")]
         public async Task<Advance> GetAdvancesDetails(string currentDate = "2025-02-12")
         {
-            var result = await _optionDbContext.Advance.Where(x => x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x => x.Time).FirstOrDefaultAsync();
+            var result = await _optionDbContext.Advance.AsNoTracking().Where(x => x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x => x.Time).FirstOrDefaultAsync();
             return result;
         }
 
@@ -449,7 +455,7 @@ namespace OptionChain.Controllers
         {
             List<string> majorIndex = new List<string> { "NIFTY 50", "NIFTY NEXT 50", "NIFTY BANK", "NIFTY FIN SERVICE", "NIFTY MID SELECT" };
 
-            var topIndex = await _optionDbContext.BroderMarkets.Where(x => x.EntryDate == Convert.ToDateTime(currentDate) && majorIndex.Contains(x.IndexSymbol ?? "")).OrderByDescending(x => x.Id).Take(5).ToListAsync();
+            var topIndex = await _optionDbContext.BroderMarkets.AsNoTracking().Where(x => x.EntryDate == Convert.ToDateTime(currentDate) && majorIndex.Contains(x.IndexSymbol ?? "")).OrderByDescending(x => x.Id).Take(5).ToListAsync();
 
             List<MajorIndexReponse> response = new List<MajorIndexReponse>();
 
@@ -656,7 +662,7 @@ namespace OptionChain.Controllers
             {
                 DateTime selectedDate = Convert.ToDateTime(currentDate); // or any specific date
 
-                var intraDayBlaster = await _optionDbContext.IntradayBlasts.AsQueryable()
+                var intraDayBlaster = await _optionDbContext.IntradayBlasts.AsNoTracking().AsQueryable()
                     .Where(x => x.EntryDate.HasValue && x.EntryDate.Value.Date == selectedDate.Date)
                     .ToListAsync();
 
@@ -698,6 +704,26 @@ namespace OptionChain.Controllers
             catch (Exception)
             {
 
+                throw;
+            }
+        }
+
+        [HttpGet("rfactors")]
+        public async Task<List<RFactorTable>> GetRFactorTablesAsync(string stockName, string currentDate = "2025-10-03")
+        {
+            try
+            {
+                DateTime dt = DateTime.Parse(currentDate);
+                var result = await _optionDbContext.RFactors
+                    .AsNoTracking()
+                    .Where(x => x.EntryDate.HasValue && x.EntryDate.Value.Date == dt.Date &&  x.Symbol.ToLower() == stockName.ToLower())
+                    .OrderBy(x=>x.Id)
+                    .ToListAsync();
+                
+                return result;
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
         }

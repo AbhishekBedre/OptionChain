@@ -82,9 +82,298 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var swip
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var apexcharts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! apexcharts */ \"./node_modules/apexcharts/dist/apexcharts.common.js\");\n/* harmony import */ var apexcharts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(apexcharts__WEBPACK_IMPORTED_MODULE_0__);\n\n\n// ===== chartOne\nconst chart01 = () => {\n  const chartOneOptions = {\n    series: [{\n      name: \"Product One\",\n      data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45]\n    }, {\n      name: \"Product Two\",\n      data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51]\n    }],\n    legend: {\n      show: false,\n      position: \"top\",\n      horizontalAlign: \"left\"\n    },\n    colors: [\"#3C50E0\", \"#80CAEE\"],\n    chart: {\n      fontFamily: \"Satoshi, sans-serif\",\n      height: 335,\n      type: \"area\",\n      dropShadow: {\n        enabled: true,\n        color: \"#623CEA14\",\n        top: 10,\n        blur: 4,\n        left: 0,\n        opacity: 0.1\n      },\n      toolbar: {\n        show: false\n      }\n    },\n    responsive: [{\n      breakpoint: 1024,\n      options: {\n        chart: {\n          height: 300\n        }\n      }\n    }, {\n      breakpoint: 1366,\n      options: {\n        chart: {\n          height: 350\n        }\n      }\n    }],\n    stroke: {\n      width: [2, 2],\n      curve: \"straight\"\n    },\n    markers: {\n      size: 0\n    },\n    labels: {\n      show: false,\n      position: \"top\"\n    },\n    grid: {\n      xaxis: {\n        lines: {\n          show: true\n        }\n      },\n      yaxis: {\n        lines: {\n          show: true\n        }\n      }\n    },\n    dataLabels: {\n      enabled: false\n    },\n    markers: {\n      size: 4,\n      colors: \"#fff\",\n      strokeColors: [\"#3056D3\", \"#80CAEE\"],\n      strokeWidth: 3,\n      strokeOpacity: 0.9,\n      strokeDashArray: 0,\n      fillOpacity: 1,\n      discrete: [],\n      hover: {\n        size: undefined,\n        sizeOffset: 5\n      }\n    },\n    xaxis: {\n      type: \"category\",\n      categories: [\"Sep\", \"Oct\", \"Nov\", \"Dec\", \"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\", \"Jul\", \"Aug\"],\n      axisBorder: {\n        show: false\n      },\n      axisTicks: {\n        show: false\n      }\n    },\n    yaxis: {\n      title: {\n        style: {\n          fontSize: \"0px\"\n        }\n      },\n      min: 0,\n      max: 100\n    }\n  };\n  const chartSelector = document.querySelectorAll(\"#chartOne\");\n  if (chartSelector.length) {\n    const chartOne = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(document.querySelector(\"#chartOne\"), chartOneOptions);\n    chartOne.render();\n  }\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (chart01);\n\n//# sourceURL=webpack://tailadmin-pro/./src/js/components/chart-01.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ 
+__webpack_require__.d(__webpack_exports__, {
+    /* harmony export */   
+    "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+    /* harmony export */ 
+    });
 
-/***/ }),
+    /* harmony import */ 
+    var apexcharts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! apexcharts */ "./node_modules/apexcharts/dist/apexcharts.common.js");
+    /* harmony import */ 
+    var apexcharts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(apexcharts__WEBPACK_IMPORTED_MODULE_0__);
+    // ===== chartOne\n
+    const chart01 = (spnStockName) => {
+        function getStockRFactor(callback) {
+            $("div[x-show='loaded']").show();
+
+            var selectedDate = $("#currentDate").val();
+            var domain = window.location.origin;
+            var subfolderName = "";
+
+            var arr = window.location.pathname.split('/');
+
+            if (arr.length > 2) {
+                subfolderName = "/" + arr[1];
+            }
+
+            var url = domain + subfolderName + "/Options/rfactors";
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { "stockName": spnStockName, "currentDate": selectedDate }, // Pass the date as a query parameter
+                success: function (response) {
+                    $("div[x-show='loaded']").hide();
+                    console.log('Success:', response);
+                    return callback(response);
+                },
+                error: function (xhr, status, error) {
+                    $("div[x-show='loaded']").hide();
+                    console.error('Error:', status, error);
+                }
+            });
+        }
+
+        function readXAxis(respnose) {
+            let data = [];
+            for(let i=0;i<respnose.length;i++)
+            {
+                data.push(respnose[i].time.substring(0,5));
+            }
+            return data;
+        }
+
+        function getStockPriceFromResponse(respnose) {
+            let data = [];
+            for (let i = 0; i < respnose.length; i++) {
+                data.push(respnose[i].price.toFixed(2));
+            }
+            return data;
+        }
+
+        function getRFactorFromResponse(response) {
+            let data = [];
+            for (let i = 0; i < response.length; i++) {
+                data.push(response[i].rFactor.toFixed(4));
+            }
+            return data;
+        }
+
+        getStockRFactor(function (respnose) {
+
+            const chartOneOptions = {   
+            
+                series: [
+                    {      
+                        name: "StockPrice",      
+                        data: getStockPriceFromResponse(respnose)    
+                    }
+                ],
+                
+                legend: { 
+                    show: false,
+                    position: "top",
+                    horizontalAlign: "left"
+                },
+                colors: ["#3C50E0", "#80CAEE"],
+                chart: {
+                    fontFamily: "Satoshi, sans-serif",
+                    height: 335,
+                    type: "area",
+                    dropShadow: {
+                        enabled: true,
+                        color: "#623CEA14",
+                        top: 10,
+                        blur: 4,
+                        left: 0,
+                        opacity: 0.1
+                    },
+                    toolbar: {
+                        show: false
+                    }
+                },
+                responsive: [
+                    {
+                            breakpoint: 1024,
+                            options: {
+                                chart: {
+                                    height: 300
+                                }
+                            }
+                    }, 
+                    {
+                        breakpoint: 1366,
+                        options: {
+                            chart: {
+                                height: 350
+                            }
+                        }
+                    }
+                ],
+                stroke: {
+                    width: [2, 2],
+                    curve: "straight"
+                },
+                markers: {
+                    size: 0
+                },
+                labels: {
+                    show: false,
+                    position: "top"
+                },
+                grid: {
+                    xaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                markers: {
+                    size: 4,
+                    colors: "#fff",
+                    strokeColors: ["#3056D3", "#80CAEE"],
+                    strokeWidth: 3,
+                    strokeOpacity: 0.9,
+                    strokeDashArray: 0,
+                    fillOpacity: 1,
+                    discrete: [],
+                    hover: {
+                        size: undefined,
+                        sizeOffset: 5
+                    }
+                },
+                xaxis: {
+                    type: "category",
+                    categories: readXAxis(respnose), //["Abhishek", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                }
+            };
+            const chartSelector = document.querySelectorAll("#chartOne");
+                                                                                    
+            if (chartSelector.length) {
+                const chartOne = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(document.querySelector("#chartOne"), chartOneOptions);
+                chartOne.render();
+            }
+
+            const chartRFactorOptions = {
+
+                series: [
+                    {
+                        name: "RFactor",
+                        data: getRFactorFromResponse(respnose)
+                    }
+                ],
+
+                legend: {
+                    show: false,
+                    position: "top",
+                    horizontalAlign: "left"
+                },
+                colors: ["#3C50E0", "#80CAEE"],
+                chart: {
+                    fontFamily: "Satoshi, sans-serif",
+                    height: 335,
+                    type: "area",
+                    dropShadow: {
+                        enabled: true,
+                        color: "#623CEA14",
+                        top: 10,
+                        blur: 4,
+                        left: 0,
+                        opacity: 0.1
+                    },
+                    toolbar: {
+                        show: false
+                    }
+                },
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        options: {
+                            chart: {
+                                height: 300
+                            }
+                        }
+                    },
+                    {
+                        breakpoint: 1366,
+                        options: {
+                            chart: {
+                                height: 350
+                            }
+                        }
+                    }
+                ],
+                stroke: {
+                    width: [2, 2],
+                    curve: "straight"
+                },
+                markers: {
+                    size: 0
+                },
+                labels: {
+                    show: false,
+                    position: "top"
+                },
+                grid: {
+                    xaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                markers: {
+                    size: 4,
+                    colors: "#fff",
+                    strokeColors: ["#3056D3", "#80CAEE"],
+                    strokeWidth: 3,
+                    strokeOpacity: 0.9,
+                    strokeDashArray: 0,
+                    fillOpacity: 1,
+                    discrete: [],
+                    hover: {
+                        size: undefined,
+                        sizeOffset: 5
+                    }
+                },
+                xaxis: {
+                    type: "category",
+                    categories: readXAxis(respnose), //["Abhishek", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                }
+            };
+            const chartSelectorRFactor = document.querySelectorAll("#chartRFactor");
+
+            if (chartSelectorRFactor.length) {
+                const chartRFactor = new (apexcharts__WEBPACK_IMPORTED_MODULE_0___default())(document.querySelector("#chartRFactor"), chartRFactorOptions);
+                chartRFactor.render();
+            }
+        });
+      };
+      /* harmony default export */ 
+      const __WEBPACK_DEFAULT_EXPORT__ = (chart01);
+      window.chart01 = chart01;
+      //# sourceURL=webpack://tailadmin-pro/./src/js/components/chart-01.js?");
+     }),
 
 /***/ "./src/js/components/chart-02.js":
 /*!***************************************!*\
@@ -335,7 +624,7 @@ function getSectorUpdate(callback) {
         data: { "currentDate": selectedDate, "overall": overall ? 1 : 0 }, // Pass the date as a query parameter
         success: function (response) {
             $("div[x-show='loaded']").hide();
-            console.log('Success:', response);
+            localStorage.setItem('sectors', JSON.stringify(response));
             return callback(response);
         },
         error: function (xhr, status, error) {
@@ -622,7 +911,7 @@ const chart04 = () => {
 
     if ((window.location.href.toLowerCase().indexOf("sector-update") > -1) || (window.location.href.toLowerCase().indexOf("intra-day-scope") > -1)
         || (window.location.href.toLowerCase().indexOf("weekly-sector") > -1) || (window.location.href.toLowerCase().indexOf("dashboard") > -1)) {
-    getSectorUpdate(function(response){
+    getSectorUpdate(function(response) {
 
       var data = response.map(m => m.pChange);
 
@@ -731,7 +1020,9 @@ const chart04 = () => {
           );
           sectorChart.render();
       }
-  });
+
+        renderSectorDropDown();
+    });
   }
 
   if (window.location.href.toLowerCase().indexOf("weekly-sector") > -1) {  

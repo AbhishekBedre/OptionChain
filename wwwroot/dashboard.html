@@ -30,6 +30,48 @@
     <script src="src/customcode.js"></script>
     <script>
 
+        function renderSectorDropDown() {
+            let dropDown = `<option value="-1">SELECT</option>`;
+            const dropDownSelectorBreakDown = document.getElementById('breakDownSectorSelection');
+            const dropDownSelectorBreakOut = document.getElementById('breakOutSectorSelection');
+            dropDownSelectorBreakDown.innerHTML = '';
+            dropDownSelectorBreakOut.innerHTML = '';
+
+            let sectors = localStorage.getItem('sectors');
+            if (sectors != null && sectors.length > 0) {
+                sectors = JSON.parse(sectors);
+            }
+
+            for (let i = 0; i < sectors.length; i++) {
+                dropDown += `<option value="${i}" class="text-body">${sectors[i].sector}</option>`;
+            }
+
+            dropDownSelectorBreakDown.innerHTML = dropDown;
+            dropDownSelectorBreakOut.innerHTML = dropDown;
+        }
+
+        function loadPopup(stockName, pChange) {
+            let className = "text-meta-3 font-bold";
+            let spnStockName = document.getElementById('spnStockName');
+            spnStockName.innerHTML = stockName;
+            let spnStockPChange = document.getElementById('spnStockPChange');
+            spnStockPChange.innerHTML = '(' + pChange + ')'
+            if (pChange < 0)
+                className = "text-meta-1 font-bold";
+
+            spnStockPChange.className = className;
+
+            let dvPopup = document.getElementById("dvPopup");
+            dvPopup.style.display = "block";
+
+            chart01(stockName);
+        }
+
+        function closePopup() {
+            let dbPopup = document.getElementById('dbPopup');
+            dvPopup.style.display = "none";
+        }
+
         function renderSectorStocks(mydata) {
             const container = document.getElementById('sectorStock');
             container.innerHTML = ''; // Clear previous content
@@ -63,7 +105,7 @@
 
                     let sectorName = data[i].name + " - <span class=" + className + ">(" + data[i].pChange + "%)</span>";
 
-                    var mainDiv = `<div class="col-span-12 xl:col-span-6 deleteToRefresh scroll-container">
+                    var mainDiv = `<div x-data="{popupOpen: false}" class="col-span-12 xl:col-span-6 deleteToRefresh scroll-container">
                                       <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                           <div class="p-4 flex items-center justify-between">
                                               <div>
@@ -118,8 +160,12 @@ ${options}
                     for (var j = 0; j < data[i].stocks.length; j++) {
 
                         var stockClassName = "text-success";
-                        if (data[i].stocks[j].pChange < 0)
+                        var bgColor = "3CA745";
+
+                        if (data[i].stocks[j].pChange < 0) {
                             stockClassName = "text-danger";
+                            bgColor = "DC3545";
+                        }
 
                         stockContent += `
                                               <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
@@ -131,6 +177,9 @@ ${options}
                                                               </a>
                                                           </p>
                                                       </div>
+                                                      <!--<div style="padding-left: 10px;">
+                                                        <button name="btnPopupRFactor" onclick="loadPopup('${data[i].stocks[j].symbol}', '${ data[i].stocks[j].pChange }')" class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
+                                                      </div>-->
                                                   </div>
                                                   <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
                                                       <p class="text-sm font-medium text-black ${stockClassName}">${data[i].stocks[j].lastPrice}</p>
@@ -142,7 +191,9 @@ ${options}
                                                       <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">${data[i].stocks[j].pChange}</p>
                                                   </div>
                                                   <div class="col-span-1 flex items-center">
-                                                      <p class="text-sm font-medium text-meta-8">${data[i].stocks[j].tFactor}</p>
+                                                      <button name="btnPopupRFactor" onclick="loadPopup('${data[i].stocks[j].symbol}', '${data[i].stocks[j].pChange}')" class="inline-flex rounded-full bg-[#${bgColor}] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">
+                                                        ${data[i].stocks[j].tFactor}
+                                                      </button>
                                                   </div>
                                               </div>
                                               `;
@@ -396,6 +447,9 @@ ${options}
                             </a>
                         </p>
                     </div>
+                    <div style="padding-left: 10px;">
+                        <button class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
+                    </div>
                 </div>
                 <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
                     <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
@@ -450,6 +504,9 @@ ${options}
                                 ${response[i].symbol}
                             </a>
                         </p>
+                    </div>
+                    <div style="padding-left: 10px;">
+                        <button class="inline-flex rounded-full bg-[#DC3545] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
                     </div>
                 </div>
                 <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
@@ -1304,16 +1361,14 @@ ${options}
                                         </h3>
                                     </div>
                                     <div class="relative z-20 inline-block">
-                                        <select name="stocksFilter1" id="stocksFilter1" class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
-                                            <option value="1">NIFTY 500</option>
-                                            <option value="2">NIFTY 50</option>
-                                            <option value="3">NIFTY 100</option>
-                                            <option value="4">NIFTY 200</option>
+                                        <select name="breakOutSectorSelection" id="breakOutSectorSelection" class="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-3 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input text-black dark:text-white">
+                                            <option value="1">Loading...</option>
                                         </select>
-                                        <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
-                                            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z" fill="#637381"></path>
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z" fill="#637381"></path>
+                                        <span class="absolute right-4 top-1/2 z-20 -translate-y-1/2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g opacity="0.8">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381"></path>
+                                                </g>
                                             </svg>
                                         </span>
                                     </div>
@@ -1332,17 +1387,15 @@ ${options}
                                             BREAKDOWN STOCKS
                                         </h3>
                                     </div>
-                                    <div class="relative z-20 inline-block">
-                                        <select name="stocksFilter0" id="stocksFilter0" class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
-                                            <option value="1">NIFTY 500</option>
-                                            <option value="2">NIFTY 50</option>
-                                            <option value="3">NIFTY 100</option>
-                                            <option value="4">NIFTY 200</option>
+                                    <div class="relative z-20 inline-block" id="breakDownSectorsDropDown">
+                                        <select name="breakDownSectorSelection" id="breakDownSectorSelection" class="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-3 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input text-black dark:text-white">
+                                            <option value="1">Loading...</option>
                                         </select>
-                                        <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
-                                            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z" fill="#637381"></path>
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z" fill="#637381"></path>
+                                        <span class="absolute right-4 top-1/2 z-20 -translate-y-1/2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g opacity="0.8">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381"></path>
+                                                </g>
                                             </svg>
                                         </span>
                                     </div>
@@ -1368,6 +1421,48 @@ ${options}
 
                         <div id="sectorStock"></div>
 
+                        <!-- ===== Task Popup Start ===== -->
+                        <div id="dvPopup" x-transition class="fixed left-0 top-0 z-99999 flex h-screen w-full justify-center overflow-y-scroll bg-black/80 px-4 py-5" style="display:none;">
+                            <div style="padding-top:15px;" class="relative m-auto w-full rounded-sm border border-stroke bg-gray p-4 shadow-default dark:border-strokedark dark:bg-meta-4 sm:p-8 xl:p-10">
+                                <button id="btnClose" onclick="closePopup()" class="absolute right-1 top-1 sm:right-5 sm:top-5">
+                                    <svg class="fill-current"
+                                         width="20"
+                                         height="20"
+                                         viewBox="0 0 20 20"
+                                         fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                              clip-rule="evenodd"
+                                              d="M11.8913 9.99599L19.5043 2.38635C20.032 1.85888 20.032 1.02306 19.5043 0.495589C18.9768 -0.0317329 18.141 -0.0317329 17.6135 0.495589L10.0001 8.10559L2.38673 0.495589C1.85917 -0.0317329 1.02343 -0.0317329 0.495873 0.495589C-0.0318274 1.02306 -0.0318274 1.85888 0.495873 2.38635L8.10887 9.99599L0.495873 17.6056C-0.0318274 18.1331 -0.0318274 18.9689 0.495873 19.4964C0.717307 19.7177 1.05898 19.9001 1.4413 19.9001C1.75372 19.9001 2.13282 19.7971 2.40606 19.4771L10.0001 11.8864L17.6135 19.4964C17.8349 19.7177 18.1766 19.9001 18.5589 19.9001C18.8724 19.9001 19.2531 19.7964 19.5265 19.4737C20.0319 18.9452 20.0245 18.1256 19.5043 17.6056L11.8913 9.99599Z"
+                                              fill="" />
+                                    </svg>
+                                </button>
+
+                                <div>
+                                    <span id="spnStockName" class="text-xl font-bold text-black dark:text-white">NBFC</span> <span id="spnStockPChange" class="text-meta-1 font-bold">(-1.39%)</span>
+                                </div>
+
+                                <form action="#" style="padding-top:20px;">
+                                    <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
+                                        <div>
+                                            <div id="chartOne" class="-ml-5"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-xl font-bold text-black pb-5 pt-5 dark:text-white">RFactor</h2>
+                                    </div>
+                                    <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
+                                        <div>
+                                            <div id="chartRFactor" class="-ml-5"></div>
+                                        </div>
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- ===== Task Popup End ===== -->
                         <!----
     // SAMPLE CODE for SECTOR SECTION
 

@@ -22,7 +22,7 @@ namespace OptionChain.Controllers
         {
             try
             {
-                var usersEntry = await _optionDbContext.Users.Where(x => x.Email.ToLower() == user.Email.ToLower()).FirstOrDefaultAsync();
+                var usersEntry = await _optionDbContext.Users.AsNoTracking().Where(x => x.Email.ToLower() == user.Email.ToLower()).FirstOrDefaultAsync();
 
                 if(usersEntry == null)
                 {

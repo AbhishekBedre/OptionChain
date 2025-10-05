@@ -23,6 +23,7 @@ namespace OptionChain.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string? Symbol { get; set; }
+        public string? SectorName { get; set; }
         public double LastPrice { get; set; }
         public double PChange { get; set; }
         public double PrevDayHigh { get; set; }
