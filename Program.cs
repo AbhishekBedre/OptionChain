@@ -22,6 +22,9 @@ Console.WriteLine(connectionString);
 builder.Services.AddDbContext<OptionDbContext>(options =>
     options.UseSqlServer(connectionString, options => options.CommandTimeout(2000)));
 
+builder.Services.AddDbContext<UpStoxDbContext>(options =>
+    options.UseSqlServer(connectionString, options => options.CommandTimeout(2000)));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
