@@ -63,6 +63,35 @@ namespace OptionChain.Migrations.UpStoxDb
                     b.ToTable("AuthDetails");
                 });
 
+            modelBuilder.Entity("OptionChain.Models.MarketMetaData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("InstrumentToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MarketMetaDatas");
+                });
+
             modelBuilder.Entity("OptionChain.Models.OHLC", b =>
                 {
                     b.Property<long>("Id")
@@ -82,16 +111,22 @@ namespace OptionChain.Migrations.UpStoxDb
                     b.Property<decimal>("High")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal?>("LastPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("Low")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Open")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<long>("StockMetaDataId")
+                        .HasColumnType("bigint");
+
                     b.Property<TimeSpan?>("Time")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("time")
-                        .HasDefaultValueSql("CONVERT(VARCHAR(5), GETDATE(), 108)");
+                        .HasDefaultValueSql("CONVERT(VARCHAR(5), GETUTCDATE(), 108)");
 
                     b.Property<long>("Timestamp")
                         .HasColumnType("bigint");
@@ -102,6 +137,23 @@ namespace OptionChain.Migrations.UpStoxDb
                     b.HasKey("Id");
 
                     b.ToTable("OHLCs");
+                });
+
+            modelBuilder.Entity("OptionChain.Models.SectorStockMetaData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<string>("StockMetaDataId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SectorStockMetaDatas");
                 });
 #pragma warning restore 612, 618
         }

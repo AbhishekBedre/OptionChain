@@ -188,11 +188,11 @@ namespace OptionChain
         public double StockIndClosePrice { get; set; }
         public double TotalTradedValue { get; set; }
         public string? LastUpdateTime { get; set; }
-        public double YearHigh { get; set; }
-        public double Ffmc { get; set; }
-        public double YearLow { get; set; }
-        public double NearWKH { get; set; }
-        public double NearWKL { get; set; }
+        public double? YearHigh { get; set; }
+        public double? Ffmc { get; set; }
+        public double? YearLow { get; set; }
+        public double? NearWKH { get; set; }
+        public double? NearWKL { get; set; }
 
         //[JsonConverter(typeof(IntOrDashConverter))]
         //public double PerChange365d { get; set; }

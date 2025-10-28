@@ -177,6 +177,9 @@ namespace OptionChain
     {
         public DbSet<OHLC> OHLCs { get; set; }
         public DbSet<AuthDetails> AuthDetails{ get; set; }
+        public DbSet<MarketMetaData> MarketMetaDatas{ get; set; }
+        public DbSet<SectorStockMetaData> SectorStockMetaDatas { get; set; }
+
 
         public UpStoxDbContext(DbContextOptions<UpStoxDbContext> options)
             : base(options)
@@ -186,11 +189,15 @@ namespace OptionChain
         {
             modelBuilder.Entity<OHLC>().HasKey(o => o.Id);
             modelBuilder.Entity<OHLC>().Property(e => e.CreatedDate).HasDefaultValueSql("GETUTCDATE()");
-            modelBuilder.Entity<OHLC>().Property(e => e.Time).HasDefaultValueSql("CONVERT(VARCHAR(5), GETDATE(), 108)");
+            modelBuilder.Entity<OHLC>().Property(e => e.Time).HasDefaultValueSql("CONVERT(VARCHAR(5), GETUTCDATE(), 108)");
 
             modelBuilder.Entity<AuthDetails>().HasKey(o => o.Id);
             modelBuilder.Entity<AuthDetails>().Property(e => e.CreatedDate).HasDefaultValueSql("GETUTCDATE()");
-        }
 
+            modelBuilder.Entity<MarketMetaData>().HasKey(o => o.Id);
+            modelBuilder.Entity<MarketMetaData>().Property(e => e.CreatedDate).HasDefaultValueSql("GETUTCDATE()");
+
+            modelBuilder.Entity<SectorStockMetaData>().HasKey(o => o.Id);
+        }
     }
 }

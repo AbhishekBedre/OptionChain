@@ -37,6 +37,9 @@ namespace OptionChain.Models
         [JsonPropertyName("id")]
         public long Id { get; set; }
 
+        [JsonPropertyName("stockMerataDataId")]
+        public long StockMetaDataId { get; set; }
+
         [JsonPropertyName("open")]
         public decimal Open { get; set; }
 
@@ -60,7 +63,42 @@ namespace OptionChain.Models
 
         [JsonPropertyName("time")]
         public TimeSpan? Time { get; set; }
+
+        [JsonPropertyName("lastPrice")]
+        public decimal? LastPrice { get; set; }
     }
+
+    public class MarketMetaData
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonPropertyName("id")]
+        public long Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("instrumentToken")]
+        public string InstrumentToken { get; set; }
+
+        [JsonPropertyName("createdDate")]
+        public DateTime? CreatedDate { get; set; }
+
+        [JsonPropertyName("modifiedDate")]
+        public DateTime? ModifiedDate { get; set; }
+    }
+
+    public class SectorStockMetaData
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonPropertyName("id")]
+        public long Id { get; set; }
+
+        [JsonPropertyName("stockMetaDataId")]
+        public string StockMetaDataId { get; set; }
+    }
+
     public class AuthDetails
     {
         [Key]
