@@ -66,6 +66,9 @@ namespace OptionChain.Models
 
         [JsonPropertyName("lastPrice")]
         public decimal? LastPrice { get; set; }
+
+        [JsonPropertyName("pChange")]
+        public decimal? PChange { get; set; }
     }
 
     public class MarketMetaData
@@ -96,7 +99,13 @@ namespace OptionChain.Models
         public long Id { get; set; }
 
         [JsonPropertyName("stockMetaDataId")]
-        public string StockMetaDataId { get; set; }
+        public long StockMetaDataId { get; set; }
+
+        [JsonPropertyName("sectorId")]
+        public long SectorId { get; set; }
+
+        [JsonPropertyName("sectorDisplayName")]
+        public string SectorDisplayName { get; set; }
     }
 
     public class AuthDetails

@@ -304,6 +304,14 @@ namespace OptionChain.Controllers
             return sectorsResponses.OrderByDescending(x => x.PChange).ToList();
         }
 
+        [HttpGet("sectorsv1")]
+        public async Task<List<SectorsResponse>> GetSectorsTrendsAsync(string currentDate="2025-10-28")
+        {
+            List<SectorsResponse> sectorsResponses = new List<SectorsResponse>();
+
+            return sectorsResponses;
+        }
+
         [HttpGet("sector-stocks")]
         public async Task<IEnumerable<Sector>> GetSectorStocks(string currentDate = "2025-01-22", bool isFNO = true)
         {

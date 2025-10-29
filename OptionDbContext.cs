@@ -190,6 +190,12 @@ namespace OptionChain
             modelBuilder.Entity<OHLC>().HasKey(o => o.Id);
             modelBuilder.Entity<OHLC>().Property(e => e.CreatedDate).HasDefaultValueSql("GETUTCDATE()");
             modelBuilder.Entity<OHLC>().Property(e => e.Time).HasDefaultValueSql("CONVERT(VARCHAR(5), GETUTCDATE(), 108)");
+            modelBuilder.Entity<OHLC>().Property(x => x.PChange).HasPrecision(10, 2);
+            modelBuilder.Entity<OHLC>().Property(x => x.LastPrice).HasPrecision(10, 2);
+            modelBuilder.Entity<OHLC>().Property(x => x.Open).HasPrecision(10, 2);
+            modelBuilder.Entity<OHLC>().Property(x => x.High).HasPrecision(10, 2);
+            modelBuilder.Entity<OHLC>().Property(x => x.Low).HasPrecision(10, 2);
+            modelBuilder.Entity<OHLC>().Property(x => x.Close).HasPrecision(10, 2);
 
             modelBuilder.Entity<AuthDetails>().HasKey(o => o.Id);
             modelBuilder.Entity<AuthDetails>().Property(e => e.CreatedDate).HasDefaultValueSql("GETUTCDATE()");

@@ -21,6 +21,8 @@ namespace OptionChain.Controllers
         private readonly OptionDbContext _optionDbContext;
         private readonly UpStoxDbContext _upStoxDbContext;
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
+        private string accessToken = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI3MkFBM0siLCJqdGkiOiI2OTAwZGE1MzYzZTYzOTM1NjI0ZGRkMzQiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNQbHVzUGxhbiI6ZmFsc2UsImlhdCI6MTc2MTY2MzU3MSwiaXNzIjoidWRhcGktZ2F0ZXdheS1zZXJ2aWNlIiwiZXhwIjoxNzYxNjg4ODAwfQ.MK9mp1dCr-1F_hgZeu4hvDcC61GPQUCKWoluY_D8Z8g";
+
 
         public UsersController(ILogger<UsersController> logger,
             OptionDbContext optionDbContext,
@@ -153,8 +155,6 @@ namespace OptionChain.Controllers
 
         private void GetMarketUpdate(string instrumentKeyToFetch, long stockId, DateTime fromDate, DateTime toDate)
         {
-            string accessToken = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI3MkFBM0siLCJqdGkiOiI2OGZmNDVjYTc2ZmRlMzIxNzU2YjYxMDkiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNQbHVzUGxhbiI6ZmFsc2UsImlhdCI6MTc2MTU2MDAxMCwiaXNzIjoidWRhcGktZ2F0ZXdheS1zZXJ2aWNlIiwiZXhwIjoxNzYxNjAyNDAwfQ.RG64JgGO3eL583LBULHjzYEaMSlHbz0KqsnTnAFFQZY";
-
             HttpClient _httpClient = new HttpClient();
 
             try
@@ -219,6 +219,56 @@ namespace OptionChain.Controllers
             return true;
         }
 
+        [HttpGet("TodaysData")]
+        public bool GetTodaysData(string date)
+        {
+            var marketMetaData = _upStoxDbContext.MarketMetaDatas.AsNoTracking().ToList();
+            var stockNameWithKey = marketMetaData.ToDictionary(x => x.InstrumentToken, x => x.Id);
+
+            foreach (var item in marketMetaData)
+            {
+                var instrumentKey = item.InstrumentToken;
+                stockNameWithKey.TryGetValue(instrumentKey, out var stockMetaDataId);
+
+                GetIntraDayMarketUpdate(item.InstrumentToken, stockMetaDataId);
+            }
+
+            return true;
+        }
+
+        private bool GetIntraDayMarketUpdate(string instrumentKeyToFetch, long stockId)
+        {
+            HttpClient _httpClient = new HttpClient();
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // API endpoint (you can dynamically change symbols if needed), NSE_EQ|INE040A01034,NSE_EQ|INE062A01020
+                string url = "https://api.upstox.com/v3/historical-candle/intraday/"+ instrumentKeyToFetch + "/minutes/1";
+
+                // Make GET request
+                HttpResponseMessage response = _httpClient.GetAsync(url).GetAwaiter().GetResult();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    string error = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    throw new Exception($"Upstox API failed ({response.StatusCode}): {error}");
+                }
+
+                string jsonResponse = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                CandleResponse apiResponse = JsonSerializer.Deserialize<CandleResponse>(jsonResponse, _jsonOptions) ?? new CandleResponse();
+
+                return AddMarketDataEFCore(apiResponse, stockId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetMarketUpdate: {ex.Message}");
+                return false;
+            }
+        }
     }
 
     public class StockInfo
