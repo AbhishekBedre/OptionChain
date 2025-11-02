@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OptionChain;
 
@@ -11,9 +12,10 @@ using OptionChain;
 namespace OptionChain.Migrations.UpStoxDb
 {
     [DbContext(typeof(UpStoxDbContext))]
-    partial class UpStoxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251102120912_PreComputerTableAndIndex")]
+    partial class PreComputerTableAndIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,72 +167,57 @@ namespace OptionChain.Migrations.UpStoxDb
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DaysATR")
+                    b.Property<long>("DaysATR")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal?>("DaysAboveVWAPPercentage")
+                    b.Property<decimal>("DaysAboveVWAPPercentage")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal?>("DaysAverageBodySize")
+                    b.Property<decimal>("DaysAverageBodySize")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal?>("DaysAverageClose")
+                    b.Property<decimal>("DaysAverageClose")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<long?>("DaysAverageVolume")
+                    b.Property<long>("DaysAverageVolume")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal?>("DaysGreenPercentage")
+                    b.Property<decimal>("DaysGreenPercentage")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal?>("DaysHigh")
+                    b.Property<decimal>("DaysHigh")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal?>("DaysHighLowRangePercentage")
+                    b.Property<decimal>("DaysHighLowRangePercentage")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal?>("DaysLow")
+                    b.Property<decimal>("DaysLow")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<long?>("DaysMedianATR")
+                    b.Property<long>("DaysMedianATR")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal?>("DaysStdDevClose")
+                    b.Property<decimal>("DaysStdDevClose")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal?>("DaysStdDevVolume")
+                    b.Property<decimal>("DaysStdDevVolume")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("DaysTrendScore")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("DaysVWAP")
+                    b.Property<decimal>("DaysVWAP")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
-
-                    b.Property<decimal?>("PreviousDayClose")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PreviousDayHigh")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PreviousDayLow")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<long>("StockMetaDataId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

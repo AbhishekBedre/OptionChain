@@ -136,4 +136,72 @@ namespace OptionChain.Models
         [JsonPropertyName("modifiedDate")]
         public DateTime? ModifiedDate { get; set; }
     }
+
+    public class PreComputedData
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonPropertyName("id")]
+        public long Id { get; set; }
+
+        [JsonPropertyName("stockMetaDataId")]
+        public long StockMetaDataId { get; set; }
+
+        // Will use 10 days high
+        [JsonPropertyName("daysHigh")]
+        public decimal? DaysHigh { get; set; }
+
+        // will use 10 days low
+        [JsonPropertyName("daysLow")]
+        public decimal? DaysLow { get; set; }
+
+        [JsonPropertyName("daysAverageClose")]
+        public decimal? DaysAverageClose { get; set; }
+
+        [JsonPropertyName("daysAverageVolume")]
+        public long? DaysAverageVolume { get; set; }
+
+        [JsonPropertyName("daysATR")]
+        public long? DaysATR { get; set; }
+
+        [JsonPropertyName("daysMedianATR")]
+        public long? DaysMedianATR { get; set; }
+
+        // Trend Score 10-Day (Up/Down/Side)
+        [JsonPropertyName("daysTrendScore")]
+        public int DaysTrendScore { get; set; }
+
+        [JsonPropertyName("daysVWAP")]
+        public decimal? DaysVWAP { get; set; }
+
+        [JsonPropertyName("daysStdDevClose")]
+        public decimal? DaysStdDevClose { get; set; }
+
+        [JsonPropertyName("daysStdDevVolume")]
+        public decimal? DaysStdDevVolume { get; set; }
+
+        [JsonPropertyName("daysGreenPercentage")]
+        public decimal? DaysGreenPercentage { get; set; } // 100 - Green% = Red %
+
+        [JsonPropertyName("daysAboveVWAPPercentage")]
+        public decimal? DaysAboveVWAPPercentage { get; set; }
+
+        [JsonPropertyName("daysHighLowRangePercentage")]
+        public decimal? DaysHighLowRangePercentage { get; set; }
+
+        [JsonPropertyName("daysAverageBodySize")]
+        public decimal? DaysAverageBodySize { get; set; }
+
+        [JsonPropertyName("createdDate")]
+        public DateTime? CreatedDate { get; set; }
+
+        [JsonPropertyName("previousDayHigh")]
+        public decimal? PreviousDayHigh { get; set; }
+
+        [JsonPropertyName("previousDayLow")]
+        public decimal? PreviousDayLow { get; set; }
+
+        [JsonPropertyName("previousDayClose")]
+        public decimal? PreviousDayClose { get; set; }
+    }
 }

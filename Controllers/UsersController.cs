@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
 namespace OptionChain.Controllers
 {
@@ -246,7 +247,7 @@ namespace OptionChain.Controllers
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 // API endpoint (you can dynamically change symbols if needed), NSE_EQ|INE040A01034,NSE_EQ|INE062A01020
-                string url = "https://api.upstox.com/v3/historical-candle/intraday/"+ instrumentKeyToFetch + "/minutes/1";
+                string url = "https://api.upstox.com/v3/historical-candle/intraday/" + instrumentKeyToFetch + "/minutes/1";
 
                 // Make GET request
                 HttpResponseMessage response = _httpClient.GetAsync(url).GetAwaiter().GetResult();
@@ -268,6 +269,77 @@ namespace OptionChain.Controllers
                 Console.WriteLine($"Error in GetMarketUpdate: {ex.Message}");
                 return false;
             }
+        }
+
+        [HttpGet("UpdatePreComputedValues")]
+        public async Task UpdatePreComputedValues()
+        {
+            const int NO_OF_DAYS = 10;
+            var preCompuerDataList = new List<PreComputedData>();
+
+            var firstRow = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.StockMetaDataId == 1)
+                .Select(x => x.CreatedDate)
+                .Distinct()
+                .OrderByDescending(x => x)
+                .Take(NO_OF_DAYS)
+                .ToListAsync();
+
+            var equityStocks = await _upStoxDbContext.MarketMetaDatas
+                .AsNoTracking()
+                .Select(x => new { x.Id, x.Name })
+                .ToListAsync();
+
+            // Take the last date to filter the values
+            var startDate = firstRow.Last();
+            var previousDate = firstRow.ElementAt(0);
+
+            foreach (var stock in equityStocks)
+            {
+                var ohlcData = await _upStoxDbContext.OHLCs
+                    .AsNoTracking()
+                    .Where(x => x.StockMetaDataId == stock.Id && x.CreatedDate >= startDate)
+                    .ToListAsync();
+
+                var daysHigh = ohlcData.Max(x => x.High);
+                var daysLow = ohlcData.Min(x => x.Low);
+                var daysAverageClose = ohlcData.Average(x => x.Close);
+                var daysAverageVolume = (long)ohlcData.Average(x => x.Volume);
+
+                var previousOHLCData = ohlcData.Where(x => x.CreatedDate == previousDate).ToList();
+                var previousDayHigh = previousOHLCData.Max(x => x.High);
+                var previousDayLow = previousOHLCData.Min(x => x.Low);
+                var previousDayClose = previousOHLCData.OrderByDescending(x => x.Time).FirstOrDefault()?.LastPrice ?? 0;
+
+                var precomputedValue = new PreComputedData
+                {
+                    CreatedDate = DateTime.Now.Date,
+                    DaysHigh = daysHigh,
+                    DaysLow = daysLow,
+                    DaysAverageClose = daysAverageClose,
+                    DaysAverageVolume = daysAverageVolume,
+                    DaysAboveVWAPPercentage = 0,
+                    DaysATR = 0,
+                    DaysAverageBodySize = 0,
+                    DaysGreenPercentage = 0,
+                    DaysHighLowRangePercentage = 0,
+                    DaysMedianATR = 0,
+                    DaysStdDevClose = 0,
+                    DaysStdDevVolume = 0,
+                    DaysTrendScore = 0,
+                    DaysVWAP = 0,
+                    StockMetaDataId = stock.Id,
+                    PreviousDayHigh = previousDayHigh,
+                    PreviousDayClose = previousDayClose,
+                    PreviousDayLow = previousDayLow
+                };
+
+                preCompuerDataList.Add(precomputedValue);
+            }
+
+            await _upStoxDbContext.PreComputedDatas.AddRangeAsync(preCompuerDataList);
+            await _upStoxDbContext.SaveChangesAsync();
         }
     }
 

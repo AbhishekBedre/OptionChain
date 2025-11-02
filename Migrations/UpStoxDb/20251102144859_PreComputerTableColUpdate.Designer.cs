@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OptionChain;
 
@@ -11,9 +12,10 @@ using OptionChain;
 namespace OptionChain.Migrations.UpStoxDb
 {
     [DbContext(typeof(UpStoxDbContext))]
-    partial class UpStoxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251102144859_PreComputerTableColUpdate")]
+    partial class PreComputerTableColUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -219,15 +221,6 @@ namespace OptionChain.Migrations.UpStoxDb
                     b.Property<decimal?>("DaysVWAP")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
-
-                    b.Property<decimal?>("PreviousDayClose")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PreviousDayHigh")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PreviousDayLow")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long>("StockMetaDataId")
                         .HasColumnType("bigint");
