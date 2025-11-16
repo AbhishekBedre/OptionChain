@@ -26,14 +26,19 @@ namespace OptionChain.Controllers
     {
         private readonly ILogger _logger;
         private readonly OptionDbContext _optionDbContext;
+        private readonly UpStoxDbContext _upStoxDbContext;
         private readonly IMemoryCache _memoryCache;
         private readonly TimeSpan cacheDuration = TimeSpan.FromHours(10); // Set cache expiration time
 
-        public OptionsController(ILogger<OptionsController> logger, OptionDbContext optionDbContext, IMemoryCache memoryCache)
+        public OptionsController(ILogger<OptionsController> logger,
+            OptionDbContext optionDbContext,
+            UpStoxDbContext upStoxDbContext,
+            IMemoryCache memoryCache)
         {
             _logger = logger;
             _optionDbContext = optionDbContext;
             _memoryCache = memoryCache;
+            _upStoxDbContext = upStoxDbContext;
         }
 
         // Nifty Option Chart
@@ -55,7 +60,7 @@ namespace OptionChain.Controllers
             var positiveValue = new List<OptionsResponse>();
             var negetiveValue = new List<OptionsResponse>();
 
-            for (int i=0;i<timeSlots.Count;i++)
+            for (int i = 0; i < timeSlots.Count; i++)
             {
                 var row = responseOptionValues.FirstOrDefault(x => x.Time == timeSlots?.ElementAt(i).ToString(@"hh\:mm"));
 
@@ -305,7 +310,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("sectorsv1")]
-        public async Task<List<SectorsResponse>> GetSectorsTrendsAsync(string currentDate="2025-10-28")
+        public async Task<List<SectorsResponse>> GetSectorsTrendsAsync(string currentDate = "2025-10-28")
         {
             List<SectorsResponse> sectorsResponses = new List<SectorsResponse>();
 
@@ -362,7 +367,7 @@ namespace OptionChain.Controllers
                             Change = stockDetail.Change,
                             DayHigh = stockDetail.DayHigh,
                             DayLow = stockDetail.DayLow,
-                            TFactor = Math.Round(Convert.ToDouble(stockDetail.TFactor),2),
+                            TFactor = Math.Round(Convert.ToDouble(stockDetail.TFactor), 2),
                             Open = stockDetail.Open,
                             Time = stockDetail.Time,
                             IsNifty50 = stockDetail.IsNifty50,
@@ -371,7 +376,7 @@ namespace OptionChain.Controllers
                         });
                     }
                 }
-                
+
                 if (sectorUpdate == null || sectorUpdate.Where(x => x.Sector == sector.Key).FirstOrDefault() == null)
                 {
                     mySector.PChange = Math.Round(mySector.Stocks.Average(x => x.PChange) ?? 0, 2);
@@ -476,6 +481,47 @@ namespace OptionChain.Controllers
                     PChange = item.PercentChange,
                     PChangeLast30Days = item.PerChange30d,
                     LastPrice = item.Last
+                };
+                response.Add(index);
+            }
+
+            return response;
+        }
+
+        [HttpGet("major-index-v2")]
+        public async Task<List<MajorIndexReponse>> GetMajorIndexV2Async(string currentDate)
+        {
+            Dictionary<long, string> majorIndexName = new Dictionary<long, string> {
+                { 89, "NIFTY 50" },
+                { 90,  "NIFTY NEXT 50" },
+                { 76,  "NIFTY BANK" },
+                { 77, "NIFTY FIN SERVICE" },
+                { 78, "NIFTY MID SELECT" }
+            };
+
+            var indexIds = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.CreatedDate == Convert.ToDateTime(currentDate) && majorIndexName.Keys.Contains(x.StockMetaDataId))
+                .GroupBy(x => new { x.CreatedDate, x.StockMetaDataId })
+                .Select(g => g.Max(z => z.Id))
+                .ToListAsync();
+
+            var topIndex = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => indexIds.Contains(x.Id))
+                .ToListAsync();
+
+            List<MajorIndexReponse> response = new List<MajorIndexReponse>();
+
+            foreach (var item in topIndex)
+            {
+                var index = new MajorIndexReponse
+                {
+                    Name = majorIndexName[item.StockMetaDataId],
+                    Variation = (item.PChange / 100) * item.LastPrice,
+                    PChange = item.PChange,
+                    PChangeLast30Days = 0,
+                    LastPrice = item.LastPrice
                 };
                 response.Add(index);
             }
@@ -724,10 +770,10 @@ namespace OptionChain.Controllers
                 DateTime dt = DateTime.Parse(currentDate);
                 var result = await _optionDbContext.RFactors
                     .AsNoTracking()
-                    .Where(x => x.EntryDate.HasValue && x.EntryDate.Value.Date == dt.Date &&  x.Symbol.ToLower() == stockName.ToLower())
-                    .OrderBy(x=>x.Id)
+                    .Where(x => x.EntryDate.HasValue && x.EntryDate.Value.Date == dt.Date && x.Symbol.ToLower() == stockName.ToLower())
+                    .OrderBy(x => x.Id)
                     .ToListAsync();
-                
+
                 return result;
             }
             catch (Exception ex)

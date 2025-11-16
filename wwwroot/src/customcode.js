@@ -183,7 +183,7 @@ function getIndexData(callback) {
 
     var selectedDate = $("#currentDate").val();
 
-    var url = domain + subfolderName + "/Options/major-index?";
+    var url = domain + subfolderName + "/Options/major-index-v2?";
 
     $.ajax({
         url: url,
@@ -194,7 +194,7 @@ function getIndexData(callback) {
             let nifty50 = response.find(s=>s.name == "NIFTY 50");
             $("#nifty50").text(formatToThousands(nifty50.lastPrice));
             $("#niftyPer").text(nifty50.pChange + "%");
-            $("#niftyVeri").text(nifty50.variation);
+            $("#niftyVeri").text(nifty50.variation.toFixed(2));
 
             if(nifty50.pChange > 0) {
                 $("#nifty50").removeClass("text-red");
@@ -226,7 +226,7 @@ function getIndexData(callback) {
             let niftyBank = response.find(s=>s.name == "NIFTY BANK");
             $("#niftyBank").text(formatToThousands(niftyBank.lastPrice));
             $("#niftyBankPer").text(niftyBank.pChange + "%");
-            $("#niftyBankVeri").text(niftyBank.variation);
+            $("#niftyBankVeri").text(niftyBank.variation.toFixed(2));
 
             if(niftyBank.pChange > 0) {
                 $("#niftyBank").removeClass("text-red");
@@ -257,7 +257,7 @@ function getIndexData(callback) {
             let niftyNext50 = response.find(s=>s.name == "NIFTY NEXT 50");
             $("#niftyNext50").text(formatToThousands(niftyNext50.lastPrice));
             $("#niftyNext50Per").text(niftyNext50.pChange + "%");
-            $("#niftyNext50Veri").text(niftyNext50.variation);
+            $("#niftyNext50Veri").text(niftyNext50.variation.toFixed(2));
 
             if(niftyNext50.pChange > 0) {
                 $("#niftyNext50").removeClass("text-red");
@@ -285,10 +285,10 @@ function getIndexData(callback) {
                 $("#niftyNext50Veri").addClass("text-red");
             }
 
-            let niftyMidSelect = response.find(s=>s.name == "NIFTY MIDCAP SELECT");
+            let niftyMidSelect = response.find(s=>s.name == "NIFTY MID SELECT");
             $("#niftyMidSelect").text(formatToThousands(niftyMidSelect.lastPrice));
             $("#niftyMidSelectPer").text(niftyMidSelect.pChange + "%");
-            $("#niftyMidSelectVeri").text(niftyMidSelect.variation);
+            $("#niftyMidSelectVeri").text(niftyMidSelect.variation.toFixed(2));
 
             if(niftyMidSelect.pChange > 0) {
                 $("#niftyMidSelect").removeClass("text-red");
@@ -316,10 +316,10 @@ function getIndexData(callback) {
                 $("#niftyMidSelectVeri").addClass("text-red");
             }
 
-            let niftyFinService = response.find(s=>s.name == "NIFTY FINANCIAL SERVICES");
+            let niftyFinService = response.find(s=>s.name == "NIFTY FIN SERVICE");
             $("#niftyFinService").text(formatToThousands(niftyFinService.lastPrice));
             $("#niftyFinServicePer").text(niftyFinService.pChange + "%");
-            $("#niftyFinServiceVeri").text(niftyFinService.variation);
+            $("#niftyFinServiceVeri").text(niftyFinService.variation.toFixed(2));
 
             if(niftyFinService.pChange > 0) {
                 $("#niftyFinService").removeClass("text-red");

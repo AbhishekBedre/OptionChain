@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OptionChain.Controllers;
 using OptionChain.Models;
-using System.Xml;
 
 namespace OptionChain
 {
@@ -180,7 +179,7 @@ namespace OptionChain
         public DbSet<MarketMetaData> MarketMetaDatas{ get; set; }
         public DbSet<SectorStockMetaData> SectorStockMetaDatas { get; set; }
         public DbSet<PreComputedData> PreComputedDatas { get; set; }
-
+        public DbSet<FuturePreComputedData> FuturePreComputedDatas { get; set; }
 
         public UpStoxDbContext(DbContextOptions<UpStoxDbContext> options)
             : base(options)
@@ -228,6 +227,10 @@ namespace OptionChain
             modelBuilder.Entity<PreComputedData>().Property(x => x.PreviousDayHigh).HasPrecision(10, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.PreviousDayLow).HasPrecision(10, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.PreviousDayClose).HasPrecision(10, 2);
+
+            modelBuilder.Entity<FuturePreComputedData>().Property(x => x.PivotPoint).HasPrecision(10, 2);
+            modelBuilder.Entity<FuturePreComputedData>().Property(x => x.BottomCP).HasPrecision(10, 2);
+            modelBuilder.Entity<FuturePreComputedData>().Property(x => x.TopCP).HasPrecision(10, 2);
         }
     }
 }

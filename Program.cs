@@ -16,6 +16,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string connectionStringOnline = builder.Configuration.GetConnectionString("DefaultConnectionOnline");
 
 Console.WriteLine(connectionString);
 
@@ -23,7 +24,7 @@ builder.Services.AddDbContext<OptionDbContext>(options =>
     options.UseSqlServer(connectionString, options => options.CommandTimeout(2000)));
 
 builder.Services.AddDbContext<UpStoxDbContext>(options =>
-    options.UseSqlServer(connectionString, options => options.CommandTimeout(2000)));
+    options.UseSqlServer(connectionStringOnline, options => options.CommandTimeout(2000)));
 
 builder.Services.AddCors(options =>
 {

@@ -162,10 +162,10 @@ namespace OptionChain.Models
         public long? DaysAverageVolume { get; set; }
 
         [JsonPropertyName("daysATR")]
-        public long? DaysATR { get; set; }
+        public decimal? DaysATR { get; set; }
 
         [JsonPropertyName("daysMedianATR")]
-        public long? DaysMedianATR { get; set; }
+        public decimal? DaysMedianATR { get; set; }
 
         // Trend Score 10-Day (Up/Down/Side)
         [JsonPropertyName("daysTrendScore")]
@@ -203,5 +203,43 @@ namespace OptionChain.Models
 
         [JsonPropertyName("previousDayClose")]
         public decimal? PreviousDayClose { get; set; }
+    }
+
+    public class FuturePreComputedData
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonPropertyName("id")]
+        public long Id { get; set; }
+
+        [JsonPropertyName("stockMetaDataId")]
+        public long StockMetaDataId { get; set; }
+
+        [JsonPropertyName("pivotPoint")]
+        public decimal? PivotPoint { get; set; }
+
+        [JsonPropertyName("bottomCP")]
+        public decimal? BottomCP { get; set; }
+
+        [JsonPropertyName("topCP")]
+        public decimal? TopCP { get; set; }
+
+        [JsonPropertyName("tr1")]
+        public bool TR1 { get; set; } = false;
+
+        [JsonPropertyName("tr2")]
+        public bool TR2 { get; set; } = false;
+
+        [JsonPropertyName("wasTrendy")]
+        public bool WasTrendy { get; set; } = false;
+
+        [JsonPropertyName("createdDate")]
+        public DateTime? CreatedDate { get; set; }
+
+        [JsonPropertyName("modifiedDate")]
+        public DateTime? ModifiedDate { get; set; }
+
+        [JsonPropertyName("forDate")]
+        public DateTime? ForDate { get; set; }
     }
 }

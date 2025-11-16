@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OptionChain;
 
@@ -11,9 +12,10 @@ using OptionChain;
 namespace OptionChain.Migrations.UpStoxDb
 {
     [DbContext(typeof(UpStoxDbContext))]
-    partial class UpStoxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251108153632_colDatatypeupdate")]
+    partial class colDatatypeupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,52 +63,6 @@ namespace OptionChain.Migrations.UpStoxDb
                     b.HasKey("Id");
 
                     b.ToTable("AuthDetails");
-                });
-
-            modelBuilder.Entity("OptionChain.Models.FuturePreComputedData", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<decimal?>("BottomCP")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ForDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal?>("PivotPoint")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<long>("StockMetaDataId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("TR1")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("TR2")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal?>("TopCP")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<bool>("WasTrendy")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FuturePreComputedDatas");
                 });
 
             modelBuilder.Entity("OptionChain.Models.MarketMetaData", b =>
