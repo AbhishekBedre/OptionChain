@@ -309,10 +309,44 @@ namespace OptionChain.Controllers
             return sectorsResponses.OrderByDescending(x => x.PChange).ToList();
         }
 
-        [HttpGet("sectorsv1")]
-        public async Task<List<SectorsResponse>> GetSectorsTrendsAsync(string currentDate = "2025-10-28")
+        [HttpGet("sectors-v2")]
+        public async Task<List<SectorsResponse>> GetSectorsTrendsAsync(string currentDate = "2025-11-21")
         {
             List<SectorsResponse> sectorsResponses = new List<SectorsResponse>();
+            DateTime currentDt = DateTime.Parse(currentDate);
+
+            // Get Index Id
+            var indexIdsAndName = await _upStoxDbContext.MarketMetaDatas
+                .AsNoTracking()
+                .Where(x => x.Name.Contains("index"))
+                .Select(x => new { x.Id, x.Name })
+                .ToListAsync();
+
+            var iDsOfUpdatedSectors = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.CreatedDate == currentDt && indexIdsAndName.Select(x => x.Id).Contains(x.StockMetaDataId))
+                .GroupBy(g => g.StockMetaDataId)
+                .Select(g => g.Max(x => x.Id))
+                .ToListAsync();
+
+            var sectorsDetails = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => iDsOfUpdatedSectors.Contains(x.Id))
+                .ToListAsync();
+
+            foreach (var item in sectorsDetails)
+            {
+                var sector = new SectorsResponse
+                {
+                    Id = item.Id,
+                    Sector = indexIdsAndName.FirstOrDefault(x => x.Id == item.StockMetaDataId).Name.Split(":")[1],
+                    PChange = item.PChange ?? 0
+                };
+
+                sectorsResponses.Add(sector);
+            }
+
+            sectorsResponses = sectorsResponses.OrderByDescending(x => x.PChange).ToList();
 
             return sectorsResponses;
         }
@@ -402,10 +436,172 @@ namespace OptionChain.Controllers
             return sectorsStocks;
         }
 
+        [HttpGet("sector-stocks-v2")]
+        public async Task<IEnumerable<Sector>> GetSectorStocksSync(string currentDate = "2025-11-21", bool isFNO = true, int totalSector = 2)
+        {
+            List<Sector> sectorsStocks = new List<Sector>();
+
+            var marketMetaDatasCache = _memoryCache.Get<List<MarketMetaData>>("marketMetadatasCache");
+            if (marketMetaDatasCache == null)
+            {
+                // Get Index Id
+                marketMetaDatasCache = await _upStoxDbContext.MarketMetaDatas
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // Store in cache with expiration policy
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
+
+                _memoryCache.Set("marketMetadatasCache", marketMetaDatasCache, cacheOptions);
+            }
+
+            var indexIdsAndName = marketMetaDatasCache
+                .Where(x => x.Name.Contains("index", StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
+
+            var allStockMetaDataIdsCache = _memoryCache.Get<List<SectorStockMetaData>>("SectorStockMetaData");
+
+            if (allStockMetaDataIdsCache == null)
+            {
+                // Get All stock metaData Ids
+                allStockMetaDataIdsCache = await _upStoxDbContext.SectorStockMetaDatas
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // Store in cache with expiration policy
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
+
+                _memoryCache.Set("SectorStockMetaData", allStockMetaDataIdsCache, cacheOptions);
+            }
+
+            var allIndexUpdatedIds = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.CreatedDate == DateTime.Parse(currentDate) && indexIdsAndName.Select(x => x.Id).Contains(x.StockMetaDataId))
+                .GroupBy(g => g.StockMetaDataId)
+                .Select(x => x.Max(x => x.Id))
+                .ToListAsync();
+
+            var allIndexUpdatedEntries = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => allIndexUpdatedIds.Contains(x.Id))
+                .OrderByDescending(x => x.PChange) // the most positive sector will top in this list so just get top and bottom according to the totalSector
+                .ToListAsync();
+
+            var indexFiltered = allIndexUpdatedEntries.Take(totalSector).ToList();
+            var indexFilteredBottom2 = allIndexUpdatedEntries.TakeLast(totalSector).ToList();
+
+            if (totalSector > 0)
+            {                
+                indexFiltered.AddRange(indexFilteredBottom2);
+                indexIdsAndName = indexIdsAndName.Where(x => indexFiltered.Select(y => y.StockMetaDataId).Contains(x.Id)).ToList();
+            }
+
+            foreach (var item in indexIdsAndName)
+            {
+                List<SectorStocksResponse> sectorStocks = new List<SectorStocksResponse>();
+
+                var stockMetaDataIds = allStockMetaDataIdsCache
+                    .Where(x => x.SectorId == item.Id)
+                    .Select(x => x.StockMetaDataId)
+                    .ToList();
+
+                var indexUpdatedEntry = allIndexUpdatedEntries
+                    .Where(x => x.StockMetaDataId == item.Id)
+                    .FirstOrDefault();
+
+                foreach (var stock in stockMetaDataIds)
+                {
+                    var stockEntry = await _upStoxDbContext.OHLCs
+                        .AsNoTracking()
+                        .Where(x => x.CreatedDate == DateTime.Parse(currentDate) && x.StockMetaDataId == stock)
+                        .OrderByDescending(x => x.Id)
+                        .FirstOrDefaultAsync();
+
+                    var sectorStock = new SectorStocksResponse
+                    {
+                        Id = ((int)stockEntry.Id),
+                        LastPrice = (double)stockEntry?.LastPrice,
+                        PChange = (double)stockEntry.PChange,
+                        TFactor = 0,
+                        Time = stockEntry.Time.ToString(),
+                        Symbol = marketMetaDatasCache.Where(x => x.Id == stock).FirstOrDefault().Name.Split(":")[1].ToString()
+                    };
+
+                    sectorStocks.Add(sectorStock);
+                }
+
+                var sectorsStock = new Sector
+                {
+                    Id = (int)item.Id,
+                    Name = indexIdsAndName.FirstOrDefault(x => x.Id == item.Id).Name.Split(":")[1],
+                    PChange = (double)indexUpdatedEntry.PChange,
+                    Stocks = sectorStocks.OrderByDescending(x => x.PChange).ToList()
+                };
+
+                sectorsStocks.Add(sectorsStock);
+            }
+
+            return sectorsStocks;
+        }
+
+        [HttpGet()]
+
         [HttpGet("advances")]
         public async Task<Advance> GetAdvancesDetails(string currentDate = "2025-02-12")
         {
             var result = await _optionDbContext.Advance.AsNoTracking().Where(x => x.EntryDate == Convert.ToDateTime(currentDate)).OrderByDescending(x => x.Time).FirstOrDefaultAsync();
+            return result;
+        }
+
+        [HttpGet("advances-v2")]
+        public async Task<Advance> GetAdvancesDetailsAsync(string currentDate = "2025-11-21")
+        {
+            var currentDt = DateTime.Parse(currentDate);
+
+            var marketMetaDatasCache = _memoryCache.Get<List<MarketMetaData>>("marketMetadatasCache");
+            if (marketMetaDatasCache == null)
+            {
+                // Get Index Id
+                marketMetaDatasCache = await _upStoxDbContext.MarketMetaDatas
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // Store in cache with expiration policy
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
+
+                _memoryCache.Set("marketMetadatasCache", marketMetaDatasCache, cacheOptions);
+            }
+
+            var indexIdsAndName = marketMetaDatasCache
+                .Where(x => x.Name.Contains("index", StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
+
+            var stockIds = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.CreatedDate == currentDt && !indexIdsAndName.Select(x => x.Id).Contains(x.StockMetaDataId))
+                .GroupBy(x => new { x.CreatedDate, x.StockMetaDataId })
+                .Select(g => g.Max(z => z.Id))
+                .ToListAsync();
+
+            var stockRecords = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => stockIds.Contains(x.Id))
+                .ToListAsync();
+
+
+            var result = new Advance
+            {
+                Id = 1,
+                EntryDate = currentDt,
+                Time = stockRecords.FirstOrDefault().Time,
+                Advances = stockRecords.Where(x=>x.PChange > 0).Count().ToString(),
+                Declines = stockRecords.Where(x=>x.PChange < 0).Count().ToString(),
+                Unchanged = stockRecords.Where(x=>x.PChange == 0).Count().ToString()
+            };
+
             return result;
         }
 
@@ -707,6 +903,71 @@ namespace OptionChain.Controllers
 
                 throw;
             }
+        }
+
+        [HttpGet("watchlist-stocks-v2")]
+        public async Task<List<SectorStocksResponse>> GetWatchListStocksAsync(string currentDate = "2025-11-24")
+        {
+            DateTime currentDt = DateTime.Parse(currentDate);
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
+
+
+            var getWatchListStocks = _memoryCache.Get<List<SectorStocksResponse>>(currentDate);
+            if (getWatchListStocks != null)
+                return getWatchListStocks;
+
+            getWatchListStocks = new List<SectorStocksResponse>();
+
+            var marketMetaDatasCache = _memoryCache.Get<List<MarketMetaData>>("marketMetadatasCache");
+            if (marketMetaDatasCache == null)
+            {
+                // Get Index Id
+                marketMetaDatasCache = await _upStoxDbContext.MarketMetaDatas
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                _memoryCache.Set("marketMetadatasCache", marketMetaDatasCache, cacheOptions);
+            }
+
+            var trendingStocks = await _upStoxDbContext.FuturePreComputedDatas
+                .AsNoTracking()
+                .Where(x => x.ForDate == currentDt && x.TR1 == true)
+                .Select(x=> new { x.StockMetaDataId, x.CreatedDate })
+                .ToListAsync();
+
+            var previousDayCreatedDate = trendingStocks.Select(x => x.CreatedDate).FirstOrDefault();
+
+            var stockDetailIds = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.CreatedDate == previousDayCreatedDate && trendingStocks.Select(x=>x.StockMetaDataId).Contains(x.StockMetaDataId))
+                .GroupBy(x => new { x.CreatedDate, x.StockMetaDataId })
+                .Select(x=>x.Max(z=>z.Id))
+                .ToListAsync();
+
+            var stockDetails = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => stockDetailIds.Contains(x.Id))
+                .ToListAsync();
+
+            foreach (var item in stockDetails)
+            {
+                var stock = new SectorStocksResponse
+                {
+                    Id = item.Id,
+                    LastPrice = (double)item.LastPrice,
+                    PChange = (double)item.PChange,
+                    Symbol = marketMetaDatasCache.Where(x => x.Id == item.StockMetaDataId).First().Name.Split(":")[1].ToString(),
+                    TFactor = 0,
+                    Time = item.Time.ToString()
+                };
+                getWatchListStocks.Add(stock);
+            }
+
+            _memoryCache.Set(currentDate, getWatchListStocks, cacheOptions);
+
+            return getWatchListStocks;
+
         }
 
         [HttpGet("intra-day-blaster")]
