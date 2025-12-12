@@ -22,7 +22,7 @@ namespace OptionChain.Controllers
         private readonly OptionDbContext _optionDbContext;
         private readonly UpStoxDbContext _upStoxDbContext;
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
-        private string accessToken = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI3MkFBM0siLCJqdGkiOiI2OTAwZGE1MzYzZTYzOTM1NjI0ZGRkMzQiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNQbHVzUGxhbiI6ZmFsc2UsImlhdCI6MTc2MTY2MzU3MSwiaXNzIjoidWRhcGktZ2F0ZXdheS1zZXJ2aWNlIiwiZXhwIjoxNzYxNjg4ODAwfQ.MK9mp1dCr-1F_hgZeu4hvDcC61GPQUCKWoluY_D8Z8g";
+        private string accessToken = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI3MkFBM0siLCJqdGkiOiI2OTNjMjVhMTI3ZWEyZDM5ODdiYmU4Y2QiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNQbHVzUGxhbiI6ZmFsc2UsImlhdCI6MTc2NTU0OTQ3MywiaXNzIjoidWRhcGktZ2F0ZXdheS1zZXJ2aWNlIiwiZXhwIjoxNzY1NTc2ODAwfQ.hHJ9WstgAlAkeY9aeVQ0_Cfz-93YjFd6fpGRXq9JguY";
 
 
         public UsersController(ILogger<UsersController> logger,
@@ -139,7 +139,10 @@ namespace OptionChain.Controllers
         [HttpGet("HistoricalData")]
         public async Task<bool> GetHistoricalData(string fromDate, string toDate)
         {
-            var marketMetaData = _upStoxDbContext.MarketMetaDatas.AsNoTracking().ToList();
+            var marketMetaData = _upStoxDbContext.MarketMetaDatas
+                .AsNoTracking()
+                .ToList();
+
             var stockNameWithKey = marketMetaData.ToDictionary(x => x.InstrumentToken, x => x.Id);
 
             foreach (var item in marketMetaData)
@@ -192,21 +195,58 @@ namespace OptionChain.Controllers
             if (apiResponse.Data == null && apiResponse.Status != "success")
                 return false;
 
+            // get the previous close collection off the stocks
+
+            var stockPrecomputedData = _upStoxDbContext.PreComputedDatas
+                .AsNoTracking()
+                .Where(x => x.StockMetaDataId == stockMetaDataId)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefault();
+
+            var findLastDate = _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.StockMetaDataId == stockMetaDataId && x.Time == new TimeSpan(15, 29, 0))
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefault();
+
+            // Previous day close stock
+            var stockDetails = _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.StockMetaDataId == stockMetaDataId && x.CreatedDate != null
+                    && findLastDate != null
+                    && findLastDate.CreatedDate != null
+                    && x.CreatedDate.Value.Date == findLastDate.CreatedDate.Value.Date
+                    && x.Time == new TimeSpan(15, 29, 0))
+                .FirstOrDefault();
+
+            apiResponse.Data.Candles.Reverse();
+
             foreach (var item in apiResponse.Data.Candles)
             {
-                var timeStamp = DateTime.Parse(item.ElementAt(0).ToString());
+                var timeStamp = DateTime.Parse(item.ElementAt(0).ToString()); // Time
+
+                var previousClose = stockDetails?.LastPrice ?? stockDetails?.Close ?? 0;
+
+                var closePrice = Convert.ToDecimal(item.ElementAt(4).ToString());
+
+                var pChange = previousClose == 0 ? 0 : (((closePrice - previousClose) * 100) / previousClose);
+
+                var rFactor = (stockPrecomputedData != null && closePrice != 0) ? ((stockPrecomputedData.DaysHigh - stockPrecomputedData.DaysLow) / closePrice ?? 1) * 100 : 0;
 
                 prevOhlcList.Add(new OHLC
                 {
                     StockMetaDataId = stockMetaDataId,
                     Timestamp = new DateTimeOffset(timeStamp).ToUnixTimeMilliseconds(),
-                    Open = Convert.ToDecimal(item.ElementAt(1).ToString()),
-                    High = Convert.ToDecimal(item.ElementAt(2).ToString()),
-                    Low = Convert.ToDecimal(item.ElementAt(3).ToString()),
-                    Close = Convert.ToDecimal(item.ElementAt(4).ToString()),
-                    Volume = long.Parse(item.ElementAt(5).ToString()),
+                    Open = Convert.ToDecimal(item.ElementAt(1).ToString()), // Open
+                    High = Convert.ToDecimal(item.ElementAt(2).ToString()), // high
+                    Low = Convert.ToDecimal(item.ElementAt(3).ToString()), // low
+                    Close = Convert.ToDecimal(item.ElementAt(4).ToString()), // Close
+                    Volume = long.Parse(item.ElementAt(5).ToString()), // volumn
                     CreatedDate = timeStamp.Date,
-                    Time = new TimeSpan(timeStamp.Hour, timeStamp.Minute, 0)
+                    Time = new TimeSpan(timeStamp.Hour, timeStamp.Minute, 0), //open interest,
+                    LastPrice = 0,
+                    PChange = pChange,
+                    RFactor = rFactor
                 });
             }
 
@@ -220,7 +260,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("TodaysData")]
-        public bool GetTodaysData(string date)
+        public bool GetTodaysData(string date = "2025-12-12")
         {
             var marketMetaData = _upStoxDbContext.MarketMetaDatas.AsNoTracking().ToList();
             var stockNameWithKey = marketMetaData.ToDictionary(x => x.InstrumentToken, x => x.Id);
