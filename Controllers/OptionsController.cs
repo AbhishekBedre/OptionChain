@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using OptionChain.Models;
+using System;
+using System.Text;
 using System.Text.Json.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace OptionChain.Controllers
 {
@@ -493,7 +497,7 @@ namespace OptionChain.Controllers
             var indexFilteredBottom2 = allIndexUpdatedEntries.TakeLast(totalSector).ToList();
 
             if (totalSector > 0)
-            {                
+            {
                 indexFiltered.AddRange(indexFilteredBottom2);
                 indexIdsAndName = indexIdsAndName.Where(x => indexFiltered.Select(y => y.StockMetaDataId).Contains(x.Id)).ToList();
             }
@@ -524,7 +528,7 @@ namespace OptionChain.Controllers
                         Id = ((int)stockEntry.Id),
                         LastPrice = (double)stockEntry?.LastPrice,
                         PChange = (double)stockEntry.PChange,
-                        TFactor = 0,
+                        TFactor = (double)stockEntry.RFactor,
                         Time = stockEntry.Time.ToString(),
                         Symbol = marketMetaDatasCache.Where(x => x.Id == stock).FirstOrDefault().Name.Split(":")[1].ToString()
                     };
@@ -597,9 +601,9 @@ namespace OptionChain.Controllers
                 Id = 1,
                 EntryDate = currentDt,
                 Time = stockRecords.FirstOrDefault().Time,
-                Advances = stockRecords.Where(x=>x.PChange > 0).Count().ToString(),
-                Declines = stockRecords.Where(x=>x.PChange < 0).Count().ToString(),
-                Unchanged = stockRecords.Where(x=>x.PChange == 0).Count().ToString()
+                Advances = stockRecords.Where(x => x.PChange > 0).Count().ToString(),
+                Declines = stockRecords.Where(x => x.PChange < 0).Count().ToString(),
+                Unchanged = stockRecords.Where(x => x.PChange == 0).Count().ToString()
             };
 
             return result;
@@ -919,30 +923,21 @@ namespace OptionChain.Controllers
 
             getWatchListStocks = new List<SectorStocksResponse>();
 
-            var marketMetaDatasCache = _memoryCache.Get<List<MarketMetaData>>("marketMetadatasCache");
-            if (marketMetaDatasCache == null)
-            {
-                // Get Index Id
-                marketMetaDatasCache = await _upStoxDbContext.MarketMetaDatas
-                    .AsNoTracking()
-                    .ToListAsync();
-
-                _memoryCache.Set("marketMetadatasCache", marketMetaDatasCache, cacheOptions);
-            }
+            var marketMetaDatasCache = await GetMarketMetaDataFromCacheIfAvailable();
 
             var trendingStocks = await _upStoxDbContext.FuturePreComputedDatas
                 .AsNoTracking()
                 .Where(x => x.ForDate == currentDt && x.TR1 == true)
-                .Select(x=> new { x.StockMetaDataId, x.CreatedDate })
+                .Select(x => new { x.StockMetaDataId, x.CreatedDate })
                 .ToListAsync();
 
             var previousDayCreatedDate = trendingStocks.Select(x => x.CreatedDate).FirstOrDefault();
 
             var stockDetailIds = await _upStoxDbContext.OHLCs
                 .AsNoTracking()
-                .Where(x => x.CreatedDate == previousDayCreatedDate && trendingStocks.Select(x=>x.StockMetaDataId).Contains(x.StockMetaDataId))
+                .Where(x => x.CreatedDate == previousDayCreatedDate && trendingStocks.Select(x => x.StockMetaDataId).Contains(x.StockMetaDataId))
                 .GroupBy(x => new { x.CreatedDate, x.StockMetaDataId })
-                .Select(x=>x.Max(z=>z.Id))
+                .Select(x => x.Max(z => z.Id))
                 .ToListAsync();
 
             var stockDetails = await _upStoxDbContext.OHLCs
@@ -958,11 +953,13 @@ namespace OptionChain.Controllers
                     LastPrice = (double)item.LastPrice,
                     PChange = (double)item.PChange,
                     Symbol = marketMetaDatasCache.Where(x => x.Id == item.StockMetaDataId).First().Name.Split(":")[1].ToString(),
-                    TFactor = 0,
+                    TFactor = (double)item.RFactor,
                     Time = item.Time.ToString()
                 };
                 getWatchListStocks.Add(stock);
             }
+
+            getWatchListStocks = getWatchListStocks.OrderByDescending(x => x.TFactor).ToList();
 
             _memoryCache.Set(currentDate, getWatchListStocks, cacheOptions);
 
@@ -1006,6 +1003,115 @@ namespace OptionChain.Controllers
             }
         }
 
+        [HttpGet("breakout-stocks-v2")]
+        public async Task<List<IntradayBlast>> GetBreakoutStocksV2Async(string currentDate = "2025-12-04")
+        {
+            try
+            {
+                var response = _memoryCache.Get<List<IntradayBlast>>("intradayBreakout");
+
+                if (response == null)
+                    response = new List<IntradayBlast>();
+
+                DateTime currentDt = DateTime.Parse(currentDate);
+
+                var result = await _upStoxDbContext.OHLCs
+                    .AsNoTracking()
+                    .Where(x => x.CreatedDate == currentDt && x.Time <= new TimeSpan(12, 0, 0))
+                    .ToListAsync();
+
+                var lastEntryDateRecord = await _upStoxDbContext.PreComputedDatas
+                    .AsNoTracking()
+                    .OrderByDescending(x => x.Id)
+                    .FirstOrDefaultAsync();
+
+                var lastEntryDate = lastEntryDateRecord.CreatedDate;
+
+                var preComputedDatas = await _upStoxDbContext.PreComputedDatas
+                    .AsNoTracking()
+                    .Where(x => x.CreatedDate == lastEntryDate)
+                    .ToListAsync();
+
+                var getCPRFroTrend = await _upStoxDbContext.FuturePreComputedDatas
+                    .AsNoTracking()
+                    .Where(x => x.ForDate == currentDt)
+                    .ToListAsync();
+
+                var totalStocks = result.Select(x => x.StockMetaDataId).Distinct().Where(x => x > 0).ToList();
+
+                foreach (var stock in totalStocks)
+                {
+                    var stockRecords = result.Where(x => x.StockMetaDataId == stock).ToList();
+
+                    var marketMetaData = await GetMarketMetaDataFromCacheIfAvailable();
+
+                    var firstMax = stockRecords.MaxBy(x => x.High);
+                    var secondMax = stockRecords.Where(x => x.Id != firstMax.Id).MaxBy(x => x.High);
+                    var thirdMax = stockRecords.Where(x => (x.Id != firstMax.Id && x.Id != secondMax.Id)).MaxBy(x => x.High);
+
+                    List<OHLC> orderByHigh = new List<OHLC>
+                    {
+                        thirdMax,
+                        secondMax,
+                        firstMax
+                    };
+
+                    var getLatestEntry = orderByHigh.Last();
+                    var getCPRFroTrendForStock = getCPRFroTrend.Where(x => x.StockMetaDataId == stock).FirstOrDefault();
+
+                    var preComputedDataForStock = preComputedDatas.Where(x => x.StockMetaDataId == stock).FirstOrDefault();
+
+                    var isHigherHigh = (orderByHigh.ElementAt(0).High < orderByHigh.ElementAt(1).High)
+                        && (orderByHigh.ElementAt(1).High < orderByHigh.ElementAt(2).High);
+
+
+                    var isBullish = orderByHigh.ElementAt(0).High > getCPRFroTrendForStock.PivotPoint
+                        && orderByHigh.ElementAt(1).High > getCPRFroTrendForStock.PivotPoint
+                        && orderByHigh.ElementAt(2).High > getCPRFroTrendForStock.PivotPoint;
+
+                    if (isBullish && isHigherHigh && preComputedDataForStock != null &&
+                        (orderByHigh.ElementAt(0).Time < orderByHigh.ElementAt(1).Time) && (orderByHigh.ElementAt(1).Time < orderByHigh.ElementAt(2).Time)
+                        && (orderByHigh.ElementAt(0).Volume > preComputedDataForStock.DaysAverageVolume
+                        && orderByHigh.ElementAt(1).Volume > preComputedDataForStock.DaysAverageVolume
+                        && orderByHigh.ElementAt(2).Volume > preComputedDataForStock.DaysAverageVolume))
+                    {
+                        var symbol = marketMetaData.Where(x => x.Id == stock).FirstOrDefault().Name.Split(":")[1].ToString();
+
+                        if (response.Find(x => x.Symbol == symbol) == null)
+                        {
+                            response.Add(new IntradayBlast
+                            {
+                                Id = getLatestEntry.Id,
+                                PChange = (double)getLatestEntry.PChange,
+                                EntryDate = getLatestEntry.CreatedDate,
+                                LastPrice = (double)(getLatestEntry.LastPrice ?? getLatestEntry.Close),
+                                Time = getLatestEntry.Time,
+                                Counter = 1,
+                                PrevLastPrice = (double)preComputedDataForStock.PreviousDayClose,
+                                Symbol = symbol
+                            });
+                        }
+                    }
+                }
+
+                response = response.OrderByDescending(x => x.Time).ToList();
+
+                // cache the reponse so that we get to know what was 
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
+
+                _memoryCache.Set("intradayBreakout", response, cacheOptions);
+
+                return response;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         [HttpGet("breakdown-stocks")]
         public async Task<List<BreakoutStock>> GetBreakdownStocksAsync(string currentDate = "2025-09-19")
         {
@@ -1019,6 +1125,114 @@ namespace OptionChain.Controllers
             catch (Exception)
             {
 
+                throw;
+            }
+        }
+
+        [HttpGet("breakdown-stocks-v2")]
+        public async Task<List<IntradayBlast>> GetBreakdownStocksV2Async(string currentDate = "2025-12-04")
+        {
+            try
+            {
+                var response = _memoryCache.Get<List<IntradayBlast>>("intradayBreakdown");
+
+                if (response == null)
+                    response = new List<IntradayBlast>();
+
+                DateTime currentDt = DateTime.Parse(currentDate);
+
+                var result = await _upStoxDbContext.OHLCs
+                    .AsNoTracking()
+                    .Where(x => x.CreatedDate == currentDt && x.Time <= new TimeSpan(12, 0, 0))
+                    .ToListAsync();
+
+                var lastEntryDateRecord = await _upStoxDbContext.PreComputedDatas
+                    .AsNoTracking()
+                    .OrderByDescending(x => x.Id)
+                    .FirstOrDefaultAsync();
+
+                var lastEntryDate = lastEntryDateRecord.CreatedDate;
+
+                var preComputedDatas = await _upStoxDbContext.PreComputedDatas
+                    .AsNoTracking()
+                    .Where(x => x.CreatedDate == lastEntryDate)
+                    .ToListAsync();
+
+                var getCPRFroTrend = await _upStoxDbContext.FuturePreComputedDatas
+                    .AsNoTracking()
+                    .Where(x => x.ForDate == currentDt)
+                    .ToListAsync();
+
+                var totalStocks = result.Select(x => x.StockMetaDataId).Distinct().Where(x => x > 0).ToList();
+
+                foreach (var stock in totalStocks)
+                {
+                    var stockRecords = result.Where(x => x.StockMetaDataId == stock).ToList();
+
+                    var marketMetaData = await GetMarketMetaDataFromCacheIfAvailable();
+
+                    var firstMin = stockRecords.MinBy(x => x.Low);
+                    var secondMin = stockRecords.Where(x => x.Id != firstMin.Id).MinBy(x => x.Low);
+                    var thirdMin = stockRecords.Where(x => (x.Id != firstMin.Id && x.Id != secondMin.Id)).MinBy(x => x.Low);
+
+                    List<OHLC> orderByHigh = new List<OHLC>
+                    {
+                        thirdMin,
+                        secondMin,
+                        firstMin
+                    };
+
+                    var getLatestEntry = orderByHigh.Last();
+
+                    var getCPRFroTrendForStock = getCPRFroTrend.Where(x => x.StockMetaDataId == stock).FirstOrDefault();
+                    var preComputedDataForStock = preComputedDatas.Where(x => x.StockMetaDataId == stock).FirstOrDefault();
+
+                    var isLowerLow = (orderByHigh.ElementAt(0).Low > orderByHigh.ElementAt(1).Low)
+                        && (orderByHigh.ElementAt(1).Low > orderByHigh.ElementAt(2).Low);
+
+                    var isBearish = orderByHigh.ElementAt(0).Low < (getCPRFroTrendForStock?.PivotPoint ?? 0)
+                        && orderByHigh.ElementAt(1).Low < (getCPRFroTrendForStock?.PivotPoint ?? 0)
+                        && orderByHigh.ElementAt(2).Low < (getCPRFroTrendForStock?.PivotPoint ?? 0);
+
+                    if (isBearish && isLowerLow && preComputedDataForStock != null &&
+                        (orderByHigh.ElementAt(0).Time < orderByHigh.ElementAt(1).Time) && (orderByHigh.ElementAt(1).Time < orderByHigh.ElementAt(2).Time)
+                        && (orderByHigh.ElementAt(0).Volume > preComputedDataForStock.DaysAverageVolume
+                        && orderByHigh.ElementAt(1).Volume > preComputedDataForStock.DaysAverageVolume
+                        && orderByHigh.ElementAt(2).Volume > preComputedDataForStock.DaysAverageVolume))
+                    {
+                        var symbol = marketMetaData.Where(x => x.Id == stock).FirstOrDefault().Name.Split(":")[1].ToString();
+
+                        if (response.Find(x => x.Symbol == symbol) == null)
+                        {
+                            response.Add(new IntradayBlast
+                            {
+                                Id = getLatestEntry.Id,
+                                PChange = (double)getLatestEntry.PChange,
+                                EntryDate = getLatestEntry.CreatedDate,
+                                LastPrice = (double)(getLatestEntry.LastPrice ?? getLatestEntry.Close),
+                                Time = getLatestEntry.Time,
+                                Counter = 1,
+                                PrevLastPrice = (double)preComputedDataForStock.PreviousDayClose,
+                                Symbol = symbol
+                            });
+                        }
+                    }
+                }
+
+                response = response.OrderByDescending(x => x.Time).ToList();
+
+                // cache the reponse so that we get to know what was 
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
+
+                _memoryCache.Set("intradayBreakdown", response, cacheOptions);
+
+                return response;
+
+            }
+            catch (Exception)
+            {
                 throw;
             }
         }
@@ -1041,6 +1255,66 @@ namespace OptionChain.Controllers
             {
                 throw;
             }
+        }
+
+        [HttpGet("stock-quots")]
+        public async Task<string> GetStockQuotsAsync()
+        {
+            var maxStockIds = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => x.CreatedDate == DateTime.Now.Date)
+                .GroupBy(g => g.StockMetaDataId)
+                .Select(x => x.Max(x => x.Id))
+                .ToListAsync();
+
+            var latestEntry = await _upStoxDbContext.OHLCs
+                .AsNoTracking()
+                .Where(x => maxStockIds.Contains(x.Id))
+                .ToListAsync();
+
+            StringBuilder sb = new StringBuilder();
+
+            var marketData = await GetMarketMetaDataFromCacheIfAvailable();
+
+            marketData = marketData.Where(x => !x.Name.Contains("INDEX")).ToList();
+
+            foreach (var item in latestEntry)
+            {
+                string name = marketData.FirstOrDefault(x => x.Id == item.StockMetaDataId)?.Name ?? "";
+
+                if (item.StockMetaDataId > 0 && !string.IsNullOrEmpty(name))
+                {
+                    sb
+                        .Append(" " + name.Split(":")[1].ToString() + " ")
+                        .Append(" ")
+                        .Append(" ₹" + (item.LastPrice ?? item.Close).ToString())
+                        .Append(" ")
+                        .Append(item.PChange > 0 ? "<span class=\"text-meta-3 format\">" + item.PChange + "%</span>" : "<span class=\"text-red format\">" + item.PChange + "%</span>")
+                        .Append(" ");
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        private async Task<List<MarketMetaData>> GetMarketMetaDataFromCacheIfAvailable()
+        {
+            // Store in cache with expiration policy
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
+
+            var marketMetaDatasCache = _memoryCache.Get<List<MarketMetaData>>("marketMetadatasCache");
+            if (marketMetaDatasCache == null)
+            {
+                // Get Index Id
+                marketMetaDatasCache = await _upStoxDbContext.MarketMetaDatas
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                _memoryCache.Set("marketMetadatasCache", marketMetaDatasCache, cacheOptions);
+            }
+
+            return marketMetaDatasCache;
         }
     }
 

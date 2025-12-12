@@ -219,7 +219,8 @@ namespace OptionChain
             modelBuilder.Entity<PreComputedData>().Property(x => x.DaysAverageClose).HasPrecision(10, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.DaysVWAP).HasPrecision(10, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.DaysStdDevClose).HasPrecision(10, 2);
-            modelBuilder.Entity<PreComputedData>().Property(x => x.DaysStdDevVolume).HasPrecision(10, 2);
+            modelBuilder.Entity<PreComputedData>().Property(x => x.DaysStdDevVolume).HasPrecision(18, 2);
+            modelBuilder.Entity<PreComputedData>().Property(x => x.DaysAverageVolume).HasPrecision(18, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.DaysGreenPercentage).HasPrecision(10, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.DaysAboveVWAPPercentage).HasPrecision(10, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.DaysHighLowRangePercentage).HasPrecision(10, 2);

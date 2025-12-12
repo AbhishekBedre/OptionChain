@@ -69,6 +69,9 @@ namespace OptionChain.Models
 
         [JsonPropertyName("pChange")]
         public decimal? PChange { get; set; }
+
+        [JsonPropertyName("rFactor")]
+        public decimal? RFactor { get; set; }
     }
 
     public class MarketMetaData
