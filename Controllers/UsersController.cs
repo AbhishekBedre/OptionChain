@@ -380,6 +380,30 @@ namespace OptionChain.Controllers
             await _upStoxDbContext.PreComputedDatas.AddRangeAsync(preCompuerDataList);
             await _upStoxDbContext.SaveChangesAsync();
         }
+
+        [HttpGet("FutureStocks")]
+        public async Task<string> FutureStocksAsync()
+        {
+            try
+            {
+                var result = await _upStoxDbContext.MarketMetaDatas
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                string stocks = "";
+
+                foreach (var item in result)
+                {
+                    stocks += item.Name.Split(":")[1].ToString() +", ";
+                }
+
+                return stocks;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 
     public class StockInfo

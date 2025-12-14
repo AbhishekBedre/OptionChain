@@ -1,11 +1,148 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace OptionChain.Models
-{
+{ 
+    #region OptionDataModel
+    public class ApiOptionResponse
+    {
+        [JsonPropertyName("status")]
+        public string Status { get; set; }
+
+        [JsonPropertyName("data")]
+        public List<OptionDataItem> Data { get; set; }
+    }
+    public class OptionDataItem
+    {
+        [JsonPropertyName("expiry")]
+        public DateTime Expiry { get; set; }
+
+        [JsonPropertyName("pcr")]
+        public decimal PCR { get; set; }
+
+        [JsonPropertyName("strike_price")]
+        public decimal StrikePrice { get; set; }
+
+        [JsonPropertyName("underlying_spot_price")]
+        public decimal UnderlyingSpotPrice { get; set; }
+
+        [JsonPropertyName("call_options")]
+        public OptionSide CallOptions { get; set; }
+
+        [JsonPropertyName("put_options")]
+        public OptionSide PutOptions { get; set; }
+    }
+
+    public class OptionSide
+    {
+        [JsonPropertyName("instrument_key")]
+        public string InstrumentKey { get; set; }
+
+        [JsonPropertyName("market_data")]
+        public MarketData MarketData { get; set; }
+    }
+
+    public class MarketData
+    {
+        [JsonPropertyName("ltp")]
+        public decimal LTP { get; set; }
+
+        [JsonPropertyName("volume")]
+        public long Volume { get; set; }
+
+        [JsonPropertyName("oi")]
+        public decimal OI { get; set; }
+
+        [JsonPropertyName("close_price")]
+        public decimal ClosePrice { get; set; }
+
+        [JsonPropertyName("prev_oi")]
+        public decimal PrevOI { get; set; }
+    }
+
+    // OptionData table
+    public class OptionExpiryData
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonPropertyName("id")]
+        public long Id { get; set; }
+
+        [JsonPropertyName("stockMetaDataId")]
+        public long StockMetaDataId { get; set; }
+
+        [JsonPropertyName("expiry")]
+        public DateTime Expiry { get; set; }
+
+        [JsonPropertyName("strikePrice")]
+        public decimal StrikePrice { get; set; }
+
+        [JsonPropertyName("strikePCR")]
+        public decimal StrikePCR { get; set; }
+
+        [JsonPropertyName("spotPrice")]
+        public decimal SpotPrice { get; set; }
+
+
+        [JsonPropertyName("callOI")]
+        public long CallOI { get; set; }
+
+        [JsonPropertyName("callLTP")]
+        public decimal CallLTP { get; set; }
+
+        [JsonPropertyName("callVolume")]
+        public long CallVolume { get; set; }
+
+        [JsonPropertyName("callPrevOI")]
+        public long CallPrevOI { get; set; }
+
+
+        [JsonPropertyName("putOI")]
+        public long PutOI { get; set; }
+
+        [JsonPropertyName("putLTP")]
+        public decimal PutLTP { get; set; }
+
+        [JsonPropertyName("putVolume")]
+        public long PutVolume { get; set; }
+
+        [JsonPropertyName("putPrevOI")]
+        public long PutPrevOI { get; set; }
+
+        // Positive => market down, Negative => market up
+        [JsonPropertyName("callPutDiff")]
+        public long CallPutDiff => CallOI - PutOI;
+
+        [JsonPropertyName("openContractChange")]
+        public long OpenContractChange { get; set; }
+
+        [JsonPropertyName("createdDate")]
+        public DateTime CreatedDate { get; set; }
+
+        [JsonPropertyName("time")]
+        public TimeSpan? Time { get; set; }
+    }
+
+    public class OptionExpirySummary
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+        public double TotOICE { get; set; }
+        public double TotOIPE { get; set; }
+        public double TotVolCE { get; set; }
+        public double TotVolPE { get; set; }
+        public double CEPEOIDiff { get; set; }
+        public double CEPEVolDiff { get; set; }
+        public double CEPEOIPrevDiff { get; set; }
+        public double CEPEVolPrevDiff { get; set; }
+        public TimeSpan? Time { get; set; }
+        public DateTime? EntryDate { get; set; }
+    }
+
+    #endregion
+
     public class ApiResponse
     {
         [JsonPropertyName("status")]
@@ -245,4 +382,5 @@ namespace OptionChain.Models
         [JsonPropertyName("forDate")]
         public DateTime? ForDate { get; set; }
     }
+
 }

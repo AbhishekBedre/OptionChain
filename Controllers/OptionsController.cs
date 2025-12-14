@@ -54,68 +54,37 @@ namespace OptionChain.Controllers
             // Generate time slots from 9:15 AM to 3:30 PM with a 5-minute interval
             var startTime = new TimeSpan(9, 15, 0);
             var endTime = new TimeSpan(15, 30, 0);
-            var interval = TimeSpan.FromMinutes(5);
+            var interval = TimeSpan.FromMinutes(1);
 
             var timeSlots = Enumerable.Range(0, (int)((endTime - startTime).TotalMinutes / interval.TotalMinutes) + 1)
-                .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 5)))
+                .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 1)))
                 .ToList();
 
-            var responseOptionValues = await _optionDbContext.OptionValues.FromSqlRaw(@"EXEC [NiftyOptions] '" + currentDate + "'").ToListAsync();
+            //var responseOptionValues = await _optionDbContext.OptionValues.FromSqlRaw(@"EXEC [NiftyOptions] '" + currentDate + "'").ToListAsync();
+            var responseOptionValues = await _upStoxDbContext.optionExpirySummaries
+                .AsNoTracking()
+                .Where(x => x.EntryDate == DateTime.Now.Date)
+                .ToListAsync();
+
             var positiveValue = new List<OptionsResponse>();
             var negetiveValue = new List<OptionsResponse>();
 
             for (int i = 0; i < timeSlots.Count; i++)
             {
-                var row = responseOptionValues.FirstOrDefault(x => x.Time == timeSlots?.ElementAt(i).ToString(@"hh\:mm"));
+                var row = responseOptionValues.FirstOrDefault(x => responseOptionValues.First().Time.Value.ToString(@"hh\:mm") == timeSlots?.ElementAt(i).ToString(@"hh\:mm"));
 
                 positiveValue.Add(new OptionsResponse
                 {
                     Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i), DateTime.Now),
-                    value = row?.Value > 0 ? row.Value : null
+                    value = row?.CEPEOIDiff > 0 ? row.CEPEOIDiff: null
                 });
 
                 negetiveValue.Add(new OptionsResponse
                 {
                     Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i), DateTime.Now),
-                    value = row?.Value < 0 ? row.Value : null
+                    value = row?.CEPEOIDiff < 0 ? row.CEPEOIDiff: null
                 });
             }
-
-            //// Map existing data to a dictionary for quick lookup
-            //var resultDictionary = result.ToDictionary(
-            //x => new TimeSpan(x.Time.Value.Hours, x.Time.Value.Minutes, 0), // Truncate milliseconds
-            //x => new OptionsResponse
-            //{
-            //    value = x.CEPEOIPrevDiff * -1,
-            //    Time = ob.ConvertToUnixTimestamp(x.Time ?? TimeSpan.Zero, x.EntryDate ?? DateTime.MinValue)
-            //});
-
-            //// Create positive and negative value lists with default values
-            //var positiveValue = timeSlots.Select(slot =>
-            //{
-            //    if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value >= 0)
-            //    {
-            //        return existingData;
-            //    }
-            //    return new OptionsResponse
-            //    {
-            //        value = null,
-            //        Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
-            //    };
-            //}).ToList();
-
-            //var negetiveValue = timeSlots.Select(slot =>
-            //{
-            //    if (resultDictionary.TryGetValue(slot, out var existingData) && existingData.value < 0)
-            //    {
-            //        return existingData;
-            //    }
-            //    return new OptionsResponse
-            //    {
-            //        value = null,
-            //        Time = ob.ConvertToUnixTimestamp(slot, Convert.ToDateTime(currentDate))
-            //    };
-            //}).ToList();
 
             AllOptionResponse allOptionResponse = new AllOptionResponse();
 
@@ -142,7 +111,6 @@ namespace OptionChain.Controllers
 
             return response;
         }
-
 
         // Bank Nifty Option Chart
         [HttpGet("Bank")]
@@ -526,7 +494,7 @@ namespace OptionChain.Controllers
                     var sectorStock = new SectorStocksResponse
                     {
                         Id = ((int)stockEntry.Id),
-                        LastPrice = (double)stockEntry?.LastPrice,
+                        LastPrice = (double)(stockEntry?.LastPrice > 0 ? stockEntry?.LastPrice : stockEntry.Close),
                         PChange = (double)stockEntry.PChange,
                         TFactor = (double)stockEntry.RFactor,
                         Time = stockEntry.Time.ToString(),
@@ -718,11 +686,12 @@ namespace OptionChain.Controllers
                 var index = new MajorIndexReponse
                 {
                     Name = majorIndexName[item.StockMetaDataId],
-                    Variation = (item.PChange / 100) * item.LastPrice,
+                    Variation = (item.PChange / 100) * (item.LastPrice > 0 ? item.LastPrice : item.Close),
                     PChange = item.PChange,
                     PChangeLast30Days = 0,
-                    LastPrice = item.LastPrice
+                    LastPrice = item.LastPrice > 0 ? item.LastPrice : item.Close
                 };
+
                 response.Add(index);
             }
 
@@ -950,7 +919,7 @@ namespace OptionChain.Controllers
                 var stock = new SectorStocksResponse
                 {
                     Id = item.Id,
-                    LastPrice = (double)item.LastPrice,
+                    LastPrice = (double)(item.LastPrice > 0 ? item.LastPrice : item.Close),
                     PChange = (double)item.PChange,
                     Symbol = marketMetaDatasCache.Where(x => x.Id == item.StockMetaDataId).First().Name.Split(":")[1].ToString(),
                     TFactor = (double)item.RFactor,
@@ -1287,7 +1256,7 @@ namespace OptionChain.Controllers
                     sb
                         .Append(" " + name.Split(":")[1].ToString() + " ")
                         .Append(" ")
-                        .Append(" ₹" + (item.LastPrice ?? item.Close).ToString())
+                        .Append(" ₹" + (item.LastPrice > 0 ? item.LastPrice : item.Close).ToString())
                         .Append(" ")
                         .Append(item.PChange > 0 ? "<span class=\"text-meta-3 format\">" + item.PChange + "%</span>" : "<span class=\"text-red format\">" + item.PChange + "%</span>")
                         .Append(" ");

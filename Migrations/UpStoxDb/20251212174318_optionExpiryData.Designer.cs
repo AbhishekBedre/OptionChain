@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OptionChain;
 
@@ -11,9 +12,10 @@ using OptionChain;
 namespace OptionChain.Migrations.UpStoxDb
 {
     [DbContext(typeof(UpStoxDbContext))]
-    partial class UpStoxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251212174318_optionExpiryData")]
+    partial class optionExpiryData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,8 +178,7 @@ namespace OptionChain.Migrations.UpStoxDb
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal?>("RFactor")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long>("StockMetaDataId")
                         .HasColumnType("bigint");
@@ -265,55 +266,9 @@ namespace OptionChain.Migrations.UpStoxDb
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<TimeSpan?>("Time")
-                        .HasColumnType("time");
-
                     b.HasKey("Id");
 
                     b.ToTable("OptionExpiryDatas");
-                });
-
-            modelBuilder.Entity("OptionChain.Models.OptionExpirySummary", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<double>("CEPEOIDiff")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CEPEOIPrevDiff")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CEPEVolDiff")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CEPEVolPrevDiff")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime?>("EntryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<TimeSpan?>("Time")
-                        .HasColumnType("time");
-
-                    b.Property<double>("TotOICE")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotOIPE")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotVolCE")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotVolPE")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("optionExpirySummaries");
                 });
 
             modelBuilder.Entity("OptionChain.Models.PreComputedData", b =>
@@ -328,8 +283,7 @@ namespace OptionChain.Migrations.UpStoxDb
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("DaysATR")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("DaysAboveVWAPPercentage")
                         .HasPrecision(10, 2)
@@ -364,8 +318,7 @@ namespace OptionChain.Migrations.UpStoxDb
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal?>("DaysMedianATR")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("DaysStdDevClose")
                         .HasPrecision(10, 2)

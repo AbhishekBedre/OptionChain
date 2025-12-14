@@ -180,6 +180,8 @@ namespace OptionChain
         public DbSet<SectorStockMetaData> SectorStockMetaDatas { get; set; }
         public DbSet<PreComputedData> PreComputedDatas { get; set; }
         public DbSet<FuturePreComputedData> FuturePreComputedDatas { get; set; }
+        public DbSet<OptionExpiryData> OptionExpiryDatas { get; set; }
+        public DbSet<OptionExpirySummary> optionExpirySummaries { get; set; }
 
         public UpStoxDbContext(DbContextOptions<UpStoxDbContext> options)
             : base(options)
@@ -196,6 +198,7 @@ namespace OptionChain
             modelBuilder.Entity<OHLC>().Property(x => x.High).HasPrecision(10, 2);
             modelBuilder.Entity<OHLC>().Property(x => x.Low).HasPrecision(10, 2);
             modelBuilder.Entity<OHLC>().Property(x => x.Close).HasPrecision(10, 2);
+            modelBuilder.Entity<OHLC>().Property(x => x.RFactor).HasPrecision(10, 2);
 
             modelBuilder.Entity<OHLC>()
                 .HasIndex(o => new { o.CreatedDate, o.Time }).HasDatabaseName("IX_OHLCs_CreatedDate_Time");
@@ -203,7 +206,6 @@ namespace OptionChain
                 .HasIndex(o => new { o.CreatedDate, o.Time, o.StockMetaDataId }).HasDatabaseName("IX_OHLCs_CreatedDate_Time_StockMetaDataId");
             modelBuilder.Entity<OHLC>()
                 .HasIndex(o => new { o.CreatedDate, o.StockMetaDataId }).HasDatabaseName("IX_OHLCs_CreatedDate_StockMetaDataId");
-
 
             modelBuilder.Entity<AuthDetails>().HasKey(o => o.Id);
             modelBuilder.Entity<AuthDetails>().Property(e => e.CreatedDate).HasDefaultValueSql("GETUTCDATE()");
@@ -228,10 +230,18 @@ namespace OptionChain
             modelBuilder.Entity<PreComputedData>().Property(x => x.PreviousDayHigh).HasPrecision(10, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.PreviousDayLow).HasPrecision(10, 2);
             modelBuilder.Entity<PreComputedData>().Property(x => x.PreviousDayClose).HasPrecision(10, 2);
+            modelBuilder.Entity<PreComputedData>().Property(x => x.DaysATR).HasPrecision(10, 2);
+            modelBuilder.Entity<PreComputedData>().Property(x => x.DaysMedianATR).HasPrecision(10, 2);
 
             modelBuilder.Entity<FuturePreComputedData>().Property(x => x.PivotPoint).HasPrecision(10, 2);
             modelBuilder.Entity<FuturePreComputedData>().Property(x => x.BottomCP).HasPrecision(10, 2);
             modelBuilder.Entity<FuturePreComputedData>().Property(x => x.TopCP).HasPrecision(10, 2);
+            
+            modelBuilder.Entity<OptionExpiryData>().Property(x => x.StrikePrice).HasPrecision(10, 2);
+            modelBuilder.Entity<OptionExpiryData>().Property(x => x.StrikePCR).HasPrecision(10, 2);
+            modelBuilder.Entity<OptionExpiryData>().Property(x => x.SpotPrice).HasPrecision(10, 2);
+            modelBuilder.Entity<OptionExpiryData>().Property(x => x.CallLTP).HasPrecision(10, 2);
+            modelBuilder.Entity<OptionExpiryData>().Property(x => x.PutLTP).HasPrecision(10, 2);
         }
     }
 }
