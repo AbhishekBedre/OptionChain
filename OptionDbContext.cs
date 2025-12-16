@@ -182,11 +182,17 @@ namespace OptionChain
         public DbSet<FuturePreComputedData> FuturePreComputedDatas { get; set; }
         public DbSet<OptionExpiryData> OptionExpiryDatas { get; set; }
         public DbSet<OptionExpirySummary> optionExpirySummaries { get; set; }
+        public DbSet<UserMaster> UserMasters { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="options"></param>
         public UpStoxDbContext(DbContextOptions<UpStoxDbContext> options)
             : base(options)
         {
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OHLC>().HasKey(o => o.Id);
@@ -242,6 +248,8 @@ namespace OptionChain
             modelBuilder.Entity<OptionExpiryData>().Property(x => x.SpotPrice).HasPrecision(10, 2);
             modelBuilder.Entity<OptionExpiryData>().Property(x => x.CallLTP).HasPrecision(10, 2);
             modelBuilder.Entity<OptionExpiryData>().Property(x => x.PutLTP).HasPrecision(10, 2);
+
+            modelBuilder.Entity<UserMaster>().HasKey(x => x.Id);
         }
     }
 }

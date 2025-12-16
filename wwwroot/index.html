@@ -38,10 +38,10 @@
             transition: all 0.3s ease;
         }
 
-        #loginBtn:hover {
-            background-color: #16a085;
-            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.5);
-        }
+            #loginBtn:hover {
+                background-color: #16a085;
+                box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.5);
+            }
 
         /* Profile details span */
         #userDetails {
@@ -65,7 +65,7 @@
       x-init="
       darkMode=JSON.parse(localStorage.getItem('darkMode'));
       $watch('darkMode', value=>
-      localStorage.setItem('darkMode', JSON.stringify(value)))"
+    localStorage.setItem('darkMode', JSON.stringify(value)))"
     :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
     >
     <!-- ===== Preloader Start ===== -->
@@ -80,43 +80,43 @@
     </div>
     <script>
         const clientId = '881197514547-bfqqrhltd6fn2pkq2vvn1ideg1rftn1q.apps.googleusercontent.com'; // Replace with your client_id
-        const redirectUri = 'http://localhost:5181/index.html'; // Replace with your redirect URI
+        const redirectUri = 'https://trade.infologs.in/smarttrade/index.html'; // Replace with your redirect URI
         const scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
         let accessToken = null;
-    
+
         // Login button click handler
         document.getElementById('loginBtn').addEventListener('click', () => {
-          const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-                          `client_id=${clientId}&` +
-                          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-                          `response_type=token&` +
-                          `scope=${encodeURIComponent(scope)}&` +
-                          `include_granted_scopes=true`;
-    
-          // Redirect user to Google's OAuth 2.0 server
-          window.location.href = authUrl;
+            const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `response_type=token&` +
+                `scope=${encodeURIComponent(scope)}&` +
+                `include_granted_scopes=true`;
+
+            // Redirect user to Google's OAuth 2.0 server
+            window.location.href = authUrl;
         });
-    
+
         // Parse the access token from URL hash
         function getTokenFromUrl() {
-          const hash = window.location.hash.substring(1);
-          const params = new URLSearchParams(hash);
-          return params.get('access_token');
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            return params.get('access_token');
         }
-    
+
         // Fetch Gmail user details
         async function fetchUserDetails(token) {
-          const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          return response.json();
+            const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.json();
         }
-    
+
         // Display user details
         function displayUserDetails(user) {
-          localStorage.userInfo = JSON.stringify(user);
+            localStorage.userInfo = JSON.stringify(user);
 
             var domain = window.location.origin;
 
@@ -129,21 +129,24 @@
             }
 
             var url = domain + subfolderName + "/Users";
-            debugger;
+            //debugger;
+            var urlNevigate = domain + subfolderName + "/dashboard.html";
+            //window.location.href = url;
             $.ajax({
                 url: url,
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(
-                  { 
-                    "email": user.email, 
-                    "familyName": user.family_name, 
-                    "givenName": user.given_name, 
-                    "profileImgeUrl": user.picture, 
-                    "verifiedEmail": user.verified_email,
-                    "name": user.name
-                  }),
+                    {
+                        "email": user.email,
+                        "familyName": user.family_name,
+                        "givenName": user.given_name,
+                        "profileImgeUrl": user.picture,
+                        "verifiedEmail": user.verified_email,
+                        "name": user.name
+                    }),
                 success: function (response) {
+                    console.log("user created/updated.");
                     var domain = window.location.origin;
                     var subfolderName = "";
 
@@ -153,25 +156,26 @@
                         subfolderName = "/" + arr[1];
                     }
 
-                    var url = domain + subfolderName + "/dashboard.html";
-                    window.location.href = url;
+                    window.location.href = urlNevigate;
                 },
                 error: function (xhr, status, error) {
+                    console.log("Error while adding or updating user");
                     console.error('Error:', status, error);
+                    window.location.href = urlNevigate;
                 }
             });
         }
-    
+
         // Handle token after login
         window.onload = async () => {
-          accessToken = getTokenFromUrl();
-          if (accessToken) {
-            localStorage.accessToken = accessToken;
-            
-            const user = await fetchUserDetails(accessToken);
-            displayUserDetails(user);
-            document.getElementById('loginBtn').style.display = 'none';
-          }
+            accessToken = getTokenFromUrl();
+            if (accessToken) {
+                localStorage.accessToken = accessToken;
+
+                const user = await fetchUserDetails(accessToken);
+                displayUserDetails(user);
+                document.getElementById('loginBtn').style.display = 'none';
+            }
         };
     </script>
 

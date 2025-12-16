@@ -56,6 +56,8 @@ namespace OptionChain.Controllers
             var endTime = new TimeSpan(15, 30, 0);
             var interval = TimeSpan.FromMinutes(1);
 
+            DateTime currDt = DateTime.Parse(currentDate);
+
             var timeSlots = Enumerable.Range(0, (int)((endTime - startTime).TotalMinutes / interval.TotalMinutes) + 1)
                 .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 1)))
                 .ToList();
@@ -63,7 +65,7 @@ namespace OptionChain.Controllers
             //var responseOptionValues = await _optionDbContext.OptionValues.FromSqlRaw(@"EXEC [NiftyOptions] '" + currentDate + "'").ToListAsync();
             var responseOptionValues = await _upStoxDbContext.optionExpirySummaries
                 .AsNoTracking()
-                .Where(x => x.EntryDate == DateTime.Now.Date)
+                .Where(x => x.EntryDate.Value.Date == currDt.Date)
                 .ToListAsync();
 
             var positiveValue = new List<OptionsResponse>();
@@ -71,7 +73,7 @@ namespace OptionChain.Controllers
 
             for (int i = 0; i < timeSlots.Count; i++)
             {
-                var row = responseOptionValues.FirstOrDefault(x => responseOptionValues.First().Time.Value.ToString(@"hh\:mm") == timeSlots?.ElementAt(i).ToString(@"hh\:mm"));
+                var row = responseOptionValues.FirstOrDefault(x => x.Time.Value.ToString(@"hh\:mm") == timeSlots?.ElementAt(i).ToString(@"hh\:mm"));
 
                 positiveValue.Add(new OptionsResponse
                 {
@@ -1227,11 +1229,13 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("stock-quots")]
-        public async Task<string> GetStockQuotsAsync()
+        public async Task<string> GetStockQuotsAsync(string currentDate = "2025-12-12")
         {
+            DateTime currDt = DateTime.Parse(currentDate);
+
             var maxStockIds = await _upStoxDbContext.OHLCs
                 .AsNoTracking()
-                .Where(x => x.CreatedDate == DateTime.Now.Date)
+                .Where(x => x.CreatedDate == currDt.Date)
                 .GroupBy(g => g.StockMetaDataId)
                 .Select(x => x.Max(x => x.Id))
                 .ToListAsync();

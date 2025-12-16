@@ -20,12 +20,17 @@
             display: none; /* Initially hidden */
             z-index: 9999;
         }
+		.format {
+			padding-right: 25px;
+			padding-left: 5px;
+		}
+        
     </style>
 
     <script data-cfasync="false" nonce="933ec671-cee0-49a2-8de7-e905e1857d2e">try { (function (w, d) { !function (a, b, c, d) { if (a.zaraz) console.error("zaraz is loaded twice"); else { a[c] = a[c] || {}; a[c].executed = []; a.zaraz = { deferred: [], listeners: [] }; a.zaraz._v = "5848"; a.zaraz._n = "933ec671-cee0-49a2-8de7-e905e1857d2e"; a.zaraz.q = []; a.zaraz._f = function (e) { return async function () { var f = Array.prototype.slice.call(arguments); a.zaraz.q.push({ m: e, a: f }) } }; for (const g of ["track", "set", "debug"]) a.zaraz[g] = a.zaraz._f(g); a.zaraz.init = () => { var h = b.getElementsByTagName(d)[0], i = b.createElement(d), j = b.getElementsByTagName("title")[0]; j && (a[c].t = b.getElementsByTagName("title")[0].text); a[c].x = Math.random(); a[c].w = a.screen.width; a[c].h = a.screen.height; a[c].j = a.innerHeight; a[c].e = a.innerWidth; a[c].l = a.location.href; a[c].r = b.referrer; a[c].k = a.screen.colorDepth; a[c].n = b.characterSet; a[c].o = (new Date).getTimezoneOffset(); if (a.dataLayer) for (const k of Object.entries(Object.entries(dataLayer).reduce(((l, m) => ({ ...l[1], ...m[1] })), {}))) zaraz.set(k[0], k[1], { scope: "page" }); a[c].q = []; for (; a.zaraz.q.length;) { const n = a.zaraz.q.shift(); a[c].q.push(n) } i.defer = !0; for (const o of [localStorage, sessionStorage]) Object.keys(o || {}).filter((q => q.startsWith("_zaraz_"))).forEach((p => { try { a[c]["z_" + p.slice(7)] = JSON.parse(o.getItem(p)) } catch { a[c]["z_" + p.slice(7)] = o.getItem(p) } })); i.referrerPolicy = "origin"; i.src = "cdn-cgi/zaraz/sd0d9.js?z=" + btoa(encodeURIComponent(JSON.stringify(a[c]))); h.parentNode.insertBefore(i, h) };["complete", "interactive"].includes(b.readyState) ? zaraz.init() : a.addEventListener("DOMContentLoaded", zaraz.init) } }(w, d, "zarazData", "script"); window.zaraz._p = async bs => new Promise((bt => { if (bs) { bs.e && bs.e.forEach((bu => { try { const bv = d.querySelector("script[nonce]"), bw = bv?.nonce || bv?.getAttribute("nonce"), bx = d.createElement("script"); bw && (bx.nonce = bw); bx.innerHTML = bu; bx.onload = () => { d.head.removeChild(bx) }; d.head.appendChild(bx) } catch (by) { console.error(`Error executing script: ${bu}\n`, by) } })); Promise.allSettled((bs.f || []).map((bz => fetch(bz[0], bz[1])))) } bt() })); zaraz._p({ "e": ["(function(w,d){})(window,document)"] }); })(window, document) } catch (e) { throw fetch("/cdn-cgi/zaraz/t"), e; };</script>
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>    
     <script src="src/customcode.js?t=126"></script>
     <script>
 
@@ -105,97 +110,100 @@
                     let sectorName = "<span>" + data[i].name.trim() + " - </span>" + "<span class=" + className + ">(" + data[i].pChange + "%)</span>";
 
                     var mainDiv = `<div x-data="{popupOpen: false}" class="col-span-12 xl:col-span-6 deleteToRefresh scroll-container">
-                                          <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                                              <div class="p-4 flex items-center justify-between">
-                                                  <div>
-                                                      <h3 class="text-xl font-bold text-black dark:text-white" id="${data[i].id}">
-                                                      ${sectorName}
-                                                      </h3>
-                                                  </div>
-                                                  <div class="relative z-20 inline-block">
-                                                    <select
-                                                        name="stocksFilter${i}" id="stocksFilter${i}"
-                                                        class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
-                                                        ${options}
-                                                    </select>
-                                                    <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
-                                                        <svg
-                                                        width="10" height="6" viewBox="0 0 10 6"
-                                                        fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
-                                                            fill="#637381"
-                                                        />
-                                                        <path
-                                                            fill-rule="evenodd" clip-rule="evenodd"
-                                                            d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
-                                                            fill="#637381"
-                                                        />
-                                                        </svg>
-                                                    </span>
-                                                </div>
+                                      <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                          <div class="p-4 flex items-center justify-between">
+                                              <div>
+                                                  <h3 class="text-xl font-bold text-black dark:text-white" id="${ data[i].id }">
+                                                  ${sectorName}
+                                                  </h3>
                                               </div>
-                                              <div class="flex flex-col gap-2">`;
+                                              <div class="relative z-20 inline-block">
+                                                <select
+                                                    name="stocksFilter${i}" id="stocksFilter${i}"
+                                                    class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
+													${options}
+                                                </select>
+                                                <span class="absolute right-3 top-1/2 z-10 -translate-y-1/2">
+                                                    <svg
+                                                    width="10" height="6" viewBox="0 0 10 6"
+                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M0.47072 1.08816C0.47072 1.02932 0.500141 0.955772 0.54427 0.911642C0.647241 0.808672 0.809051 0.808672 0.912022 0.896932L4.85431 4.60386C4.92785 4.67741 5.06025 4.67741 5.14851 4.60386L9.09079 0.896932C9.19376 0.793962 9.35557 0.808672 9.45854 0.911642C9.56151 1.01461 9.5468 1.17642 9.44383 1.27939L5.50155 4.98632C5.22206 5.23639 4.78076 5.23639 4.51598 4.98632L0.558981 1.27939C0.50014 1.22055 0.47072 1.16171 0.47072 1.08816Z"
+                                                        fill="#637381"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M1.22659 0.546578L5.00141 4.09604L8.76422 0.557869C9.08459 0.244537 9.54201 0.329403 9.79139 0.578788C10.112 0.899434 10.0277 1.36122 9.77668 1.61224L9.76644 1.62248L5.81552 5.33722C5.36257 5.74249 4.6445 5.7544 4.19352 5.32924C4.19327 5.32901 4.19377 5.32948 4.19352 5.32924L0.225953 1.61241C0.102762 1.48922 -4.20186e-08 1.31674 -3.20269e-08 1.08816C-2.40601e-08 0.905899 0.0780105 0.712197 0.211421 0.578787C0.494701 0.295506 0.935574 0.297138 1.21836 0.539529L1.22659 0.546578ZM4.51598 4.98632C4.78076 5.23639 5.22206 5.23639 5.50155 4.98632L9.44383 1.27939C9.5468 1.17642 9.56151 1.01461 9.45854 0.911642C9.35557 0.808672 9.19376 0.793962 9.09079 0.896932L5.14851 4.60386C5.06025 4.67741 4.92785 4.67741 4.85431 4.60386L0.912022 0.896932C0.809051 0.808672 0.647241 0.808672 0.54427 0.911642C0.500141 0.955772 0.47072 1.02932 0.47072 1.08816C0.47072 1.16171 0.50014 1.22055 0.558981 1.27939L4.51598 4.98632Z"
+                                                        fill="#637381"
+                                                    />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                          </div>
+                                          <div class="flex flex-col gap-2">`;
 
                     var stockContent = `
-                          <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                              <div class="col-span-2 xl:col-span-3 flex items-center">
-                                  <p class="font-medium">Name</p>
-                              </div>
-                              <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
-                                  <p class="font-medium">Price</p>
-                              </div>
-                              <!--<div class="col-span-1 flex items-center">
-                                  <p class="font-medium">Change</p>
-                              </div>-->
-                              <div class="col-span-2 flex items-center">
-                                  <p class="font-medium">%</p>
-                              </div>
-                              <div class="col-span-1 flex items-center">
-                                  <p class="font-medium">T Fact</p>
-                              </div>
-                          </div>`;
+					  <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+						  <div class="col-span-2 xl:col-span-3 flex items-center">
+							  <p class="font-medium">Name</p>
+						  </div>
+						  <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+							  <p class="font-medium">Price</p>
+						  </div>
+						  <!--<div class="col-span-1 flex items-center">
+							  <p class="font-medium">Change</p>
+						  </div>-->
+						  <div class="col-span-2 flex items-center">
+							  <p class="font-medium">%</p>
+						  </div>
+						  <div class="col-span-1 flex items-center">
+							  <p class="font-medium">T Fact</p>
+						  </div>
+					  </div>`;
 
                     for (var j = 0; j < data[i].stocks.length; j++) {
 
                         var stockClassName = "text-success";
                         var bgColor = "3CA745";
+						
+						var stockList = data[i].stocks;
+						stockList = stockList.sort((a, b) => (b.tFactor - a.tFactor));
 
-                        if (data[i].stocks[j].pChange < 0) {
+                        if (stockList[j].pChange < 0) {
                             stockClassName = "text-danger";
                             bgColor = "DC3545";
                         }
 
                         stockContent += `
-                              <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                                  <div class="col-span-2 xl:col-span-3 flex items-center">
-                                      <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                          <p class="text-sm font-medium text-black dark:text-white">
-                                              <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${data[i].stocks[j].symbol}&interval=5">
-                                                ${data[i].stocks[j].symbol}
-                                              </a>
-                                          </p>
-                                      </div>
-                                      <!--<div style="padding-left: 10px;">
-                                        <button name="btnPopupRFactor" onclick="loadPopup('${data[i].stocks[j].symbol}', '${data[i].stocks[j].pChange}')" class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
-                                      </div>-->
-                                  </div>
-                                  <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
-                                      <p class="text-sm font-medium text-black ${stockClassName}">${data[i].stocks[j].lastPrice}</p>
-                                  </div>
-                                  <!--<div class="col-span-1 flex items-center">
-                                      <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">${data[i].stocks[j].change}</p>
-                                  </div>-->
-                                  <div class="col-span-2 flex items-center">
-                                      <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">${data[i].stocks[j].pChange}</p>
-                                  </div>
-                                  <div class="col-span-1 flex items-center">
-                                      <button name="btnPopupRFactor" onclick="loadPopup('${data[i].stocks[j].symbol}', '${data[i].stocks[j].pChange}')" class="inline-flex rounded-full bg-[#${bgColor}] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">
-                                        ${data[i].stocks[j].tFactor}
-                                      </button>
-                                  </div>
-                              </div>
-                              `;
+						  <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+							  <div class="col-span-2 xl:col-span-3 flex items-center">
+								  <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+									  <p class="text-sm font-medium text-black dark:text-white">
+										  <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${stockList[j].symbol}&interval=5">
+											${stockList[j].symbol}
+										  </a>
+									  </p>
+								  </div>
+								  <!--<div style="padding-left: 10px;">
+									<button name="btnPopupRFactor" onclick="loadPopup('${stockList[j].symbol}', '${ stockList[j].pChange }')" class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
+								  </div>-->
+							  </div>
+							  <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+								  <p class="text-sm font-medium text-black ${stockClassName}">${stockList[j].lastPrice}</p>
+							  </div>
+							  <!--<div class="col-span-1 flex items-center">
+								  <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">${stockList[j].change}</p>
+							  </div>-->
+							  <div class="col-span-2 flex items-center">
+								  <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">${stockList[j].pChange}</p>
+							  </div>
+							  <div class="col-span-1 flex items-center">
+								  <button name="btnPopupRFactor" onclick="loadPopup('${stockList[j].symbol}', '${stockList[j].pChange}')" class="inline-flex rounded-full bg-[#${bgColor}] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">
+									${stockList[j].tFactor}
+								  </button>
+							  </div>
+						  </div>
+						  `;
                     }
 
                     finalData += mainDiv + stockContent + `</div>` + `</div></div>`;
@@ -208,39 +216,59 @@
 
         $(document).ready(function () {
 
+			getStockQuots(function(response) {
+				$("#stockQuots").html(response);
+			}, "/Options/stock-quots");
+			
             // Example usage with the AJAX call
             getSecorStocks(function (response) {
                 renderSectorStocks(response);
             });
 
-            getWatchlistStocks(function (response) {
+            getWatchlistStocks(function(response){
                 renderWatchListStocks(response);
             });
 
             getStockDetails(function (response) {
                 renderBreakoutStocks(response);
-            }, "/Options/breakout-stocks");
+            }, "/Options/breakout-stocks-v2");
 
             getStockDetails(function (response) {
                 renderBreakdownStocks(response);
-            }, "/Options/breakdown-stocks");
+            }, "/Options/breakdown-stocks-v2");
 
             $("#SectorUpdate").click(function () {
-                updateSectorStockList();
+				updateSectorStockList();
             });
         });
+		
+		function updateSectorStockList() {
+			$('.deleteToRefresh').each(function () {
+				$(this).replaceWith('<div id="sectorStock"></div>');
+			});
 
-        function updateSectorStockList() {
-            $('.deleteToRefresh').each(function () {
-                $(this).replaceWith('<div id="sectorStock"></div>');
+			getIndexData();
+
+			getSecorStocks(function (response) {
+				renderSectorStocks(response);
+			});
+			
+			getStockQuots(function(response) {
+				$("#stockQuots").html(response);
+			}, "/Options/stock-quots");
+			
+			getWatchlistStocks(function(response){
+                renderWatchListStocks(response);
             });
+			
+			getStockDetails(function (response) {
+                renderBreakoutStocks(response);
+            }, "/Options/breakout-stocks-v2");
 
-            getIndexData();
-
-            getSecorStocks(function (response) {
-                renderSectorStocks(response);
-            });
-        }
+            getStockDetails(function (response) {
+                renderBreakdownStocks(response);
+            }, "/Options/breakdown-stocks-v2");
+		}
 
         function getSecorStocks(callback) {
 
@@ -258,13 +286,13 @@
             var url = domain + subfolderName + "/Options/sector-stocks-v2";
 
             var selectedDate = $("#currentDate").val();
-
-            var toogleStatus = $("#toggle4").is(":checked");
-
-            var totalSector = 2;
-
-            if (toogleStatus)
-                totalSector = 0;
+			
+			var toogleStatus = $("#toggle4").is(":checked");
+			
+			var totalSector = 2;
+			
+			if(toogleStatus)
+				totalSector = 0;
 
             $.ajax({
                 url: url,
@@ -281,6 +309,34 @@
                 }
             });
         }
+		
+		function getNextBusinessDate(startDate, holidays = []) {
+			// Convert holidays to a Set of strings for fast comparison
+			const holidaySet = new Set(holidays.map(h => new Date(h).toDateString()));
+
+			let nextDate = new Date(startDate);
+			nextDate.setDate(nextDate.getDate() + 1); // Move to next day
+
+			while (true) {
+				const day = nextDate.getDay(); // 0 = Sun, 6 = Sat
+
+				// Skip Saturday & Sunday
+				if (day === 0 || day === 6) {
+					nextDate.setDate(nextDate.getDate() + 1);
+					continue;
+				}
+
+				// Skip holidays
+				if (holidaySet.has(nextDate.toDateString())) {
+					nextDate.setDate(nextDate.getDate() + 1);
+					continue;
+				}
+
+				// Valid business day
+				return nextDate.toISOString().split("T")[0];;
+			}
+		}
+
 
         function getWatchlistStocks(callback) {
             $("div[x-show='loaded']").show();
@@ -296,12 +352,12 @@
 
             var url = domain + subfolderName + "/Options/watchlist-stocks-v2";
 
-            var selectedDate = $("#currentDate").val();
+            var selectedDate = getNextBusinessDate($("#currentDate").val());
 
             $.ajax({
                 url: url,
                 type: 'GET',
-                data: { "currentDate": "2025-11-24" }, // Pass the date as a query parameter
+                data: { "currentDate": $("#currentDate").val() }, // Pass the date as a query parameter
                 success: function (response) {
                     $("div[x-show='loaded']").hide();
                     console.log('Success:', response);
@@ -345,60 +401,92 @@
                 }
             });
         }
+		
+		function getStockQuots(callback, endPoint) {
+			$("div[x-show='loaded']").show();
+
+            var domain = window.location.origin;
+            var subfolderName = "";
+
+            var arr = window.location.pathname.split('/');
+
+            if (arr.length > 2) {
+                subfolderName = "/" + arr[1];
+            }
+
+            var url = domain + subfolderName + endPoint;
+			
+			var selectedDate = $("#currentDate").val();
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { "currentDate": selectedDate }, // Pass the date as a query parameter
+                success: function (response) {
+                    $("div[x-show='loaded']").hide();
+                    console.log('Success:', response);
+                    return callback(response);
+                },
+                error: function (xhr, status, error) {
+                    $("div[x-show='loaded']").hide();
+                    console.error('Error:', status, error);
+                }
+            });
+		}
 
         function renderWatchListStocks(response) {
             $("#watchListStocks").empty();
             var finalContent = ``;
             var headerContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-2 xl:col-span-3 flex items-center">
-                        <p class="font-medium">Name</p>
-                    </div>
-                    <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
-                        <p class="font-medium">Price</p>
-                    </div>
-                    <div class="col-span-2 flex items-center">
-                        <p class="font-medium">%</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="font-medium">T Fact</p>
-                    </div>
-                </div><div style="max-height: 400px; overflow-y: scroll; scrollbar-width: thin">`;
+                <div class="col-span-2 xl:col-span-3 flex items-center">
+                    <p class="font-medium">Name</p>
+                </div>
+                <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                    <p class="font-medium">Price</p>
+                </div>
+                <div class="col-span-2 flex items-center">
+                    <p class="font-medium">%</p>
+                </div>
+                <div class="col-span-1 flex items-center">
+                    <p class="font-medium">T Fact</p>
+                </div>
+            </div><div style="max-height: 400px; height:400px; overflow-y: scroll; scrollbar-width: thin">`;
 
-            for (let i = 0; i < response.length; i++) {
+            for(let i=0;i<response.length;i++) {
 
                 var stockClassName = "text-success";
                 if (response[i].pChange < 0)
                     stockClassName = "text-danger";
 
                 var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                        <div class="col-span-2 xl:col-span-3 flex items-center">
-                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                <p class="text-sm font-medium text-black dark:text-white">
-                                    <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
-                                        ${response[i].symbol}
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
-                            <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
-                        </div>
-                        <div class="col-span-2 flex items-center">
-                            <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
-                            ${response[i].pChange}
+                    <div class="col-span-2 xl:col-span-3 flex items-center">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                            <p class="text-sm font-medium text-black dark:text-white">
+                                <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                    ${response[i].symbol}
+                                </a>
                             </p>
                         </div>
-                        <div class="col-span-1 flex items-center">
-                            <p class="text-sm font-medium text-meta-8">
-                                ${response[i].tFactor}
-                            </p>
-                        </div>
-                    </div>`;
+                    </div>
+                    <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                        <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
+                    </div>
+                    <div class="col-span-2 flex items-center">
+                        <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
+                        ${response[i].pChange}
+                        </p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="text-sm font-medium text-meta-8">
+                            ${response[i].tFactor}
+                        </p>
+                    </div>
+                </div>`;
 
                 finalContent = finalContent + stockContent;
             }
 
-            $("#watchListStocks").html(headerContent + finalContent + "</div>");
+            $("#watchListStocks").html(headerContent + finalContent+ "</div>");
         }
 
         function toAmPmFormat(timeStr) {
@@ -427,53 +515,53 @@
             $("#breakoutStocks").empty();
             var finalContent = ``;
             var headerContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+            <div class="col-span-2 xl:col-span-3 flex items-center">
+                <p class="font-medium">Name</p>
+            </div>
+            <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                <p class="font-medium">Price</p>
+            </div>
+            <div class="col-span-2 flex items-center">
+                <p class="font-medium">%</p>
+            </div>
+            <div class="col-span-1 flex items-center">
+                <p class="font-medium">Time</p>
+            </div>
+            </div><div style="max-height: 400px; height:400px; overflow-y: scroll; scrollbar-width: thin">`;
+
+                for (let i = 0; i < response.length; i++) {
+
+                    var stockClassName = "text-success";
+                    if (response[i].pChange < 0)
+                        stockClassName = "text-danger";
+
+                    var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
                 <div class="col-span-2 xl:col-span-3 flex items-center">
-                    <p class="font-medium">Name</p>
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <p class="text-sm font-medium text-black dark:text-white">
+                            <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                ${response[i].symbol}
+                            </a>
+                        </p>
+                    </div>
+                    <div style="padding-left: 10px; display:none">
+                        <button class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
+                    </div>
                 </div>
                 <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
-                    <p class="font-medium">Price</p>
+                    <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
                 </div>
                 <div class="col-span-2 flex items-center">
-                    <p class="font-medium">%</p>
+                    <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
+                    ${response[i].pChange}
+                    </p>
                 </div>
                 <div class="col-span-1 flex items-center">
-                    <p class="font-medium">Time</p>
+                    <p class="text-sm font-medium text-meta-8">
+                        ${ toAmPmFormat(response[i].time) }
+                    </p>
                 </div>
-                </div><div style="max-height: 400px; overflow-y: scroll; scrollbar-width: thin">`;
-
-            for (let i = 0; i < response.length; i++) {
-
-                var stockClassName = "text-success";
-                if (response[i].pChange < 0)
-                    stockClassName = "text-danger";
-
-                var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-2 xl:col-span-3 flex items-center">
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                            <p class="text-sm font-medium text-black dark:text-white">
-                                <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
-                                    ${response[i].symbol}
-                                </a>
-                            </p>
-                        </div>
-                        <div style="padding-left: 10px; display:none">
-                            <button class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
-                        </div>
-                    </div>
-                    <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
-                        <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
-                    </div>
-                    <div class="col-span-2 flex items-center">
-                        <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
-                        ${response[i].pChange}
-                        </p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="text-sm font-medium text-meta-8">
-                            ${toAmPmFormat(response[i].time)}
-                        </p>
-                    </div>
-                </div>`;
+            </div>`;
 
                 finalContent = finalContent + stockContent;
             }
@@ -485,19 +573,19 @@
             $("#breakdownStocks").empty();
             var finalContent = ``;
             var headerContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                <div class="col-span-2 xl:col-span-3 flex items-center">
-                    <p class="font-medium">Name</p>
-                </div>
-                <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
-                    <p class="font-medium">Price</p>
-                </div>
-                <div class="col-span-2 flex items-center">
-                    <p class="font-medium">%</p>
-                </div>
-                <div class="col-span-1 flex items-center">
-                    <p class="font-medium">Time</p>
-                </div>
-                </div><div style="max-height: 400px; overflow-y: scroll; scrollbar-width: thin">`;
+            <div class="col-span-2 xl:col-span-3 flex items-center">
+                <p class="font-medium">Name</p>
+            </div>
+            <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                <p class="font-medium">Price</p>
+            </div>
+            <div class="col-span-2 flex items-center">
+                <p class="font-medium">%</p>
+            </div>
+            <div class="col-span-1 flex items-center">
+                <p class="font-medium">Time</p>
+            </div>
+            </div><div style="max-height: 400px; height:400px; overflow-y: scroll; scrollbar-width: thin">`;
 
             for (let i = 0; i < response.length; i++) {
 
@@ -506,32 +594,32 @@
                     stockClassName = "text-danger";
 
                 var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-2 xl:col-span-3 flex items-center">
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                            <p class="text-sm font-medium text-black dark:text-white">
-                                <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
-                                    ${response[i].symbol}
-                                </a>
-                            </p>
-                        </div>
-                        <div style="padding-left: 10px;; display:none">
-                            <button class="inline-flex rounded-full bg-[#DC3545] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
-                        </div>
-                    </div>
-                    <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
-                        <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
-                    </div>
-                    <div class="col-span-2 flex items-center">
-                        <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
-                        ${response[i].pChange}
+                <div class="col-span-2 xl:col-span-3 flex items-center">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <p class="text-sm font-medium text-black dark:text-white">
+                            <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                ${response[i].symbol}
+                            </a>
                         </p>
                     </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="text-sm font-medium text-meta-8">
-                            ${toAmPmFormat(response[i].time)}
-                        </p>
+                    <div style="padding-left: 10px;; display:none">
+                        <button class="inline-flex rounded-full bg-[#DC3545] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
                     </div>
-                </div>`;
+                </div>
+                <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                    <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
+                </div>
+                <div class="col-span-2 flex items-center">
+                    <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
+                    ${response[i].pChange}
+                    </p>
+                </div>
+                <div class="col-span-1 flex items-center">
+                    <p class="text-sm font-medium text-meta-8">
+                        ${toAmPmFormat(response[i].time)}
+                    </p>
+                </div>
+            </div>`;
 
                 finalContent = finalContent + stockContent;
             }
@@ -543,7 +631,7 @@
     </script>
 
     <script src="src/lightweight-charts.standalone.production.js"></script>
-
+    
 </head>
 <body x-data="{ page: 'dashboard', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
       x-init="
@@ -648,14 +736,14 @@
                                             <a class="group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white"
                                                href="intra-day-scope.html"
                                                :class="page === 'intra-day-scope' && '!text-white'">
-                                                Intra day scope
+                                               Intra day scope
                                             </a>
                                         </li>
                                         <li>
                                             <a class="group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white"
                                                href="weekly-sector.html"
                                                :class="page === 'weekly-sector' && '!text-white'">
-                                                Weekly sector update
+                                               Weekly sector update
                                             </a>
                                         </li>
                                     </ul>
@@ -674,6 +762,11 @@
         <!-- ===== Content Area Start ===== -->
         <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             <!-- ===== Header Start ===== -->
+			<div class="flex flex-grow items-center justify-between shadow-2 md:px-12 drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none" 
+				style="height: 60px; color: #fff; font-size: 16px; font-weight: bold; border-bottom: 1px groove black">
+				<marquee id="stockQuots" behavior="scroll" direction="left" scrollamount="6" onmouseover="this.stop();" onmouseout="this.start();">
+				</marquee>
+			</div>
             <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
                 <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
                     <div class="flex items-center gap-2 sm:gap-4">
@@ -701,11 +794,10 @@
                         <!-- Hamburger Toggle BTN -->
                         <a href="dashboard.html" style="height: 30px;">
                             <img src="src/images/logo/logo-icon.svg" alt="Logo">
-                            <h1 class="lg:block sm:hidden" style="position: relative; top: -30px;right: -45px; font-size: 28px;color: #fff;font-weight: bold; font-family: inherit;">
+                            <h1 class="lg:block sm:hidden" style="position: relative; top: -30px;right: -45px; font-size: 25px;color: #fff;font-weight: bold; font-family: inherit;">
                                 Smart Trade
                             </h1>
                         </a>
-
                     </div>
 
                     <div class="flex items-center gap-3 2xsm:gap-7">
@@ -1423,7 +1515,7 @@
                                 </h3>
                             </div>
                             <div>
-                                <div id="sectorChart" style="min-height:600px;" class="-ml-5"></div>
+                                <div id="sectorChart" class="-ml-5"></div>
                             </div>
                         </div>
 
@@ -1474,67 +1566,67 @@
 
                         <!-- ===== Task Popup End ===== -->
                         <!----
-                        // SAMPLE CODE for SECTOR SECTION
+    // SAMPLE CODE for SECTOR SECTION
 
-                        <div class="col-span-12 xl:col-span-6">
+    <div class="col-span-12 xl:col-span-6">
 
-                            <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
-                                <div class="mb-7 flex items-center justify-between">
-                                    <div>
-                                        <h3 class="text-xl font-bold text-black dark:text-white">
-                                            OIL & GAS
-                                        </h3>
-                                    </div>
-                                </div>
+        <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
+            <div class="mb-7 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-black dark:text-white">
+                        OIL & GAS
+                    </h3>
+                </div>
+            </div>
 
-                                <div class="flex flex-col gap-2">
-                                    <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                                        <div class="col-span-3 flex items-center">
-                                            <p class="font-medium">Stock Name</p>
-                                        </div>
-                                        <div class="col-span-2 hidden items-center sm:flex">
-                                            <p class="font-medium">Last Price</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="font-medium">Change</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="font-medium">% Change</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="font-medium">T Fact</p>
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                                        <div class="col-span-3 flex items-center">
-                                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                                <div class="h-12.5 w-15 rounded-md">
-                                                    <img src="src/images/product/product-01.png" alt="Product" />
-                                                </div>
-                                                <p class="text-sm font-medium text-black dark:text-white">
-                                                    OIL
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-span-2 hidden items-center sm:flex">
-                                            <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="text-sm font-medium text-black dark:text-white">$269</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="text-sm font-medium text-black dark:text-white">22</p>
-                                        </div>
-                                        <div class="col-span-1 flex items-center">
-                                            <p class="text-sm font-medium text-meta-3">$45</p>
-                                        </div>
-                                    </div>
-
-                                </div>
+            <div class="flex flex-col gap-2">
+                <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                    <div class="col-span-3 flex items-center">
+                        <p class="font-medium">Stock Name</p>
+                    </div>
+                    <div class="col-span-2 hidden items-center sm:flex">
+                        <p class="font-medium">Last Price</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="font-medium">Change</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="font-medium">% Change</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="font-medium">T Fact</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                    <div class="col-span-3 flex items-center">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                            <div class="h-12.5 w-15 rounded-md">
+                                <img src="src/images/product/product-01.png" alt="Product" />
                             </div>
+                            <p class="text-sm font-medium text-black dark:text-white">
+                                OIL
+                            </p>
                         </div>
+                    </div>
+                    <div class="col-span-2 hidden items-center sm:flex">
+                        <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="text-sm font-medium text-black dark:text-white">$269</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="text-sm font-medium text-black dark:text-white">22</p>
+                    </div>
+                    <div class="col-span-1 flex items-center">
+                        <p class="text-sm font-medium text-meta-3">$45</p>
+                    </div>
+                </div>
 
-                        -->
+            </div>
+        </div>
+    </div>
+
+    -->
                         <!-- ====== Table Two Start -->
                         <div class="col-span-12 xl:col-span-7" style="display: none;">
                             <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -1669,7 +1761,7 @@
     </div>
     <!-- ===== Page Wrapper End ===== -->
 
-    <script defer src="bundle.js?t=132"></script>
+    <script defer src="bundle.js?t=1327"></script>
     <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"8fca2c359c0b1c85","version":"2024.10.5","r":1,"serverTiming":{"name":{"cfExtPri":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"token":"67f7a278e3374824ae6dd92295d38f77","b":1}' crossorigin="anonymous"></script>
 </body>
 

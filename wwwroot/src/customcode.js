@@ -26,17 +26,17 @@ $(document).ready(function () {
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(domain + subfolderName + "/notificationHub")
         .build();
-
+    
     connection.on("NewStock", (name) => {
         playBeep();
         console.log("Signal R on NewStock event : " + name);
-        getWatchlistIntradayStocks(function (response) {
+        getWatchlistIntradayStocks(function(response){
             renderWatchListIntradayStocks(response);
-        });
+        });    
     });
 
     connection.on("DataUpdate", (name) => {
-        console.log("Reload the data. Server has latest synced data.");
+        console.log("Reload the data. Server has latest synced data.");  
     });
 
     connection.start().catch(err => console.error(err));
@@ -45,36 +45,36 @@ $(document).ready(function () {
 
     var tokenResult = false;
     isTokenValid(localStorage.accessToken)
-        .then(tokenResult => {
-            if (tokenResult == false || (localStorage.userInfo == null
-                || localStorage.userInfo == undefined
-                || localStorage.accessToken == null)) {
-
-                var url = domain + subfolderName + "/index.html";
-
-                window.location.href = url;
-            }
-        });
-
+    .then(tokenResult => { 
+        if(tokenResult == false || (localStorage.userInfo == null 
+            || localStorage.userInfo == undefined 
+            || localStorage.accessToken == null)) {                
+    
+            var url = domain + subfolderName + "/index.html";
+    
+            window.location.href = url;        
+        }        
+    });
+    
     setTimeout(function () {
         var userDetails = JSON.parse(localStorage.userInfo);
         $("#profileImage").attr("src", userDetails.picture);
         $("#ProfileName").text(userDetails.name);
         document.dispatchEvent(new Event("click"));
     }, 200);
-
-    $("#logout").click(function () {
+    
+    $("#logout").click(function(){
         logout();
     });
 
-    getIndexData();
+    getIndexData();    
 });
 
 
 function GenerateFilerOptions() {
     let options = ``;
-    for (let i = 0; i < FILTERS.length; i++) {
-        let j = i + 1;
+    for(let i=0;i<FILTERS.length;i++) {
+        let j = i+1;
         options += `<option value="${j}">${FILTERS[i]}</option>`;
     }
     return options;
@@ -110,7 +110,8 @@ function getCurrentDateTime() {
     return strDate + " " + strTime;
 }
 
-function updateFilterOptionsOnDashboard() {
+function updateFilterOptionsOnDashboard()
+{
     let options = GenerateFilerOptions();
     $("#stocksFilter").html(options);
 }
@@ -135,14 +136,14 @@ async function isTokenValid(token) {
 function logout() {
     if (localStorage.accessToken) {
         const revokeUrl = `https://accounts.google.com/o/oauth2/revoke?token=${localStorage.accessToken}`;
-
+        
         // Revoke the token
         fetch(revokeUrl).then((response) => {
             if (response.ok) {
                 accessToken = null;
                 localStorage.clear();
                 window.location.hash = ''; // Clear the URL hash
-            }
+            } 
 
             var domain = window.location.origin;
             var subfolderName = "";
@@ -154,13 +155,13 @@ function logout() {
             }
 
             var url = domain + subfolderName + "/index.html";
-
+            
             window.location.href = url;
         })
-            .catch((error) => {
-                localStorage.clear();
-                console.error('Error revoking token:', error);
-            });
+        .catch((error) => {
+            localStorage.clear();
+            console.error('Error revoking token:', error);
+        });
     } else {
         localStorage.clear();
     }
@@ -190,31 +191,31 @@ function getIndexData(callback) {
         data: { "currentDate": selectedDate },
         success: function (response) {
             $("div[x-show='loaded']").hide();
-            let nifty50 = response.find(s => s.name == "NIFTY 50");
+            let nifty50 = response.find(s=>s.name == "NIFTY 50");
             $("#nifty50").text(formatToThousands(nifty50.lastPrice.toFixed(2)));
             $("#niftyPer").text(nifty50.pChange + "%");
             $("#niftyVeri").text(nifty50.variation.toFixed(2));
 
-            if (nifty50.pChange > 0) {
+            if(nifty50.pChange > 0) {
                 $("#nifty50").removeClass("text-red");
-                $("#nifty50").addClass("text-meta-3");
-
+                $("#nifty50").addClass("text-meta-3");    
+                
                 $("#niftyIcon").attr("d", "M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z");
                 $("#niftyIcon").attr("fill", "#10B981");
-
+                
                 $("#niftyPer").removeClass("text-red");
                 $("#niftyPer").addClass("text-meta-3");
 
                 $("#niftyVeri").removeClass("text-red");
-                $("#niftyVeri").addClass("text-meta-3");
+                $("#niftyVeri").addClass("text-meta-3");                
             }
             else {
-                $("#nifty50").removeClass("text-meta-3");
+                $("#nifty50").removeClass("text-meta-3");   
                 $("#nifty50").addClass("text-red");
 
                 $("#niftyIcon").attr("d", "M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z");
                 $("#niftyIcon").attr("fill", "#ee544e");
-
+                
                 $("#niftyPer").removeClass("text-meta-3");
                 $("#niftyPer").addClass("text-red");
 
@@ -222,30 +223,30 @@ function getIndexData(callback) {
                 $("#niftyVeri").addClass("text-red");
             }
 
-            let niftyBank = response.find(s => s.name == "NIFTY BANK");
+            let niftyBank = response.find(s=>s.name == "NIFTY BANK");
             $("#niftyBank").text(formatToThousands(niftyBank.lastPrice.toFixed(2)));
             $("#niftyBankPer").text(niftyBank.pChange + "%");
             $("#niftyBankVeri").text(niftyBank.variation.toFixed(2));
 
-            if (niftyBank.pChange > 0) {
+            if(niftyBank.pChange > 0) {
                 $("#niftyBank").removeClass("text-red");
-                $("#niftyBank").addClass("text-meta-3");
-
+                $("#niftyBank").addClass("text-meta-3");    
+                
                 $("#niftyBankIcon").attr("d", "M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z");
                 $("#niftyBankIcon").attr("fill", "#10B981");
-
+                
                 $("#niftyBankPer").removeClass("text-red");
                 $("#niftyBankPer").addClass("text-meta-3");
 
                 $("#niftyBankVeri").removeClass("text-red");
-                $("#niftyBankVeri").addClass("text-meta-3");
+                $("#niftyBankVeri").addClass("text-meta-3");   
             } else {
-                $("#niftyBank").removeClass("text-meta-3");
+                $("#niftyBank").removeClass("text-meta-3");   
                 $("#niftyBank").addClass("text-red");
 
                 $("#niftyBankIcon").attr("d", "M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z");
                 $("#niftyBankIcon").attr("fill", "#ee544e");
-
+                
                 $("#niftyBankPer").removeClass("text-meta-3");
                 $("#niftyBankPer").addClass("text-red");
 
@@ -253,30 +254,30 @@ function getIndexData(callback) {
                 $("#niftyBankVeri").addClass("text-red");
             }
 
-            let niftyNext50 = response.find(s => s.name == "NIFTY NEXT 50");
+            let niftyNext50 = response.find(s=>s.name == "NIFTY NEXT 50");
             $("#niftyNext50").text(formatToThousands(niftyNext50.lastPrice.toFixed(2)));
             $("#niftyNext50Per").text(niftyNext50.pChange + "%");
             $("#niftyNext50Veri").text(niftyNext50.variation.toFixed(2));
 
-            if (niftyNext50.pChange > 0) {
+            if(niftyNext50.pChange > 0) {
                 $("#niftyNext50").removeClass("text-red");
-                $("#niftyNext50").addClass("text-meta-3");
-
+                $("#niftyNext50").addClass("text-meta-3");    
+                
                 $("#niftyNext50Icon").attr("d", "M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z");
                 $("#niftyNext50Icon").attr("fill", "#10B981");
-
+                
                 $("#niftyNext50Per").removeClass("text-red");
                 $("#niftyNext50Per").addClass("text-meta-3");
 
                 $("#niftyNext50Veri").removeClass("text-red");
                 $("#niftyNext50Veri").addClass("text-meta-3");
             } else {
-                $("#niftyNext50").removeClass("text-meta-3");
+                $("#niftyNext50").removeClass("text-meta-3");   
                 $("#niftyNext50").addClass("text-red");
 
                 $("#niftyNext50Icon").attr("d", "M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z");
                 $("#niftyNext50Icon").attr("fill", "#ee544e");
-
+                
                 $("#niftyNext50Per").removeClass("text-meta-3");
                 $("#niftyNext50Per").addClass("text-red");
 
@@ -289,25 +290,25 @@ function getIndexData(callback) {
             $("#niftyMidSelectPer").text(niftyMidSelect.pChange + "%");
             $("#niftyMidSelectVeri").text(niftyMidSelect.variation.toFixed(2));
 
-            if (niftyMidSelect.pChange > 0) {
+            if(niftyMidSelect.pChange > 0) {
                 $("#niftyMidSelect").removeClass("text-red");
-                $("#niftyMidSelect").addClass("text-meta-3");
-
+                $("#niftyMidSelect").addClass("text-meta-3");    
+                
                 $("#niftyMidSelectIcon").attr("d", "M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z");
                 $("#niftyMidSelectIcon").attr("fill", "#10B981");
-
+                
                 $("#niftyMidSelectPer").removeClass("text-red");
                 $("#niftyMidSelectPer").addClass("text-meta-3");
 
                 $("#niftyMidSelectVeri").removeClass("text-red");
                 $("#niftyMidSelectVeri").addClass("text-meta-3");
             } else {
-                $("#niftyMidSelect").removeClass("text-meta-3");
+                $("#niftyMidSelect").removeClass("text-meta-3");   
                 $("#niftyMidSelect").addClass("text-red");
 
                 $("#niftyMidSelectIcon").attr("d", "M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z");
                 $("#niftyMidSelectIcon").attr("fill", "#ee544e");
-
+                
                 $("#niftyMidSelectPer").removeClass("text-meta-3");
                 $("#niftyMidSelectPer").addClass("text-red");
 
@@ -320,13 +321,13 @@ function getIndexData(callback) {
             $("#niftyFinServicePer").text(niftyFinService.pChange + "%");
             $("#niftyFinServiceVeri").text(niftyFinService.variation.toFixed(2));
 
-            if (niftyFinService.pChange > 0) {
+            if(niftyFinService.pChange > 0) {
                 $("#niftyFinService").removeClass("text-red");
-                $("#niftyFinService").addClass("text-meta-3");
-
+                $("#niftyFinService").addClass("text-meta-3");    
+                
                 $("#niftyFinServiceIcon").attr("d", "M8.25259 5.87281L4.22834 9.89706L3.16751 8.83623L9.00282 3.00092L14.8381 8.83623L13.7773 9.89705L9.75306 5.87281L9.75306 15.0046L8.25259 15.0046L8.25259 5.87281Z");
                 $("#niftyFinServiceIcon").attr("fill", "#10B981");
-
+                
                 $("#niftyFinServicePer").removeClass("text-red");
                 $("#niftyFinServicePer").addClass("text-meta-3");
 
@@ -334,19 +335,19 @@ function getIndexData(callback) {
                 $("#niftyFinServiceVeri").addClass("text-meta-3");
             }
             else {
-                $("#niftyFinService").removeClass("text-meta-3");
+                $("#niftyFinService").removeClass("text-meta-3");   
                 $("#niftyFinService").addClass("text-red");
 
                 $("#niftyFinServiceIcon").attr("d", "M9.75302 12.1328L13.7773 8.10856L14.8381 9.16939L9.00279 15.0047L3.16748 9.16939L4.22831 8.10856L8.25256 12.1328V3.00098H9.75302V12.1328Z");
                 $("#niftyFinServiceIcon").attr("fill", "#ee544e");
-
+                
                 $("#niftyFinServicePer").removeClass("text-meta-3");
                 $("#niftyFinServicePer").addClass("text-red");
 
                 $("#niftyFinServiceVeri").removeClass("text-meta-3");
                 $("#niftyFinServiceVeri").addClass("text-red");
             }
-            if (callback != null || callback != undefined) {
+            if(callback != null || callback != undefined) {
                 return callback(response);
             }
         },
@@ -383,7 +384,7 @@ function autoRefresh() {
         const minutes = now.getMinutes();
         const nextSlot = Math.ceil((minutes + 1) / 5) * 5; // Ensures the next interval
         const nextRefresh = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), nextSlot, 0, 0);
-
+        
         // If the next slot moves to the next hour, adjust the hour accordingly
         if (nextSlot === 60) {
             nextRefresh.setHours(now.getHours() + 1);
@@ -432,7 +433,7 @@ function playBeep() {
     oscillator.frequency.setValueAtTime(2000, audioContext.currentTime); // 1000 Hz beep
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-
+    
     oscillator.start();
     setTimeout(() => oscillator.stop(), 300); // Stops after 300ms
 }

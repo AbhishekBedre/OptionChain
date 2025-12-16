@@ -19,31 +19,29 @@ namespace OptionChain.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
-        private readonly OptionDbContext _optionDbContext;
         private readonly UpStoxDbContext _upStoxDbContext;
         private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         private string accessToken = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI3MkFBM0siLCJqdGkiOiI2OTNjMjVhMTI3ZWEyZDM5ODdiYmU4Y2QiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNQbHVzUGxhbiI6ZmFsc2UsImlhdCI6MTc2NTU0OTQ3MywiaXNzIjoidWRhcGktZ2F0ZXdheS1zZXJ2aWNlIiwiZXhwIjoxNzY1NTc2ODAwfQ.hHJ9WstgAlAkeY9aeVQ0_Cfz-93YjFd6fpGRXq9JguY";
 
 
-        public UsersController(ILogger<UsersController> logger,
-            OptionDbContext optionDbContext,
-            UpStoxDbContext upStoxDbContext)
+        public UsersController(ILogger<UsersController> logger, UpStoxDbContext upStoxDbContext)
         {
             _logger = logger;
-            _optionDbContext = optionDbContext;
             _upStoxDbContext = upStoxDbContext;
         }
 
         [HttpPost]
-        public async Task<bool> Post(Users user)
+        public async Task<IResult> CreateUpdateUserPost(UserMaster user)
         {
             try
             {
-                var usersEntry = await _optionDbContext.Users.Where(x => x.Email.ToLower() == user.Email.ToLower()).FirstOrDefaultAsync();
+                var usersEntry = await _upStoxDbContext.UserMasters
+                    .Where(x => x.Email.ToLower() == user.Email.ToLower())
+                    .FirstOrDefaultAsync();
 
                 if (usersEntry == null)
                 {
-                    await _optionDbContext.Users.AddAsync(user);
+                    await _upStoxDbContext.UserMasters.AddAsync(user);
                 }
                 else
                 {
@@ -54,13 +52,13 @@ namespace OptionChain.Controllers
                     usersEntry.LastUpdated = DateTime.Now;
                 }
 
-                await _optionDbContext.SaveChangesAsync();
+                await _upStoxDbContext.SaveChangesAsync();
 
-                return true;
+                return Results.Ok();
             }
             catch (Exception ex)
             {
-                return false;
+                return Results.BadRequest(ex.Message);
             }
         }
 
