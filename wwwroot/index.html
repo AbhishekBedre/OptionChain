@@ -116,6 +116,7 @@
 
         // Display user details
         function displayUserDetails(user) {
+            $("div[x-show='loaded']").show();
             localStorage.userInfo = JSON.stringify(user);
 
             var domain = window.location.origin;
@@ -155,10 +156,11 @@
                     if (arr.length > 2) {
                         subfolderName = "/" + arr[1];
                     }
-
+                    $("div[x-show='loaded']").hide();
                     window.location.href = urlNevigate;
                 },
                 error: function (xhr, status, error) {
+                    $("div[x-show='loaded']").hide();
                     console.log("Error while adding or updating user");
                     console.error('Error:', status, error);
                     window.location.href = urlNevigate;

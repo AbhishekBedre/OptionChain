@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
@@ -14,10 +15,14 @@ namespace OptionChain.Controllers
     {
         public long ConvertToUnixTimestamp(TimeSpan timeSpan, DateTime entryDate)
         {
-            // Get the current DateTime
-            DateTime currentDateTime = new DateTime(entryDate.Year, entryDate.Month, entryDate.Day, timeSpan.Hours, timeSpan.Minutes, 0, DateTimeKind.Local).ToUniversalTime();
+            var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
-            long unixTime = ((DateTimeOffset)currentDateTime).ToUniversalTime().ToUnixTimeSeconds();
+            // Get the current DateTime
+            DateTime currentDateTime = new DateTime(entryDate.Year, entryDate.Month, entryDate.Day, timeSpan.Hours, timeSpan.Minutes, 0, DateTimeKind.Unspecified);
+
+            DateTime utcDateTime = TimeZoneInfo.ConvertTimeToUtc(currentDateTime, istZone);
+
+            long unixTime = new DateTimeOffset(utcDateTime).ToUnixTimeSeconds();
 
             return unixTime;
 
@@ -52,14 +57,22 @@ namespace OptionChain.Controllers
             Test ob = new Test();
 
             // Generate time slots from 9:15 AM to 3:30 PM with a 5-minute interval
-            var startTime = new TimeSpan(9, 15, 0);
-            var endTime = new TimeSpan(15, 30, 0);
-            var interval = TimeSpan.FromMinutes(1);
+            var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
             DateTime currDt = DateTime.Parse(currentDate);
 
-            var timeSlots = Enumerable.Range(0, (int)((endTime - startTime).TotalMinutes / interval.TotalMinutes) + 1)
-                .Select(i => startTime.Add(TimeSpan.FromMinutes(i * 1)))
+            DateTime istDate = TimeZoneInfo.ConvertTime(
+                DateTime.SpecifyKind(currDt, DateTimeKind.Unspecified),
+                istZone
+            );
+
+            DateTime startTime = istDate.Date.AddHours(9).AddMinutes(15);
+            DateTime endTime = istDate.Date.AddHours(15).AddMinutes(30);
+            TimeSpan interval = TimeSpan.FromMinutes(1);
+
+            var timeSlots = Enumerable
+                .Range(0, (int)((endTime - startTime).TotalMinutes) + 1)
+                .Select(i => startTime.AddMinutes(i))
                 .ToList();
 
             //var responseOptionValues = await _optionDbContext.OptionValues.FromSqlRaw(@"EXEC [NiftyOptions] '" + currentDate + "'").ToListAsync();
@@ -77,13 +90,13 @@ namespace OptionChain.Controllers
 
                 positiveValue.Add(new OptionsResponse
                 {
-                    Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i), DateTime.Now),
+                    Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i).TimeOfDay, istDate),
                     value = row?.CEPEOIDiff > 0 ? row.CEPEOIDiff: null
                 });
 
                 negetiveValue.Add(new OptionsResponse
                 {
-                    Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i), DateTime.Now),
+                    Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i).TimeOfDay, istDate),
                     value = row?.CEPEOIDiff < 0 ? row.CEPEOIDiff: null
                 });
             }
@@ -434,21 +447,7 @@ namespace OptionChain.Controllers
                 .Where(x => x.Name.Contains("index", StringComparison.InvariantCultureIgnoreCase))
                 .ToList();
 
-            var allStockMetaDataIdsCache = _memoryCache.Get<List<SectorStockMetaData>>("SectorStockMetaData");
-
-            if (allStockMetaDataIdsCache == null)
-            {
-                // Get All stock metaData Ids
-                allStockMetaDataIdsCache = await _upStoxDbContext.SectorStockMetaDatas
-                    .AsNoTracking()
-                    .ToListAsync();
-
-                // Store in cache with expiration policy
-                var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
-
-                _memoryCache.Set("SectorStockMetaData", allStockMetaDataIdsCache, cacheOptions);
-            }
+            var allStockMetaDataIdsCache = await GetSectorStockMetaDatasFromCacheIfAvailableAsync();
 
             var allIndexUpdatedIds = await _upStoxDbContext.OHLCs
                 .AsNoTracking()
@@ -1074,7 +1073,11 @@ namespace OptionChain.Controllers
 
                 _memoryCache.Set("intradayBreakout", response, cacheOptions);
 
-                return response;
+                var breakDownStock = await GetBreakdownStocksV2Async(currentDate);
+
+                response.AddRange(breakDownStock);
+
+                return response.OrderByDescending(x=>x.Time).ToList();
 
             }
             catch (Exception)
@@ -1270,6 +1273,50 @@ namespace OptionChain.Controllers
             return sb.ToString();
         }
 
+        [HttpGet("trending-stocks-v2")]
+        public async Task<List<BreakoutStock>> GetTendingStocksAsync(string currentDate="2025-12-19")
+        {
+            try
+            {
+                var marketData = await GetMarketMetaDataFromCacheIfAvailable();
+                var allStockMetaDataIdsCache = await GetSectorStockMetaDatasFromCacheIfAvailableAsync();
+
+                DateTime dtCurrent = DateTime.Parse(currentDate);
+
+                var maxOHLCIds = await _upStoxDbContext.OHLCs
+                    .AsNoTracking()
+                    .Where(x => x.CreatedDate == dtCurrent.Date)
+                    .GroupBy(g => g.StockMetaDataId)
+                    .Select(x => x.Max(x => x.Id))
+                    .ToListAsync();
+
+                var rFactorResult = await _upStoxDbContext.OHLCs
+                    .AsNoTracking()
+                    .Where(x => maxOHLCIds.Contains(x.Id))
+                    .OrderByDescending(x=>x.RFactor)
+                    .Take(20)
+                    .ToListAsync();
+
+                var result = rFactorResult.Select(x => new BreakoutStock
+                {
+                    Id = x.Id,
+                    LastPrice = (double)(x.LastPrice ?? 0),
+                    EntryDate = x.CreatedDate,
+                    PChange = (double)(x.PChange ?? 0),
+                    Time = x.Time,
+                    RFactor = x.RFactor,
+                    SectorName = allStockMetaDataIdsCache.FirstOrDefault(y=>y.StockMetaDataId == x.StockMetaDataId)?.SectorDisplayName.ToString(),
+                    Symbol = marketData.FirstOrDefault(y=>y.Id == x.StockMetaDataId)?.Name.Split(":")[1].ToString(),
+                }).ToList();
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         private async Task<List<MarketMetaData>> GetMarketMetaDataFromCacheIfAvailable()
         {
             // Store in cache with expiration policy
@@ -1288,6 +1335,29 @@ namespace OptionChain.Controllers
             }
 
             return marketMetaDatasCache;
+        }
+
+        private async Task<List<SectorStockMetaData>> GetSectorStockMetaDatasFromCacheIfAvailableAsync()
+        {
+            const string cacheKey = "SectorStockMetaData";
+
+            var allStockMetaDataIdsCache = _memoryCache.Get<List<SectorStockMetaData>>(cacheKey);
+
+            if (allStockMetaDataIdsCache == null)
+            {
+                // Get All stock metaData Ids
+                allStockMetaDataIdsCache = await _upStoxDbContext.SectorStockMetaDatas
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // Store in cache with expiration policy
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(12)); // Cache expires after 12 hours, this is not going to change
+
+                _memoryCache.Set(cacheKey, allStockMetaDataIdsCache, cacheOptions);
+            }
+
+            return allStockMetaDataIdsCache;
         }
     }
 

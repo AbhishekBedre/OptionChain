@@ -32,5 +32,6 @@ namespace OptionChain.Models
         public double NewDayLow { get; set; }
         public TimeSpan? Time { get; set; }
         public DateTime? EntryDate { get; set; }
+        public decimal? RFactor { get; set; }
     }
 }

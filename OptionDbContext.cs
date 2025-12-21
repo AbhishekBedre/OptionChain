@@ -183,6 +183,7 @@ namespace OptionChain
         public DbSet<OptionExpiryData> OptionExpiryDatas { get; set; }
         public DbSet<OptionExpirySummary> optionExpirySummaries { get; set; }
         public DbSet<UserMaster> UserMasters { get; set; }
+        public DbSet<BreakOutDownStock> BreakOutDownStocks { get; set; }
 
         /// <summary>
         /// 
@@ -250,6 +251,11 @@ namespace OptionChain
             modelBuilder.Entity<OptionExpiryData>().Property(x => x.PutLTP).HasPrecision(10, 2);
 
             modelBuilder.Entity<UserMaster>().HasKey(x => x.Id);
+            
+            modelBuilder.Entity<BreakOutDownStock>().HasKey(x => x.Id);
+            modelBuilder.Entity<BreakOutDownStock>().Property(x => x.LastPrice).HasPrecision(10,2);
+            modelBuilder.Entity<BreakOutDownStock>().Property(x => x.PChange).HasPrecision(10,2);
+
         }
     }
 }

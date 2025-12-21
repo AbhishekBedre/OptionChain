@@ -383,4 +383,31 @@ namespace OptionChain.Models
         public DateTime? ForDate { get; set; }
     }
 
+    public class BreakOutDownStock
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonPropertyName("id")]
+        public long Id { get; set; }
+
+        [JsonPropertyName("stockMerataDataId")]
+        public long StockMetaDataId { get; set; }
+
+        [JsonPropertyName("time")]
+        public TimeSpan? Time { get; set; }
+
+        [JsonPropertyName("lastPrice")]
+        public decimal? LastPrice { get; set; }
+
+        [JsonPropertyName("pChange")]
+        public decimal? PChange { get; set; }
+
+        [JsonPropertyName("createdDate")]
+        public DateTime? CreatedDate { get; set; }
+
+        [JsonPropertyName("trend")]
+        public bool Trend { get; set; }
+
+    }
+
 }
