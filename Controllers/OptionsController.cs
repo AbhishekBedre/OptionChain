@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
 using OptionChain.Models;
-using System;
 using System.Text;
 using System.Text.Json.Serialization;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace OptionChain.Controllers
 {
@@ -84,20 +80,21 @@ namespace OptionChain.Controllers
             var positiveValue = new List<OptionsResponse>();
             var negetiveValue = new List<OptionsResponse>();
 
-            for (int i = 0; i < timeSlots.Count; i++)
+            foreach (var item in timeSlots)
             {
-                var row = responseOptionValues.FirstOrDefault(x => x.Time.Value.ToString(@"hh\:mm") == timeSlots?.ElementAt(i).ToString(@"hh\:mm"));
-
+                var row = responseOptionValues.FirstOrDefault(x => x.Time.Value.ToString(@"hh\:mm").Trim() == item.ToString(@"HH\:mm").Trim());
+                var time = ob.ConvertToUnixTimestamp(item.TimeOfDay, istDate);
+                
                 positiveValue.Add(new OptionsResponse
                 {
-                    Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i).TimeOfDay, istDate),
-                    value = row?.CEPEOIDiff > 0 ? row.CEPEOIDiff: null
+                    Time = time,
+                    value = row?.CEPEOIDiff > 0 ? row.CEPEOIDiff : null
                 });
 
                 negetiveValue.Add(new OptionsResponse
                 {
-                    Time = ob.ConvertToUnixTimestamp(timeSlots.ElementAt(i).TimeOfDay, istDate),
-                    value = row?.CEPEOIDiff < 0 ? row.CEPEOIDiff: null
+                    Time = time,
+                    value = row?.CEPEOIDiff > 0 ? null : (row?.CEPEOIDiff ?? 0)
                 });
             }
 
@@ -1317,6 +1314,43 @@ namespace OptionChain.Controllers
             }
         }
 
+        [HttpGet("break-out-down-stocks-v2")]
+        public async Task<List<BreakOutDownStockResponse>> GetBreakOutDownStocksAsync(string currentDate="2025-12-24")
+        {
+            try
+            {
+                var response = new List<BreakOutDownStockResponse>();
+
+                DateTime currDate = DateTime.Parse(currentDate);
+
+                var result = await _upStoxDbContext.BreakOutDownStocks
+                    .AsNoTracking()
+                    .Where(x => x.CreatedDate == currDate.Date)
+                    .ToListAsync();
+
+                var marketMetaData = await GetMarketMetaDataFromCacheIfAvailable();
+
+                response = result.Select(x => new BreakOutDownStockResponse
+                {
+                    Id = x.Id,
+                    CreatedDate = x.CreatedDate,
+                    LastPrice = x.LastPrice,
+                    PChange = x.PChange,
+                    StockMetaDataId = x.StockMetaDataId,
+                    Time = x.Time,
+                    Trend = x.Trend,
+                    Symbol = marketMetaData?.FirstOrDefault(y=>y.Id== x.StockMetaDataId)?.Name.Split(":")[1].ToString() ?? ""
+                }).ToList();
+
+                return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
         private async Task<List<MarketMetaData>> GetMarketMetaDataFromCacheIfAvailable()
         {
             // Store in cache with expiration policy
@@ -1465,5 +1499,10 @@ namespace OptionChain.Controllers
         public bool IsNifty50 { get; set; }
         public bool IsNifty100 { get; set; }
         public bool IsNifty200 { get; set; }
+    }
+
+    public class BreakOutDownStockResponse : BreakOutDownStock
+    {
+        public string Symbol { get; set; }
     }
 }

@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace OptionChain.Controllers
 {
@@ -402,6 +404,74 @@ namespace OptionChain.Controllers
                 throw;
             }
         }
+
+        [HttpGet("info")]
+        public IActionResult ServerInfoAsync()
+        {
+            var process = Process.GetCurrentProcess();
+            var timeZone = TimeZoneInfo.Local;
+
+            var info = new
+            {
+                ServerTime = new
+                {
+                    Local = DateTime.Now,
+                    Utc = DateTime.UtcNow
+                },
+
+                TimeZone = new
+                {
+                    Id = timeZone.Id,
+                    DisplayName = timeZone.DisplayName,
+                    StandardName = timeZone.StandardName,
+                    DaylightName = timeZone.DaylightName,
+                    IsDaylightSaving = timeZone.IsDaylightSavingTime(DateTime.Now)
+                },
+
+                System = new
+                {
+                    MachineName = Environment.MachineName,
+                    OS = RuntimeInformation.OSDescription,
+                    OSArchitecture = RuntimeInformation.OSArchitecture.ToString(),
+                    ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString(),
+                    ProcessorCount = Environment.ProcessorCount,
+                    Is64BitOS = Environment.Is64BitOperatingSystem
+                },
+
+                Runtime = new
+                {
+                    DotNetVersion = RuntimeInformation.FrameworkDescription,
+                    Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                },
+
+                Culture = new
+                {
+                    CurrentCulture = CultureInfo.CurrentCulture.Name,
+                    CurrentUICulture = CultureInfo.CurrentUICulture.Name
+                },
+
+                Memory = new
+                {
+                    WorkingSetMB = Math.Round(process.WorkingSet64 / 1024.0 / 1024.0, 2),
+                    PrivateMemoryMB = Math.Round(process.PrivateMemorySize64 / 1024.0 / 1024.0, 2)
+                },
+
+                Uptime = new
+                {
+                    ProcessStartTime = process.StartTime,
+                    UptimeMinutes = Math.Round((DateTime.Now - process.StartTime).TotalMinutes, 2)
+                },
+
+                Request = new
+                {
+                    ClientIP = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    UserAgent = Request.Headers["User-Agent"].ToString()
+                }
+            };
+
+            return Ok(info);
+        }
+
     }
 
     public class StockInfo

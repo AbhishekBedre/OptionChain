@@ -31,6 +31,10 @@
             display: none; /* Initially hidden */
             z-index: 9999;
         }
+
+        marquee:hover {
+            cursor: pointer;
+        }
     </style>
 
     <script data-cfasync="false" nonce="933ec671-cee0-49a2-8de7-e905e1857d2e">try { (function (w, d) { !function (a, b, c, d) { if (a.zaraz) console.error("zaraz is loaded twice"); else { a[c] = a[c] || {}; a[c].executed = []; a.zaraz = { deferred: [], listeners: [] }; a.zaraz._v = "5848"; a.zaraz._n = "933ec671-cee0-49a2-8de7-e905e1857d2e"; a.zaraz.q = []; a.zaraz._f = function (e) { return async function () { var f = Array.prototype.slice.call(arguments); a.zaraz.q.push({ m: e, a: f }) } }; for (const g of ["track", "set", "debug"]) a.zaraz[g] = a.zaraz._f(g); a.zaraz.init = () => { var h = b.getElementsByTagName(d)[0], i = b.createElement(d), j = b.getElementsByTagName("title")[0]; j && (a[c].t = b.getElementsByTagName("title")[0].text); a[c].x = Math.random(); a[c].w = a.screen.width; a[c].h = a.screen.height; a[c].j = a.innerHeight; a[c].e = a.innerWidth; a[c].l = a.location.href; a[c].r = b.referrer; a[c].k = a.screen.colorDepth; a[c].n = b.characterSet; a[c].o = (new Date).getTimezoneOffset(); if (a.dataLayer) for (const k of Object.entries(Object.entries(dataLayer).reduce(((l, m) => ({ ...l[1], ...m[1] })), {}))) zaraz.set(k[0], k[1], { scope: "page" }); a[c].q = []; for (; a.zaraz.q.length;) { const n = a.zaraz.q.shift(); a[c].q.push(n) } i.defer = !0; for (const o of [localStorage, sessionStorage]) Object.keys(o || {}).filter((q => q.startsWith("_zaraz_"))).forEach((p => { try { a[c]["z_" + p.slice(7)] = JSON.parse(o.getItem(p)) } catch { a[c]["z_" + p.slice(7)] = o.getItem(p) } })); i.referrerPolicy = "origin"; i.src = "cdn-cgi/zaraz/sd0d9.js?z=" + btoa(encodeURIComponent(JSON.stringify(a[c]))); h.parentNode.insertBefore(i, h) };["complete", "interactive"].includes(b.readyState) ? zaraz.init() : a.addEventListener("DOMContentLoaded", zaraz.init) } }(w, d, "zarazData", "script"); window.zaraz._p = async bs => new Promise((bt => { if (bs) { bs.e && bs.e.forEach((bu => { try { const bv = d.querySelector("script[nonce]"), bw = bv?.nonce || bv?.getAttribute("nonce"), bx = d.createElement("script"); bw && (bx.nonce = bw); bx.innerHTML = bu; bx.onload = () => { d.head.removeChild(bx) }; d.head.appendChild(bx) } catch (by) { console.error(`Error executing script: ${bu}\n`, by) } })); Promise.allSettled((bs.f || []).map((bz => fetch(bz[0], bz[1])))) } bt() })); zaraz._p({ "e": ["(function(w,d){})(window,document)"] }); })(window, document) } catch (e) { throw fetch("/cdn-cgi/zaraz/t"), e; };</script>
@@ -145,14 +149,14 @@
                                             <a class="group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white"
                                                href="intra-day-scope.html"
                                                :class="page === 'intra-day-scope' && '!text-white'">
-                                               Intra day scope
+                                                Intra day scope
                                             </a>
                                         </li>
                                         <li>
                                             <a class="group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white"
                                                href="weekly-sector.html"
                                                :class="page === 'weekly-sector' && '!text-white'">
-                                               Weekly sector update
+                                                Weekly sector update
                                             </a>
                                         </li>
                                     </ul>
@@ -164,7 +168,7 @@
                     </div>
                 </nav>
                 <!-- Sidebar Menu -->
-                
+
             </div>
         </aside>
 
@@ -172,6 +176,11 @@
         <!-- ===== Content Area Start ===== -->
         <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             <!-- ===== Header Start ===== -->
+            <div class="flex flex-grow items-center justify-between shadow-2 md:px-12 drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none"
+                 style="height: 60px; color: #fff; font-size: 16px; font-weight: bold; border-bottom: 1px groove black">
+                <marquee id="stockQuots" behavior="scroll" direction="left" scrollamount="6" onmouseover="this.stop();" onmouseout="this.start();">
+                </marquee>
+            </div>
             <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
                 <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
                     <div class="flex items-center gap-2 sm:gap-4">
@@ -459,7 +468,7 @@
                                @click.prevent="dropdownOpen = ! dropdownOpen">
                                 <span class="hidden text-right lg:block">
                                     <span id="ProfileName" class="block text-sm font-medium text-black dark:text-white">Abhishek Bedre</span>
-                                    <span id="spnLastUpdate"  class="block text-xs font-medium">Developer</span>
+                                    <span id="spnLastUpdate" class="block text-xs font-medium">Developer</span>
                                 </span>
 
                                 <span class="h-12 w-12 rounded-full">
@@ -762,7 +771,7 @@
                         <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
                             <div>
                                 <h3 class="text-xl font-bold text-black dark:text-white">
-                                    Nifty Option Chart
+                                    NIFTY - BIG PLAYERS POSITION
                                 </h3>
                             </div>
                             <div>
@@ -773,12 +782,52 @@
 
                                         tradingViewChat();
 
+                                        getStockQuots(function (response) {
+                                            $("#stockQuots").html(response);
+                                        }, "/Options/stock-quots");
+
                                         $("#UpdateChart").click(function () {
                                             tradingViewChat();
 
                                             getIndexData();
+
+                                            getStockQuots(function (response) {
+                                                $("#stockQuots").html(response);
+                                            }, "/Options/stock-quots");
                                         });
                                     });
+
+                                    function getStockQuots(callback, endPoint) {
+                                        $("div[x-show='loaded']").show();
+
+                                        var domain = window.location.origin;
+                                        var subfolderName = "";
+
+                                        var arr = window.location.pathname.split('/');
+
+                                        if (arr.length > 2) {
+                                            subfolderName = "/" + arr[1];
+                                        }
+
+                                        var url = domain + subfolderName + endPoint;
+
+                                        var selectedDate = $("#currentDate").val();
+
+                                        $.ajax({
+                                            url: url,
+                                            type: 'GET',
+                                            data: { "currentDate": selectedDate }, // Pass the date as a query parameter
+                                            success: function (response) {
+                                                $("div[x-show='loaded']").hide();
+                                                return callback(response);
+                                            },
+                                            error: function (xhr, status, error) {
+                                                $("div[x-show='loaded']").hide();
+                                                console.error('Error:', status, error);
+                                            }
+                                        });
+                                    }
+
                                     var chart = null;
 
                                     function tradingViewChat() {
@@ -853,25 +902,64 @@
 
                                                 // Define the series for positive values (green bars)
                                                 const positiveSeries = chart.addHistogramSeries({
-                                                    color: '#186e31',   // Green for positive values
+                                                    color: '#c03444',   // Green for positive values
                                                     lineWidth: 1,       // Width of the outline line around the bars
                                                     priceLineVisible: false,  // Disable price line (not needed for column chart)
                                                 });
 
                                                 // Define the series for negative values (red bars)
                                                 const negativeSeries = chart.addHistogramSeries({
-                                                    color: '#c03444',   // Red for negative values
+                                                    color: '#186e31',   // Red for negative values
                                                     lineWidth: 1,       // Width of the outline line around the bars
                                                     priceLineVisible: false,  // Disable price line (not needed for column chart)
                                                 });
 
                                                 // Add data to the chart, including positive and negative values
                                                 var p = response.positiveValue;
+
+                                                p = p.map(item => ({
+                                                    ...item,
+                                                    ...(typeof item.value === "number" && { value: -item.value })
+                                                }));
+
                                                 positiveSeries.setData(p);
 
                                                 var n = response.negetiveValue;
 
+                                                n = n.map(item => ({
+                                                    ...item,
+                                                    ...(typeof item.value === "number" && { value: -item.value })
+                                                }));
+
                                                 negativeSeries.setData(n);
+
+                                                const candleSeries = chart.addCandlestickSeries({
+                                                    upColor: '#26a69a',
+                                                    downColor: '#ef5350',
+                                                    borderUpColor: '#26a69a',
+                                                    borderDownColor: '#ef5350',
+                                                    wickUpColor: '#26a69a',
+                                                    wickDownColor: '#ef5350',
+                                                });
+
+                                                var data = [
+                                                    {
+                                                        "time": 1766115900,
+                                                        open: 100,
+                                                        high: 105,
+                                                        low: 98,
+                                                        close: 102
+                                                    },
+                                                    {
+                                                        "time": 1766115960,
+                                                        open: 101,
+                                                        high: 109,
+                                                        low: 90,
+                                                        close: 102
+                                                    }
+                                                ];
+
+                                                candleSeries.setData(data);
 
                                                 // Highlight the 0 line with a custom style
                                                 /*const zeroLine = chart.addLineSeries({
@@ -925,8 +1013,8 @@
                                                         const formattedTime = new Date(event.time * 1000).toLocaleString(); // Convert UNIX time to readable format
 
                                                         tooltip.innerHTML = `
-                                                                                                        <div><strong>Time:</strong> ${formattedTime}</div>
-                                                                                                        <div><strong>Value:</strong> <span style="color: ${color}">${value.value}</span></div>`;
+                                                                                                                                        <div><strong>Time:</strong> ${formattedTime}</div>
+                                                                                                                                        <div><strong>Value:</strong> <span style="color: ${color}">${value.value}</span></div>`;
 
                                                         const chartContainer = document.getElementById('chartFourTradingView');
                                                         const chartRect = chartContainer.getBoundingClientRect();
@@ -964,7 +1052,7 @@
                         </div>
                         <!-- NIFTY OPTION DATA END -->
 
-                        <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
+                        <div style="display:none" class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
                             <div>
                                 <h3 class="text-xl font-bold text-black dark:text-white">
                                     NIFTY - CE PE POSITION OVERVIEW
@@ -979,7 +1067,7 @@
 
                         <!-- BNK NIFTY OPTION DATA START -->
 
-                        <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
+                        <div style="display:none" class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5">
                             <div>
                                 <h3 class="text-xl font-bold text-black dark:text-white">
                                     Bank Nifty Option Chart
@@ -990,12 +1078,16 @@
                                 <div id="tooltipBankNifty"></div>  <!-- Tooltip container -->
                                 <script>
                                     $(document).ready(function () {
-                                        tradingViewBankNiftyChart();
+                                        //tradingViewBankNiftyChart();
+
+
 
                                         $("#UpdateChart").click(function () {
-                                            tradingViewBankNiftyChart();
+                                            //tradingViewBankNiftyChart();
+
                                         });
                                     });
+
 
                                     var bankChart = null;
 
@@ -1143,8 +1235,8 @@
                                                         const formattedTime = new Date(event.time * 1000).toLocaleString(); // Convert UNIX time to readable format
 
                                                         tooltip.innerHTML = `
-                                                                                                        <div><strong>Time:</strong> ${formattedTime}</div>
-                                                                                                        <div><strong>Value:</strong> <span style="color: ${color}">${value.value}</span></div>`;
+                                                                                                                                        <div><strong>Time:</strong> ${formattedTime}</div>
+                                                                                                                                        <div><strong>Value:</strong> <span style="color: ${color}">${value.value}</span></div>`;
 
                                                         const chartContainer = document.getElementById('chartBankNifty');
                                                         const chartRect = chartContainer.getBoundingClientRect();
@@ -1183,70 +1275,70 @@
 
                             </div>
                         </div>
-                        
+
                         <!-- BNK NIFTY OPTION DATA END -->
                         <!----
-    // SAMPLE CODE for SECTOR SECTION
+                        // SAMPLE CODE for SECTOR SECTION
 
-    <div class="col-span-12 xl:col-span-6">
+                        <div class="col-span-12 xl:col-span-6">
 
-        <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
-            <div class="mb-7 flex items-center justify-between">
-                <div>
-                    <h3 class="text-xl font-bold text-black dark:text-white">
-                        OIL & GAS
-                    </h3>
-                </div>
-            </div>
+                            <div class="mb-4 rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark md:mb-6 md:p-6 xl:p-7.5 2xl:mb-7.5">
+                                <div class="mb-7 flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-black dark:text-white">
+                                            OIL & GAS
+                                        </h3>
+                                    </div>
+                                </div>
 
-            <div class="flex flex-col gap-2">
-                <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-3 flex items-center">
-                        <p class="font-medium">Stock Name</p>
-                    </div>
-                    <div class="col-span-2 hidden items-center sm:flex">
-                        <p class="font-medium">Last Price</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="font-medium">Change</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="font-medium">% Change</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="font-medium">T Fact</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-3 flex items-center">
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                            <div class="h-12.5 w-15 rounded-md">
-                                <img src="src/images/product/product-01.png" alt="Product" />
+                                <div class="flex flex-col gap-2">
+                                    <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                        <div class="col-span-3 flex items-center">
+                                            <p class="font-medium">Stock Name</p>
+                                        </div>
+                                        <div class="col-span-2 hidden items-center sm:flex">
+                                            <p class="font-medium">Last Price</p>
+                                        </div>
+                                        <div class="col-span-1 flex items-center">
+                                            <p class="font-medium">Change</p>
+                                        </div>
+                                        <div class="col-span-1 flex items-center">
+                                            <p class="font-medium">% Change</p>
+                                        </div>
+                                        <div class="col-span-1 flex items-center">
+                                            <p class="font-medium">T Fact</p>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                        <div class="col-span-3 flex items-center">
+                                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                                <div class="h-12.5 w-15 rounded-md">
+                                                    <img src="src/images/product/product-01.png" alt="Product" />
+                                                </div>
+                                                <p class="text-sm font-medium text-black dark:text-white">
+                                                    OIL
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-span-2 hidden items-center sm:flex">
+                                            <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
+                                        </div>
+                                        <div class="col-span-1 flex items-center">
+                                            <p class="text-sm font-medium text-black dark:text-white">$269</p>
+                                        </div>
+                                        <div class="col-span-1 flex items-center">
+                                            <p class="text-sm font-medium text-black dark:text-white">22</p>
+                                        </div>
+                                        <div class="col-span-1 flex items-center">
+                                            <p class="text-sm font-medium text-meta-3">$45</p>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
-                            <p class="text-sm font-medium text-black dark:text-white">
-                                OIL
-                            </p>
                         </div>
-                    </div>
-                    <div class="col-span-2 hidden items-center sm:flex">
-                        <p class="text-sm font-medium text-black dark:text-white">Electronics</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="text-sm font-medium text-black dark:text-white">$269</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="text-sm font-medium text-black dark:text-white">22</p>
-                    </div>
-                    <div class="col-span-1 flex items-center">
-                        <p class="text-sm font-medium text-meta-3">$45</p>
-                    </div>
-                </div>
 
-            </div>
-        </div>
-    </div>
-
-    -->
+                        -->
                         <!-- ====== Table Two Start -->
                         <div class="col-span-12 xl:col-span-7" style="display: none;">
                             <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
