@@ -27,6 +27,9 @@ Console.WriteLine(connectionString);
 builder.Services.AddDbContext<OptionDbContext>(options =>
     options.UseSqlServer(connectionString, options => options.CommandTimeout(2000)));
 
+builder.Services.AddDbContextFactory<UpStoxDbContext>(options =>
+    options.UseSqlServer(connectionStringOnline, options => options.CommandTimeout(2000)));
+
 builder.Services.AddDbContext<UpStoxDbContext>(options =>
     options.UseSqlServer(connectionStringOnline, options => options.CommandTimeout(2000)));
 

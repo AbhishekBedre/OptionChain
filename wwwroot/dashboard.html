@@ -231,7 +231,7 @@
 
             getStockDetails(function (response) {
                 renderBreakoutStocks(response);
-            }, "/Options/breakout-stocks-v2");
+            }, "/Options/break-out-down-stocks-v2");
 
             getStockDetails(function (response) {
                 renderBreakdownStocks(response);
@@ -263,7 +263,7 @@
 
             getStockDetails(function (response) {
                 renderBreakoutStocks(response);
-            }, "/Options/breakout-stocks-v2");
+            }, "/Options/break-out-down-stocks-v2");
 
             getStockDetails(function (response) {
                 renderBreakdownStocks(response);
@@ -424,7 +424,6 @@
                 data: { "currentDate": selectedDate }, // Pass the date as a query parameter
                 success: function (response) {
                     $("div[x-show='loaded']").hide();
-                    console.log('Success:', response);
                     return callback(response);
                 },
                 error: function (xhr, status, error) {

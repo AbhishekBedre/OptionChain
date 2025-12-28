@@ -1289,7 +1289,7 @@ namespace OptionChain.Controllers
 
                 var rFactorResult = await _upStoxDbContext.OHLCs
                     .AsNoTracking()
-                    .Where(x => maxOHLCIds.Contains(x.Id))
+                    .Where(x => maxOHLCIds.Contains(x.Id) && x.RFactor > 15)
                     .OrderByDescending(x=>x.RFactor)
                     .Take(20)
                     .ToListAsync();
