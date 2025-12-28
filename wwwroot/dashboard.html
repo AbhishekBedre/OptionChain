@@ -174,15 +174,26 @@
                             bgColor = "DC3545";
                         }
 
+                        var extension = "png";
+                        var symbol = stockList[j].symbol;
+
+                        if (symbol.includes("Nifty")) {
+                            extension = "svg";
+                            symbol = symbol.replaceAll(" ", "_")
+                        }
+
                         stockContent += `
                               <div class="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
                                   <div class="col-span-2 xl:col-span-3 flex items-center">
                                       <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                          <p class="text-sm font-medium text-black dark:text-white">
-                                              <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${stockList[j].symbol}&interval=5">
-                                                ${stockList[j].symbol}
-                                              </a>
+                                        <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${stockList[j].symbol}&interval=5">
+                                          <p>
+                                            <img src="src/images/stocklogo/${symbol}.${extension}" style="width:30px; border-radius:10px;" />
                                           </p>
+                                          <p class="text-sm font-medium text-black dark:text-white">
+                                            ${stockList[j].symbol}
+                                          </p>
+                                        </a>
                                       </div>
                                       <!--<div style="padding-left: 10px;">
                                         <button name="btnPopupRFactor" onclick="loadPopup('${stockList[j].symbol}', '${stockList[j].pChange}')" class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
@@ -457,14 +468,26 @@
                 if (response[i].pChange < 0)
                     stockClassName = "text-danger";
 
+                var extension = "png";
+                var symbol = response[i].symbol;
+
+                if (response[i].symbol.includes("Nifty")) {
+                    extension = "svg";
+                    symbol = symbol.replaceAll(" ", "_")
+                }
+
                 var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
                         <div class="col-span-2 xl:col-span-3 flex items-center">
                             <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                <p class="text-sm font-medium text-black dark:text-white">
-                                    <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                    <p>
+                                        <img src="src/images/stocklogo/${symbol}.${extension}" style="width:30px; border-radius:10px;" />
+                                    </p>
+
+                                    <p class="text-sm font-medium text-black dark:text-white">
                                         ${response[i].symbol}
-                                    </a>
-                                </p>
+                                    </p>
+                                </a>
                             </div>
                         </div>
                         <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
@@ -534,14 +557,25 @@
                 if (response[i].pChange < 0)
                     stockClassName = "text-danger";
 
+                var extension = "png";
+                var symbol = response[i].symbol;
+
+                if (response[i].symbol.includes("Nifty")) {
+                    extension = "svg";
+                    symbol = symbol.replaceAll(" ", "_")
+                }
+
                 var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
                     <div class="col-span-2 xl:col-span-3 flex items-center">
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                            <p class="text-sm font-medium text-black dark:text-white">
-                                <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                            <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                <p>
+                                    <img src="src/images/stocklogo/${symbol}.${extension}" style="width:30px; border-radius:10px;" />
+                                </p>
+                                <p class="text-sm font-medium text-black dark:text-white">
                                     ${response[i].symbol}
-                                </a>
-                            </p>
+                                </p>
+                            </a>
                         </div>
                         <div style="padding-left: 10px; display:none">
                             <button class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
@@ -592,14 +626,25 @@
                 if (response[i].pChange < 0)
                     stockClassName = "text-danger";
 
+                var extension = "png";
+                var symbol = response[i].symbol;
+
+                if (response[i].symbol.includes("Nifty")) {
+                    extension = "svg";
+                    symbol = symbol.replaceAll(" ", "_")
+                }
+
                 var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
                     <div class="col-span-2 xl:col-span-3 flex items-center">
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                            <p class="text-sm font-medium text-black dark:text-white">
-                                <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                            <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
+                                <p>
+                                    <img src="src/images/stocklogo/${symbol}.${extension}" style="width:30px; border-radius:10px;" />
+                                </p>
+                                <p class="text-sm font-medium text-black dark:text-white">
                                     ${response[i].symbol}
-                                </a>
-                            </p>
+                                </p>
+                            </a>
                         </div>
                         <div style="padding-left: 10px;; display:none">
                             <button class="inline-flex rounded-full bg-[#DC3545] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
