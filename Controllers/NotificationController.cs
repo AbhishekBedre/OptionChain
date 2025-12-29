@@ -12,11 +12,13 @@ namespace OptionChain.Controllers
     {
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IDbContextFactory<UpStoxDbContext> _upStoxDbContext;
+        private readonly DateTime _currentISTDateTime;
 
         public NotificationController(IHubContext<NotificationHub> hubContext, IDbContextFactory<UpStoxDbContext> upStoxDbContext)
         {
             _hubContext = hubContext;
             _upStoxDbContext = upStoxDbContext;
+            _currentISTDateTime = DateTime.UtcNow.ToIst();
         }
 
         [HttpGet("notify-intraday")]
@@ -29,17 +31,22 @@ namespace OptionChain.Controllers
         [HttpGet("data-update")]
         public async Task NotifyDataUpdate(NotificationType notificationType)
         {
-            // Scan for the breakout stocks
-            await ScanForBreakOutDownStock();
+            // Execute if the current interval is of 5 min like 09:15, 09:20
 
-            //send notification to clients
-            await _hubContext.Clients.All.SendAsync("DataUpdate", notificationType);
+            int minutes = _currentISTDateTime.TimeOfDay.Minutes;
+
+            if (minutes % 5 == 0)
+            {
+                // Scan for the breakout stocks
+                await ScanForBreakOutDownStock();
+
+                //send notification to clients
+                await _hubContext.Clients.All.SendAsync("DataUpdate", notificationType);
+            }
         }
 
         private async Task<bool> ScanForBreakOutDownStock()
         {
-            DateTime dt = DateTime.UtcNow.ToIst();
-
             var dbContext = _upStoxDbContext.CreateDbContext();
 
             var lastOHLCDataTask = Task.Run(async () =>
@@ -48,7 +55,7 @@ namespace OptionChain.Controllers
 
                 return await db.OHLCs
                     .AsNoTracking()
-                    .Where(x => x.CreatedDate == dt.Date && x.StockMetaDataId > 0)
+                    .Where(x => x.CreatedDate == _currentISTDateTime.Date && x.StockMetaDataId > 0)
                     .GroupBy(g => g.StockMetaDataId)
                     .Select(x => x.Max(x => x.Id))
                     .ToListAsync();
@@ -70,7 +77,7 @@ namespace OptionChain.Controllers
 
                 return await db.BreakOutDownStocks
                 .AsNoTracking()
-                .Where(x => x.CreatedDate == dt.Date)
+                .Where(x => x.CreatedDate == _currentISTDateTime.Date)
                 .ToListAsync();
             });
 
@@ -98,15 +105,18 @@ namespace OptionChain.Controllers
             {
                 var stockPrecomputedData = allPrecomputedData.Where(x => x.StockMetaDataId == item.StockMetaDataId).FirstOrDefault();
 
-                var stock = CheckBreakOutDownStockAndAddToTable(breakOutDownStocks, item.StockMetaDataId,
-                    Convert.ToDecimal(item.LastPrice > 0 ? item.LastPrice : item.Close),
-                    Convert.ToDecimal(stockPrecomputedData.DaysHigh),
-                    Convert.ToDecimal(stockPrecomputedData.DaysLow),
-                    Convert.ToDecimal(item.PChange),
-                    item.Time);
+                if (stockPrecomputedData != null)
+                {
+                    var stock = CheckBreakOutDownStockAndAddToTable(breakOutDownStocks, item.StockMetaDataId,
+                        Convert.ToDecimal(item.LastPrice > 0 ? item.LastPrice : item.Close),
+                        Convert.ToDecimal(stockPrecomputedData.PreviousDayHigh),
+                        Convert.ToDecimal(stockPrecomputedData.PreviousDayLow),
+                        Convert.ToDecimal(item.PChange),
+                        item.Time);
 
-                if (stock != null)
-                    breakOutDownStockList.Add(stock);
+                    if (stock != null)
+                        breakOutDownStockList.Add(stock);
+                }
             }
 
             if (breakOutDownStockList.Count > 0)
@@ -130,8 +140,6 @@ namespace OptionChain.Controllers
             decimal pChange,
             TimeSpan? timeSpan)
         {
-            DateTime dt = DateTime.UtcNow.ToIst();
-
             if (!breakOutDownStocks.Select(x => x.StockMetaDataId).Contains(stockMetaDataId) && (lastPrice > daysHigh || lastPrice < daysLow))
             {
                 var stockAlert = new BreakOutDownStock
@@ -141,7 +149,7 @@ namespace OptionChain.Controllers
                     Time = timeSpan,
                     Trend = (lastPrice > daysHigh) ? true : false,
                     PChange = pChange,
-                    CreatedDate = dt.Date
+                    CreatedDate = _currentISTDateTime.Date
                 };
 
                 return stockAlert;

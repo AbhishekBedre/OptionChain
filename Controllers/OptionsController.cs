@@ -489,17 +489,20 @@ namespace OptionChain.Controllers
                         .OrderByDescending(x => x.Id)
                         .FirstOrDefaultAsync();
 
-                    var sectorStock = new SectorStocksResponse
+                    if (stockEntry != null)
                     {
-                        Id = ((int)stockEntry.Id),
-                        LastPrice = (double)(stockEntry?.LastPrice > 0 ? stockEntry?.LastPrice : stockEntry.Close),
-                        PChange = (double)stockEntry.PChange,
-                        TFactor = (double)stockEntry.RFactor,
-                        Time = stockEntry.Time.ToString(),
-                        Symbol = marketMetaDatasCache.Where(x => x.Id == stock).FirstOrDefault().Name.Split(":")[1].ToString()
-                    };
+                        var sectorStock = new SectorStocksResponse
+                        {
+                            Id = ((int)stockEntry.Id),
+                            LastPrice = (double)(stockEntry?.LastPrice > 0 ? stockEntry?.LastPrice : stockEntry.Close),
+                            PChange = (double)stockEntry.PChange,
+                            TFactor = (double)stockEntry.RFactor,
+                            Time = stockEntry.Time.ToString(),
+                            Symbol = marketMetaDatasCache.Where(x => x.Id == stock).FirstOrDefault().Name.Split(":")[1].ToString()
+                        };
 
-                    sectorStocks.Add(sectorStock);
+                        sectorStocks.Add(sectorStock);
+                    }
                 }
 
                 var sectorsStock = new Sector
