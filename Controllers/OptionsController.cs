@@ -84,7 +84,7 @@ namespace OptionChain.Controllers
             {
                 var row = responseOptionValues.FirstOrDefault(x => x.Time.Value.ToString(@"hh\:mm").Trim() == item.ToString(@"HH\:mm").Trim());
                 var time = ob.ConvertToUnixTimestamp(item.TimeOfDay, istDate);
-                
+
                 positiveValue.Add(new OptionsResponse
                 {
                     Time = time,
@@ -1077,7 +1077,7 @@ namespace OptionChain.Controllers
 
                 response.AddRange(breakDownStock);
 
-                return response.OrderByDescending(x=>x.Time).ToList();
+                return response.OrderByDescending(x => x.Time).ToList();
 
             }
             catch (Exception)
@@ -1274,7 +1274,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("trending-stocks-v2")]
-        public async Task<List<BreakoutStock>> GetTendingStocksAsync(string currentDate="2025-12-19")
+        public async Task<List<BreakoutStock>> GetTendingStocksAsync(string currentDate = "2025-12-19")
         {
             try
             {
@@ -1293,7 +1293,7 @@ namespace OptionChain.Controllers
                 var rFactorResult = await _upStoxDbContext.OHLCs
                     .AsNoTracking()
                     .Where(x => maxOHLCIds.Contains(x.Id) && x.RFactor > 15)
-                    .OrderByDescending(x=>x.RFactor)
+                    .OrderByDescending(x => x.RFactor)
                     .Take(20)
                     .ToListAsync();
 
@@ -1305,8 +1305,8 @@ namespace OptionChain.Controllers
                     PChange = (double)(x.PChange ?? 0),
                     Time = x.Time,
                     RFactor = x.RFactor,
-                    SectorName = allStockMetaDataIdsCache.FirstOrDefault(y=>y.StockMetaDataId == x.StockMetaDataId)?.SectorDisplayName.ToString(),
-                    Symbol = marketData.FirstOrDefault(y=>y.Id == x.StockMetaDataId)?.Name.Split(":")[1].ToString(),
+                    SectorName = allStockMetaDataIdsCache.FirstOrDefault(y => y.StockMetaDataId == x.StockMetaDataId)?.SectorDisplayName.ToString(),
+                    Symbol = marketData.FirstOrDefault(y => y.Id == x.StockMetaDataId)?.Name.Split(":")[1].ToString(),
                 }).ToList();
 
                 return result;
@@ -1318,7 +1318,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("break-out-down-stocks-v2")]
-        public async Task<List<BreakOutDownStockResponse>> GetBreakOutDownStocksAsync(string currentDate="2025-12-24")
+        public async Task<List<BreakOutDownStockResponse>> GetBreakOutDownStocksAsync(string currentDate = "2025-12-24")
         {
             try
             {
@@ -1329,6 +1329,7 @@ namespace OptionChain.Controllers
                 var result = await _upStoxDbContext.BreakOutDownStocks
                     .AsNoTracking()
                     .Where(x => x.CreatedDate == currDate.Date)
+                    .OrderByDescending(x => x.Time)
                     .ToListAsync();
 
                 var marketMetaData = await GetMarketMetaDataFromCacheIfAvailable();
@@ -1342,7 +1343,7 @@ namespace OptionChain.Controllers
                     StockMetaDataId = x.StockMetaDataId,
                     Time = x.Time,
                     Trend = x.Trend,
-                    Symbol = marketMetaData?.FirstOrDefault(y=>y.Id== x.StockMetaDataId)?.Name.Split(":")[1].ToString() ?? ""
+                    Symbol = marketMetaData?.FirstOrDefault(y => y.Id == x.StockMetaDataId)?.Name.Split(":")[1].ToString() ?? ""
                 }).ToList();
 
                 return response;
