@@ -25,6 +25,14 @@
             padding-right: 25px;
             padding-left: 5px;
         }
+
+        #powerStocks, #trendingStocks, #breakoutBeacon {
+            text-transform: uppercase
+        }
+
+        ::placeholder {
+            text-transform: none !important;
+        }
     </style>
 
     <script data-cfasync="false" nonce="933ec671-cee0-49a2-8de7-e905e1857d2e">try { (function (w, d) { !function (a, b, c, d) { if (a.zaraz) console.error("zaraz is loaded twice"); else { a[c] = a[c] || {}; a[c].executed = []; a.zaraz = { deferred: [], listeners: [] }; a.zaraz._v = "5848"; a.zaraz._n = "933ec671-cee0-49a2-8de7-e905e1857d2e"; a.zaraz.q = []; a.zaraz._f = function (e) { return async function () { var f = Array.prototype.slice.call(arguments); a.zaraz.q.push({ m: e, a: f }) } }; for (const g of ["track", "set", "debug"]) a.zaraz[g] = a.zaraz._f(g); a.zaraz.init = () => { var h = b.getElementsByTagName(d)[0], i = b.createElement(d), j = b.getElementsByTagName("title")[0]; j && (a[c].t = b.getElementsByTagName("title")[0].text); a[c].x = Math.random(); a[c].w = a.screen.width; a[c].h = a.screen.height; a[c].j = a.innerHeight; a[c].e = a.innerWidth; a[c].l = a.location.href; a[c].r = b.referrer; a[c].k = a.screen.colorDepth; a[c].n = b.characterSet; a[c].o = (new Date).getTimezoneOffset(); if (a.dataLayer) for (const k of Object.entries(Object.entries(dataLayer).reduce(((l, m) => ({ ...l[1], ...m[1] })), {}))) zaraz.set(k[0], k[1], { scope: "page" }); a[c].q = []; for (; a.zaraz.q.length;) { const n = a.zaraz.q.shift(); a[c].q.push(n) } i.defer = !0; for (const o of [localStorage, sessionStorage]) Object.keys(o || {}).filter((q => q.startsWith("_zaraz_"))).forEach((p => { try { a[c]["z_" + p.slice(7)] = JSON.parse(o.getItem(p)) } catch { a[c]["z_" + p.slice(7)] = o.getItem(p) } })); i.referrerPolicy = "origin"; i.src = "cdn-cgi/zaraz/sd0d9.js?z=" + btoa(encodeURIComponent(JSON.stringify(a[c]))); h.parentNode.insertBefore(i, h) };["complete", "interactive"].includes(b.readyState) ? zaraz.init() : a.addEventListener("DOMContentLoaded", zaraz.init) } }(w, d, "zarazData", "script"); window.zaraz._p = async bs => new Promise((bt => { if (bs) { bs.e && bs.e.forEach((bu => { try { const bv = d.querySelector("script[nonce]"), bw = bv?.nonce || bv?.getAttribute("nonce"), bx = d.createElement("script"); bw && (bx.nonce = bw); bx.innerHTML = bu; bx.onload = () => { d.head.removeChild(bx) }; d.head.appendChild(bx) } catch (by) { console.error(`Error executing script: ${bu}\n`, by) } })); Promise.allSettled((bs.f || []).map((bz => fetch(bz[0], bz[1])))) } bt() })); zaraz._p({ "e": ["(function(w,d){})(window,document)"] }); })(window, document) } catch (e) { throw fetch("/cdn-cgi/zaraz/t"), e; };</script>
@@ -225,7 +233,82 @@
             }
         }
 
+        function seachStocks(searchText, searchIn) {
+
+            let scopedSeach = '#' + searchIn + " .grid.grid-cols-6";
+
+            $(scopedSeach).each(function () {
+                let stockName = $($(this).find("p.text-sm")[0]).text().trim()
+                    .toLowerCase();
+
+                if (stockName.startsWith(searchText)) {
+                    $(this).show();
+                } else if (stockName != "") {
+                    $(this).hide();
+                }
+            });
+        }
+
         $(document).ready(function () {
+
+            $('#trendingStocks').on('keyup', function () {
+                let searchText = $(this).val().toLowerCase();
+                seachStocks(searchText, "watchListStocks");
+            });
+
+            $('#powerStocks').on('keyup', function () {
+                let searchText = $(this).val().toLowerCase();
+                seachStocks(searchText, "breakdownStocks");
+            });
+
+            $('#breakoutBeacon').on('keyup', function () {
+                let searchText = $(this).val().toLowerCase();
+                seachStocks(searchText, "breakoutStocks");
+            });
+
+            //  ============================================================================
+
+            $("#btnPowerStockSeach").click(function () {
+                $("#powerStocks").focus();
+            });
+
+            $("#btnTrendingStockSeach").click(function () {
+                $("#trendingStocks").focus();
+            });
+
+            $("#btnBreakoutBeaconStockSeach").click(function () {
+                $("#breakoutBeacon").focus();
+            });
+
+            // ===============================================================================
+
+            $("#trendingStocks").focus(function () {
+                $(this).attr("placeholder", "Search trending stocks...")
+            });
+
+            $("#powerStocks").focus(function () {
+                $(this).attr("placeholder", "Search smart stocks...");
+            });
+
+            $("#breakoutBeacon").focus(function () {
+                $(this).attr("placeholder", "Search breakout stocks...");
+            });
+
+            // ==================================================================================
+
+            $("#trendingStocks").blur(function () {
+                $(this).attr("placeholder", "TRENDING POD")
+            });
+
+            $("#powerStocks").blur(function () {
+                $(this).attr("placeholder", "SMART POD")
+            });
+
+            $("#breakoutBeacon").blur(function () {
+                $(this).attr("placeholder", "BREAKOUT POD")
+            });
+
+
 
             getStockQuots(function (response) {
                 $("#stockQuots").html(response);
@@ -278,7 +361,7 @@
 
             getStockDetails(function (response) {
                 renderBreakdownStocks(response);
-            }, "/Options/trending-stocks-v2");
+            }, "/Options/breakdown-stocks-v2");
         }
 
         function getSecorStocks(callback) {
@@ -447,14 +530,14 @@
         function renderWatchListStocks(response) {
             $("#watchListStocks").empty();
             var finalContent = ``;
-            var headerContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-2 xl:col-span-3 flex items-center">
+            var headerContent = `<div class="grid grid-cols-6 border-t border-stroke py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                    <div class="col-span-3 xl:col-span-3 flex items-center">
                         <p class="font-medium">Name</p>
                     </div>
                     <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
                         <p class="font-medium">Price</p>
                     </div>
-                    <div class="col-span-2 flex items-center">
+                    <div class="col-span-1 xl:col-span-2 flex items-center">
                         <p class="font-medium">%</p>
                     </div>
                     <div class="col-span-1 flex items-center">
@@ -476,8 +559,8 @@
                     symbol = symbol.replaceAll(" ", "_")
                 }
 
-                var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                        <div class="col-span-2 xl:col-span-3 flex items-center">
+                var stockContent = `<div class="grid grid-cols-6 border-t border-stroke py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                        <div class="col-span-3 xl:col-span-3 flex items-center">
                             <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
                                 <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
                                     <p>
@@ -493,7 +576,7 @@
                         <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
                             <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
                         </div>
-                        <div class="col-span-2 flex items-center">
+                        <div class="col-span-1 xl:col-span-2 flex items-center">
                             <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
                             ${response[i].pChange}
                             </p>
@@ -537,13 +620,13 @@
             $("#breakoutStocks").empty();
             var finalContent = ``;
             var headerContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                <div class="col-span-2 xl:col-span-3 flex items-center">
+                <div class="col-span-3 xl:col-span-4 flex items-center">
                     <p class="font-medium">Name</p>
                 </div>
-                <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                <div class="col-span-1 xl:col-span-1 flex items-center">
                     <p class="font-medium">Price</p>
                 </div>
-                <div class="col-span-2 flex items-center">
+                <div class="col-span-1 xl:col-span-2 flex items-center">
                     <p class="font-medium">%</p>
                 </div>
                 <div class="col-span-1 flex items-center">
@@ -566,7 +649,7 @@
                 }
 
                 var stockContent = `<div class="grid grid-cols-6 border-t border-stroke px-4 py-2.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                    <div class="col-span-2 xl:col-span-3 flex items-center">
+                    <div class="col-span-3 xl:col-span-4 flex items-center">
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
                             <a class="group relative flex items-center gap-2.5 rounded-md font-medium text-bodydark2 duration-300 ease-in-out hover:text-white" target="_blank" href="https://www.tradingview.com/chart/?symbol=${response[i].symbol}&amp;interval=5">
                                 <p>
@@ -577,14 +660,21 @@
                                 </p>
                             </a>
                         </div>
-                        <div style="padding-left: 10px; display:none">
-                            <button class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">99</button>
+
+                        <div style="padding-left: 10px; display: ${parseInt(response[i].strengthCounter) > 0 ? 'block' : 'none'}">
+                            <button tooltip="this is the tooltip" class="inline-flex rounded-full bg-[#3CA745] px-3 py-1 text-sm font-medium text-white hover:bg-opacity-90" style="font-size: 11px; padding: 0.15rem 0.65rem 0.15rem 0.65rem;">
+                                ${response[i].strengthCounter}
+                            </button>
+                            <div class="absolute bottom-full left-1/2 z-20 mb-3 -translate-x-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                <span class="absolute bottom-[-3px] left-1/2 -z-10 h-2 w-2 -translate-x-1/2 rotate-45 rounded-sm bg-black"></span>
+                                Tooltip Text
+                              </div>
                         </div>
                     </div>
-                    <div class="sm:col-span-1 md:col-span-2 xl:col-span-2 items-center sm:flex">
+                    <div class="col-span-1 xl:col-span-1 flex items-center">
                         <p class="text-sm font-medium text-black ${stockClassName}">${response[i].lastPrice}</p>
                     </div>
-                    <div class="col-span-2 flex items-center">
+                    <div class="col-span-1 xl:col-span-2 flex items-center">
                         <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium ${stockClassName}">
                         ${response[i].pChange}
                         </p>
@@ -1472,12 +1562,19 @@
                         <div class="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-7">
                             <div class="mb-3 justify-between gap-4 sm:flex">
                                 <div>
-                                    <h4 class="text-xl font-bold text-black dark:text-white">
-                                        TODAY'S POSSIBLE TRENDING STOCKS
-                                    </h4>
+                                    <div class="relative text-xl text-black dark:text-white">
+                                        <button id="btnTrendingStockSeach" class="absolute left-0 top-1/2 -translate-y-1/2">
+                                            <svg class="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z" fill=""></path>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z" fill=""></path>
+                                            </svg>
+                                        </button>
+
+                                        <input id="trendingStocks" type="text" placeholder="TRENDING POD" class="w-full bg-transparent pl-9 pr-4 focus:outline-none">
+                                    </div>
                                 </div>
 
-                                <div class="relative z-20 inline-block">
+                                <div class="relative z-20 inline-block" style="display:none">
                                     <select name="stocksFilter" id="stocksFilter"
                                             class="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none">
                                     </select>
@@ -1502,9 +1599,16 @@
                             <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="p-4 flex items-center justify-between">
                                     <div>
-                                        <h3 class="text-xl font-bold text-black dark:text-white">
-                                            INTRADAY BEACON
-                                        </h3>
+                                        <div class="relative text-xl text-black dark:text-white">
+                                            <button id="btnBreakoutBeaconStockSeach" class="absolute left-0 top-1/2 -translate-y-1/2">
+                                                <svg class="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z" fill=""></path>
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z" fill=""></path>
+                                                </svg>
+                                            </button>
+
+                                            <input id="breakoutBeacon" type="text" placeholder="BREAKOUT POD" class="w-full bg-transparent pl-9 pr-4 focus:outline-none">
+                                        </div>
                                     </div>
                                     <div class="relative z-20 inline-block">
                                         <select name="breakOutSectorSelection" id="breakOutSectorSelection" class="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-3 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input text-black dark:text-white">
@@ -1529,9 +1633,16 @@
                             <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="p-4 flex items-center justify-between">
                                     <div>
-                                        <h3 class="text-xl font-bold text-black dark:text-white">
-                                            POWER STOCKS
-                                        </h3>
+                                        <div class="relative text-xl text-black dark:text-white">
+                                            <button id="btnPowerStockSeach" class="absolute left-0 top-1/2 -translate-y-1/2">
+                                                <svg class="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z" fill=""></path>
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z" fill=""></path>
+                                                </svg>
+                                            </button>
+
+                                            <input id="powerStocks" type="text" placeholder="SMART POD" class="w-full bg-transparent pl-9 pr-4 focus:outline-none">
+                                        </div>
                                     </div>
                                     <div class="relative z-20 inline-block" id="breakDownSectorsDropDown">
                                         <select name="breakDownSectorSelection" id="breakDownSectorSelection" class="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-3 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input text-black dark:text-white">

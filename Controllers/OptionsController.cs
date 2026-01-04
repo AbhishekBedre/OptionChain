@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using OptionChain.Extensions;
 using OptionChain.Models;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -1318,7 +1319,7 @@ namespace OptionChain.Controllers
         }
 
         [HttpGet("break-out-down-stocks-v2")]
-        public async Task<List<BreakOutDownStockResponse>> GetBreakOutDownStocksAsync(string currentDate = "2025-12-24")
+        public async Task<List<BreakOutDownStockResponse>> GetBreakOutDownStocksAsync(string currentDate = "2026-01-02")
         {
             try
             {
@@ -1343,10 +1344,38 @@ namespace OptionChain.Controllers
                     StockMetaDataId = x.StockMetaDataId,
                     Time = x.Time,
                     Trend = x.Trend,
-                    Symbol = marketMetaData?.FirstOrDefault(y => y.Id == x.StockMetaDataId)?.Name.Split(":")[1].ToString() ?? ""
+                    Symbol = marketMetaData?.FirstOrDefault(y => y.Id == x.StockMetaDataId)?.Name.Split(":")[1].ToString() ?? "",
+                    StrengthCount = x.StrengthCount
                 }).ToList();
 
                 return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet("nifty-chart")]
+        public async Task<List<OHLC>> GetNiftyChartAsync(string currentDate = "2025-12-29")
+        {
+            DateTime dt = DateTime.UtcNow.ToIst();
+            try
+            {
+                var ohlcResult = await _upStoxDbContext.OHLCs
+                    .AsNoTracking()
+                    .Where(x => x.CreatedDate == dt.Date)
+                    .Select(x=> new OHLC
+                    {
+                        Open = x.Open,
+                        High = x.High,
+                        Low = x.Low,
+                        Close = x.Close,
+                        Timestamp = x.Timestamp
+                    })
+                    .ToListAsync();
+
+                return ohlcResult;
             }
             catch (Exception)
             {

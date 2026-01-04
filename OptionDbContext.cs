@@ -255,7 +255,7 @@ namespace OptionChain
             modelBuilder.Entity<BreakOutDownStock>().HasKey(x => x.Id);
             modelBuilder.Entity<BreakOutDownStock>().Property(x => x.LastPrice).HasPrecision(10,2);
             modelBuilder.Entity<BreakOutDownStock>().Property(x => x.PChange).HasPrecision(10,2);
-
+            modelBuilder.Entity<BreakOutDownStock>().Property(x => x.StrengthCount).HasPrecision(10,2);
         }
     }
 }

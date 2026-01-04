@@ -406,8 +406,10 @@ namespace OptionChain.Models
         public DateTime? CreatedDate { get; set; }
 
         [JsonPropertyName("trend")]
-        public bool Trend { get; set; }
+        public int Trend { get; set; } // 0 => No trend, 1 => Up trend, 2 => Down Trend
 
+        [JsonPropertyName("strengthCounter")]
+        public double StrengthCount { get; set; } = 0;
     }
 
 }
